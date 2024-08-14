@@ -1,0 +1,17 @@
+node_modules
+coverage
+.nyc_output
+reports
+.DS_Store
+tsconfig.tmp
+.idea
+yarn-error.log
+temp
+dist/*
+.yalc/
+yalc.lock
+.env
+junit.xml
+certificates
+.npmrc
+tasks.md
