@@ -94,8 +94,6 @@ rules:
     - warn
     - patterns:
         - lodash.*
-        - microfrontends/*
-        - '!microfrontends/ChildAppMounter'
         - _mocks/*
       paths:
         - lodash
@@ -105,8 +103,6 @@ rules:
           message: 'Please use yamlStringify from @utils instead of this'
         - name: react-router
           message: 'import from "react-router-dom" instead'
-        - name: microfrontends
-          message: Import from 'microfrontends' is only allowed in child apps
         - name: '@harnessio/uicore'
           importNames:
             - Color

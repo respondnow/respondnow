@@ -1,10 +1,7 @@
 const path = require('path');
 const prettier = require('prettier');
 
-const {
-  container: { ModuleFederationPlugin },
-  DefinePlugin
-} = require('webpack');
+const { DefinePlugin } = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const { RetryChunkLoadPlugin } = require('webpack-retry-chunk-load-plugin');
