@@ -1,0 +1,10 @@
+metadata:
+resource:
+  versionInfo:
+    version: "${build.fullVersion}"
+    buildNo: "${build.number}"
+    gitCommit: "${gitCommitId}"
+    gitBranch: "${gitBranch}"
+    timestamp: "${buildTimeStamp}"
+    patch: "${build.patch}"
+responseMessages:

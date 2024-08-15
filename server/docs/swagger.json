@@ -1,0 +1,612 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "RespondNow Server APIs.",
+        "title": "RespondNow Server",
+        "termsOfService": "https://www.harness.io/legal/subscription-terms",
+        "contact": {
+            "name": "RespondNow"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/incident/list": {
+            "get": {
+                "description": "List incidents",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Incident Management"
+                ],
+                "summary": "List incidents",
+                "operationId": "ListIncidents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "searchTerm",
+                        "name": "searchTerm",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "correlationId",
+                        "name": "correlationId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "all",
+                        "name": "all",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/incident.IncidentList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/status": {
+            "get": {
+                "description": "Status of RespondNow Server",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Miscellaneous"
+                ],
+                "summary": "Status of RespondNow Server",
+                "operationId": "Status",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.APIStatus"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/version": {
+            "get": {
+                "description": "Version of RespondNow Server",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Miscellaneous"
+                ],
+                "summary": "Version of RespondNow Server",
+                "operationId": "Version",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/version.Version"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.Pagination": {
+            "type": "object",
+            "properties": {
+                "all": {
+                    "type": "boolean"
+                },
+                "index": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "totalItems": {
+                    "type": "integer"
+                },
+                "totalPages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.APIStatus": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "incident.Channel": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "source": {
+                    "$ref": "#/definitions/incident.ChannelSource"
+                },
+                "status": {
+                    "$ref": "#/definitions/incident.ChannelStatus"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "incident.ChannelSource": {
+            "type": "string",
+            "enum": [
+                "slack"
+            ],
+            "x-enum-varnames": [
+                "SlackSource"
+            ]
+        },
+        "incident.ChannelStatus": {
+            "type": "string",
+            "enum": [
+                "operational"
+            ],
+            "x-enum-varnames": [
+                "Operational"
+            ]
+        },
+        "incident.Conference": {
+            "type": "object",
+            "properties": {
+                "conferenceId": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/incident.ConferenceType"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "incident.ConferenceType": {
+            "type": "string",
+            "enum": [
+                "zoom"
+            ],
+            "x-enum-varnames": [
+                "Zoom"
+            ]
+        },
+        "incident.Environment": {
+            "type": "object",
+            "properties": {
+                "environmentId": {
+                    "type": "string"
+                },
+                "environmentName": {
+                    "type": "string"
+                }
+            }
+        },
+        "incident.Functionality": {
+            "type": "object",
+            "properties": {
+                "functionalityId": {
+                    "type": "string"
+                },
+                "functionalityName": {
+                    "type": "string"
+                }
+            }
+        },
+        "incident.Incident": {
+            "type": "object",
+            "required": [
+                "active",
+                "identifier",
+                "name",
+                "severity",
+                "status",
+                "summary"
+            ],
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "channel": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Channel"
+                    }
+                },
+                "conferenceDetails": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Conference"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "$ref": "#/definitions/utils.UserDetails"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "environments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Environment"
+                    }
+                },
+                "functionalities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Functionality"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "removed": {
+                    "type": "boolean"
+                },
+                "removedAt": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Role"
+                    }
+                },
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Service"
+                    }
+                },
+                "severity": {
+                    "$ref": "#/definitions/incident.Severity"
+                },
+                "slack": {
+                    "$ref": "#/definitions/incident.Slack"
+                },
+                "stages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Stage"
+                    }
+                },
+                "status": {
+                    "$ref": "#/definitions/incident.Status"
+                },
+                "summary": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "$ref": "#/definitions/utils.UserDetails"
+                }
+            }
+        },
+        "incident.IncidentList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Incident"
+                    }
+                },
+                "page": {
+                    "$ref": "#/definitions/api.Pagination"
+                }
+            }
+        },
+        "incident.Role": {
+            "type": "object",
+            "properties": {
+                "roleType": {
+                    "$ref": "#/definitions/incident.RoleType"
+                },
+                "userDetails": {
+                    "$ref": "#/definitions/utils.UserDetails"
+                }
+            }
+        },
+        "incident.RoleType": {
+            "type": "string",
+            "enum": [
+                "incidentCommander",
+                "communicationsLiaison"
+            ],
+            "x-enum-varnames": [
+                "IncidentCommander",
+                "CommunicationsLiaison"
+            ]
+        },
+        "incident.Service": {
+            "type": "object",
+            "properties": {
+                "serviceId": {
+                    "type": "string"
+                },
+                "serviceName": {
+                    "type": "string"
+                }
+            }
+        },
+        "incident.Severity": {
+            "type": "string",
+            "enum": [
+                "SEV1",
+                "SEV2",
+                "SEV3",
+                "SEV4"
+            ],
+            "x-enum-varnames": [
+                "Severity1",
+                "Severity2",
+                "Severity3",
+                "Severity4"
+            ]
+        },
+        "incident.Slack": {
+            "type": "object",
+            "properties": {
+                "channelDescription": {
+                    "type": "string"
+                },
+                "channelId": {
+                    "type": "string"
+                },
+                "channelName": {
+                    "type": "string"
+                },
+                "channelReference": {
+                    "type": "string"
+                },
+                "channelStatus": {
+                    "$ref": "#/definitions/incident.ChannelStatus"
+                }
+            }
+        },
+        "incident.Stage": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "stageId": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/incident.Status"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "incident.Status": {
+            "type": "string",
+            "enum": [
+                "started",
+                "detected",
+                "acknowledged",
+                "identified",
+                "mitigated",
+                "investigating",
+                "postmortemStarted",
+                "PostmortemCompleted",
+                "resolved"
+            ],
+            "x-enum-varnames": [
+                "Started",
+                "Detected",
+                "Acknowledged",
+                "Identified",
+                "Mitigated",
+                "Investigating",
+                "PostmortemStarted",
+                "PostmortemCompleted",
+                "Resolved"
+            ]
+        },
+        "utils.DefaultResponseDTO": {
+            "type": "object",
+            "properties": {
+                "correlationId": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "utils.Source": {
+            "type": "string",
+            "enum": [
+                "slack"
+            ],
+            "x-enum-varnames": [
+                "Slack"
+            ]
+        },
+        "utils.UserDetails": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "source": {
+                    "$ref": "#/definitions/utils.Source"
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "version.Metadata": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "version.Resource": {
+            "type": "object",
+            "properties": {
+                "versionInfo": {
+                    "$ref": "#/definitions/version.VersionInfo"
+                }
+            }
+        },
+        "version.Version": {
+            "type": "object",
+            "properties": {
+                "metaData": {
+                    "$ref": "#/definitions/version.Metadata"
+                },
+                "resource": {
+                    "$ref": "#/definitions/version.Resource"
+                },
+                "responseMessages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "version.VersionInfo": {
+            "type": "object",
+            "properties": {
+                "buildNo": {
+                    "type": "string"
+                },
+                "gitBranch": {
+                    "type": "string"
+                },
+                "gitCommit": {
+                    "type": "string"
+                },
+                "patch": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "externalDocs": {
+        "description": "OpenAPI",
+        "url": "https://swagger.io/resources/open-api/"
+    }
+}
