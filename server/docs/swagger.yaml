@@ -1,0 +1,412 @@
+basePath: /
+definitions:
+  api.Pagination:
+    properties:
+      all:
+        type: boolean
+      index:
+        type: integer
+      limit:
+        type: integer
+      totalItems:
+        type: integer
+      totalPages:
+        type: integer
+    type: object
+  handlers.APIStatus:
+    properties:
+      status:
+        type: string
+    type: object
+  incident.Channel:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      source:
+        $ref: '#/definitions/incident.ChannelSource'
+      status:
+        $ref: '#/definitions/incident.ChannelStatus'
+      url:
+        type: string
+    type: object
+  incident.ChannelSource:
+    enum:
+    - slack
+    type: string
+    x-enum-varnames:
+    - SlackSource
+  incident.ChannelStatus:
+    enum:
+    - operational
+    type: string
+    x-enum-varnames:
+    - Operational
+  incident.Conference:
+    properties:
+      conferenceId:
+        type: string
+      type:
+        $ref: '#/definitions/incident.ConferenceType'
+      url:
+        type: string
+    type: object
+  incident.ConferenceType:
+    enum:
+    - zoom
+    type: string
+    x-enum-varnames:
+    - Zoom
+  incident.Environment:
+    properties:
+      environmentId:
+        type: string
+      environmentName:
+        type: string
+    type: object
+  incident.Functionality:
+    properties:
+      functionalityId:
+        type: string
+      functionalityName:
+        type: string
+    type: object
+  incident.Incident:
+    properties:
+      active:
+        type: boolean
+      channel:
+        items:
+          $ref: '#/definitions/incident.Channel'
+        type: array
+      conferenceDetails:
+        items:
+          $ref: '#/definitions/incident.Conference'
+        type: array
+      createdAt:
+        type: string
+      createdBy:
+        $ref: '#/definitions/utils.UserDetails'
+      description:
+        type: string
+      environments:
+        items:
+          $ref: '#/definitions/incident.Environment'
+        type: array
+      functionalities:
+        items:
+          $ref: '#/definitions/incident.Functionality'
+        type: array
+      id:
+        type: string
+      identifier:
+        type: string
+      name:
+        type: string
+      removed:
+        type: boolean
+      removedAt:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/incident.Role'
+        type: array
+      services:
+        items:
+          $ref: '#/definitions/incident.Service'
+        type: array
+      severity:
+        $ref: '#/definitions/incident.Severity'
+      slack:
+        $ref: '#/definitions/incident.Slack'
+      stages:
+        items:
+          $ref: '#/definitions/incident.Stage'
+        type: array
+      status:
+        $ref: '#/definitions/incident.Status'
+      summary:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      updatedAt:
+        type: string
+      updatedBy:
+        $ref: '#/definitions/utils.UserDetails'
+    required:
+    - active
+    - identifier
+    - name
+    - severity
+    - status
+    - summary
+    type: object
+  incident.IncidentList:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/incident.Incident'
+        type: array
+      page:
+        $ref: '#/definitions/api.Pagination'
+    type: object
+  incident.Role:
+    properties:
+      roleType:
+        $ref: '#/definitions/incident.RoleType'
+      userDetails:
+        $ref: '#/definitions/utils.UserDetails'
+    type: object
+  incident.RoleType:
+    enum:
+    - incidentCommander
+    - communicationsLiaison
+    type: string
+    x-enum-varnames:
+    - IncidentCommander
+    - CommunicationsLiaison
+  incident.Service:
+    properties:
+      serviceId:
+        type: string
+      serviceName:
+        type: string
+    type: object
+  incident.Severity:
+    enum:
+    - SEV1
+    - SEV2
+    - SEV3
+    - SEV4
+    type: string
+    x-enum-varnames:
+    - Severity1
+    - Severity2
+    - Severity3
+    - Severity4
+  incident.Slack:
+    properties:
+      channelDescription:
+        type: string
+      channelId:
+        type: string
+      channelName:
+        type: string
+      channelReference:
+        type: string
+      channelStatus:
+        $ref: '#/definitions/incident.ChannelStatus'
+    type: object
+  incident.Stage:
+    properties:
+      createdAt:
+        type: string
+      duration:
+        type: integer
+      stageId:
+        type: string
+      type:
+        $ref: '#/definitions/incident.Status'
+      updatedAt:
+        type: string
+    type: object
+  incident.Status:
+    enum:
+    - started
+    - detected
+    - acknowledged
+    - identified
+    - mitigated
+    - investigating
+    - postmortemStarted
+    - PostmortemCompleted
+    - resolved
+    type: string
+    x-enum-varnames:
+    - Started
+    - Detected
+    - Acknowledged
+    - Identified
+    - Mitigated
+    - Investigating
+    - PostmortemStarted
+    - PostmortemCompleted
+    - Resolved
+  utils.DefaultResponseDTO:
+    properties:
+      correlationId:
+        type: string
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  utils.Source:
+    enum:
+    - slack
+    type: string
+    x-enum-varnames:
+    - Slack
+  utils.UserDetails:
+    properties:
+      email:
+        type: string
+      source:
+        $ref: '#/definitions/utils.Source'
+      userId:
+        type: string
+      userName:
+        type: string
+    type: object
+  version.Metadata:
+    properties:
+      name:
+        type: string
+      version:
+        type: string
+    type: object
+  version.Resource:
+    properties:
+      versionInfo:
+        $ref: '#/definitions/version.VersionInfo'
+    type: object
+  version.Version:
+    properties:
+      metaData:
+        $ref: '#/definitions/version.Metadata'
+      resource:
+        $ref: '#/definitions/version.Resource'
+      responseMessages:
+        items:
+          type: string
+        type: array
+    type: object
+  version.VersionInfo:
+    properties:
+      buildNo:
+        type: string
+      gitBranch:
+        type: string
+      gitCommit:
+        type: string
+      patch:
+        type: string
+      timestamp:
+        type: string
+      version:
+        type: string
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8080
+info:
+  contact:
+    name: RespondNow
+  description: RespondNow Server APIs.
+  termsOfService: https://www.harness.io/legal/subscription-terms
+  title: RespondNow Server
+  version: "1.0"
+paths:
+  /incident/list:
+    get:
+      consumes:
+      - application/json
+      description: List incidents
+      operationId: ListIncidents
+      parameters:
+      - description: searchTerm
+        in: query
+        name: searchTerm
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: correlationId
+        in: query
+        name: correlationId
+        type: string
+      - description: all
+        in: query
+        name: all
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/incident.IncidentList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+      summary: List incidents
+      tags:
+      - Incident Management
+  /status:
+    get:
+      consumes:
+      - application/json
+      description: Status of RespondNow Server
+      operationId: Status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.APIStatus'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+      summary: Status of RespondNow Server
+      tags:
+      - Miscellaneous
+  /version:
+    get:
+      consumes:
+      - application/json
+      description: Version of RespondNow Server
+      operationId: Version
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/version.Version'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+      summary: Version of RespondNow Server
+      tags:
+      - Miscellaneous
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

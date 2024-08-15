@@ -1,0 +1,16 @@
+.DS_Store
+.idea
+.vscode
+.nyc_output
+__pycache__/
+**/node_modules/
+**/build/
+**/coverage/
+
+main
+out/
+vendor/
+bin/
+_vendor-*
+tmp/
+.env

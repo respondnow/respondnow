@@ -1,0 +1,3 @@
+address: :8080
+serverURL: https://localhost:8080
+skipSecureVerify: true
