@@ -18,6 +18,26 @@ definitions:
       status:
         type: string
     type: object
+  incident.AddConference:
+    properties:
+      type:
+        $ref: '#/definitions/incident.ConferenceType'
+    type: object
+  incident.Attachment:
+    properties:
+      description:
+        type: string
+      type:
+        $ref: '#/definitions/incident.AttachmentType'
+      url:
+        type: string
+    type: object
+  incident.AttachmentType:
+    enum:
+    - link
+    type: string
+    x-enum-varnames:
+    - Link
   incident.Channel:
     properties:
       id:
@@ -58,6 +78,156 @@ definitions:
     type: string
     x-enum-varnames:
     - Zoom
+  incident.CreateRequest:
+    properties:
+      addConference:
+        $ref: '#/definitions/incident.AddConference'
+      attachments:
+        items:
+          $ref: '#/definitions/incident.Attachment'
+        type: array
+      channels:
+        items:
+          $ref: '#/definitions/incident.Channel'
+        type: array
+      description:
+        type: string
+      environments:
+        items:
+          $ref: '#/definitions/incident.Environment'
+        type: array
+      functionalities:
+        items:
+          $ref: '#/definitions/incident.Functionality'
+        type: array
+      identifier:
+        type: string
+      incidentChannel:
+        $ref: '#/definitions/incident.IncidentChannel'
+      name:
+        type: string
+      services:
+        items:
+          $ref: '#/definitions/incident.Service'
+        type: array
+      severity:
+        $ref: '#/definitions/incident.Severity'
+      status:
+        $ref: '#/definitions/incident.Status'
+      summary:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      type:
+        $ref: '#/definitions/incident.Type'
+    required:
+    - identifier
+    - incidentChannel
+    - name
+    - severity
+    - summary
+    - type
+    type: object
+  incident.CreateResponse:
+    properties:
+      accountIdentifier:
+        type: string
+      active:
+        type: boolean
+      attachments:
+        items:
+          $ref: '#/definitions/incident.Attachment'
+        type: array
+      channels:
+        items:
+          $ref: '#/definitions/incident.Channel'
+        type: array
+      conferenceDetails:
+        items:
+          $ref: '#/definitions/incident.Conference'
+        type: array
+      correlationID:
+        type: string
+      createdAt:
+        type: string
+      createdBy:
+        $ref: '#/definitions/utils.UserDetails'
+      description:
+        type: string
+      environments:
+        items:
+          $ref: '#/definitions/incident.Environment'
+        type: array
+      functionalities:
+        items:
+          $ref: '#/definitions/incident.Functionality'
+        type: array
+      id:
+        type: string
+      identifier:
+        type: string
+      incidentChannel:
+        $ref: '#/definitions/incident.IncidentChannel'
+      name:
+        type: string
+      orgIdentifier:
+        type: string
+      projectIdentifier:
+        type: string
+      removed:
+        type: boolean
+      removedAt:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/incident.Role'
+        type: array
+      services:
+        items:
+          $ref: '#/definitions/incident.Service'
+        type: array
+      severity:
+        $ref: '#/definitions/incident.Severity'
+      stages:
+        items:
+          $ref: '#/definitions/incident.Stage'
+        type: array
+      status:
+        $ref: '#/definitions/incident.Status'
+      summary:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      type:
+        $ref: '#/definitions/incident.Type'
+      updatedAt:
+        type: string
+      updatedBy:
+        $ref: '#/definitions/utils.UserDetails'
+    required:
+    - active
+    - id
+    - identifier
+    - name
+    - severity
+    - status
+    - summary
+    type: object
+  incident.CreateResponseDTO:
+    properties:
+      correlationId:
+        type: string
+      data:
+        $ref: '#/definitions/incident.CreateResponse'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
   incident.Environment:
     properties:
       environmentId:
@@ -74,9 +244,15 @@ definitions:
     type: object
   incident.Incident:
     properties:
+      accountIdentifier:
+        type: string
       active:
         type: boolean
-      channel:
+      attachments:
+        items:
+          $ref: '#/definitions/incident.Attachment'
+        type: array
+      channels:
         items:
           $ref: '#/definitions/incident.Channel'
         type: array
@@ -102,7 +278,13 @@ definitions:
         type: string
       identifier:
         type: string
+      incidentChannel:
+        $ref: '#/definitions/incident.IncidentChannel'
       name:
+        type: string
+      orgIdentifier:
+        type: string
+      projectIdentifier:
         type: string
       removed:
         type: boolean
@@ -118,8 +300,6 @@ definitions:
         type: array
       severity:
         $ref: '#/definitions/incident.Severity'
-      slack:
-        $ref: '#/definitions/incident.Slack'
       stages:
         items:
           $ref: '#/definitions/incident.Stage'
@@ -132,26 +312,55 @@ definitions:
         items:
           type: string
         type: array
+      type:
+        $ref: '#/definitions/incident.Type'
       updatedAt:
         type: string
       updatedBy:
         $ref: '#/definitions/utils.UserDetails'
     required:
     - active
+    - id
     - identifier
     - name
     - severity
     - status
     - summary
     type: object
-  incident.IncidentList:
+  incident.IncidentChannel:
     properties:
-      data:
+      slack:
+        $ref: '#/definitions/incident.Slack'
+      type:
+        $ref: '#/definitions/incident.IncidentChannelType'
+    type: object
+  incident.IncidentChannelType:
+    enum:
+    - slack
+    type: string
+    x-enum-varnames:
+    - ChannelSlack
+  incident.ListResponse:
+    properties:
+      content:
         items:
           $ref: '#/definitions/incident.Incident'
         type: array
-      page:
+      correlationID:
+        type: string
+      pagination:
         $ref: '#/definitions/api.Pagination'
+    type: object
+  incident.ListResponseDTO:
+    properties:
+      correlationId:
+        type: string
+      data:
+        $ref: '#/definitions/incident.ListResponse'
+      message:
+        type: string
+      status:
+        type: string
     type: object
   incident.Role:
     properties:
@@ -212,6 +421,8 @@ definitions:
         $ref: '#/definitions/incident.Status'
       updatedAt:
         type: string
+      userDetails:
+        $ref: '#/definitions/utils.UserDetails'
     type: object
   incident.Status:
     enum:
@@ -235,6 +446,18 @@ definitions:
     - PostmortemStarted
     - PostmortemCompleted
     - Resolved
+  incident.Type:
+    enum:
+    - availability
+    - latency
+    - security
+    - other
+    type: string
+    x-enum-varnames:
+    - Availability
+    - Latency
+    - Security
+    - Other
   utils.DefaultResponseDTO:
     properties:
       correlationId:
@@ -311,6 +534,60 @@ info:
   title: RespondNow Server
   version: "1.0"
 paths:
+  /incident/create:
+    post:
+      consumes:
+      - application/json
+      description: Create an incident
+      operationId: CreateIncident
+      parameters:
+      - description: Create an incident
+        in: body
+        name: incident"
+        required: true
+        schema:
+          $ref: '#/definitions/incident.CreateRequest'
+      - description: accountIdentifier
+        in: query
+        name: accountIdentifier
+        required: true
+        type: string
+      - description: orgIdentifier
+        in: query
+        name: orgIdentifier
+        type: string
+      - description: projectIdentifier
+        in: query
+        name: projectIdentifier
+        type: string
+      - description: correlationId
+        in: query
+        name: correlationId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/incident.CreateResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+      security:
+      - ApiKeyAuth: []
+      summary: Create an incident
+      tags:
+      - Incident
   /incident/list:
     get:
       consumes:
@@ -318,9 +595,64 @@ paths:
       description: List incidents
       operationId: ListIncidents
       parameters:
-      - description: searchTerm
+      - description: accountIdentifier
         in: query
-        name: searchTerm
+        name: accountIdentifier
+        required: true
+        type: string
+      - description: orgIdentifier
+        in: query
+        name: orgIdentifier
+        type: string
+      - description: projectIdentifier
+        in: query
+        name: projectIdentifier
+        type: string
+      - description: type
+        enum:
+        - availability
+        - latency
+        - security
+        - other
+        in: query
+        name: type
+        type: string
+      - description: severity
+        enum:
+        - SEV1
+        - SEV2
+        - SEV3
+        - SEV4
+        in: query
+        name: severity
+        type: string
+      - description: status
+        enum:
+        - started
+        - detected
+        - acknowledged
+        - identified
+        - mitigated
+        - investigating
+        - postmortemStarted
+        - PostmortemCompleted
+        - resolved
+        in: query
+        name: status
+        type: string
+      - description: active
+        in: query
+        name: active
+        type: boolean
+      - description: incidentChannelType
+        enum:
+        - slack
+        in: query
+        name: incidentChannelType
+        type: string
+      - description: search
+        in: query
+        name: search
         type: string
       - description: page
         in: query
@@ -344,7 +676,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/incident.IncidentList'
+            $ref: '#/definitions/incident.ListResponseDTO'
         "400":
           description: Bad Request
           schema:

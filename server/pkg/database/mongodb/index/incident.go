@@ -13,17 +13,17 @@ func GetIncidentIndexList() *IndexList {
 	return &IndexList{
 		Items: []Index{
 			{
-				Name:      "unique_incidentID_1",
+				Name:      "unique_incidentIdentifier_1",
 				Available: true,
 				Model: mongo.IndexModel{
 					Keys: bson.D{
 						{
-							Key:   "incident_id",
+							Key:   "identifier",
 							Value: constant.One,
 						},
 					},
 					Options: options.Index().
-						SetName("unique_incidentID_1").
+						SetName("unique_incidentIdentifier_1").
 						SetUnique(true).
 						SetPartialFilterExpression(bson.D{
 							{

@@ -18,6 +18,89 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/incident/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create an incident",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Incident"
+                ],
+                "summary": "Create an incident",
+                "operationId": "CreateIncident",
+                "parameters": [
+                    {
+                        "description": "Create an incident",
+                        "name": "incident\"",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/incident.CreateRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "accountIdentifier",
+                        "name": "accountIdentifier",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "orgIdentifier",
+                        "name": "orgIdentifier",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "projectIdentifier",
+                        "name": "projectIdentifier",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "correlationId",
+                        "name": "correlationId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/incident.CreateResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/incident/list": {
             "get": {
                 "description": "List incidents",
@@ -35,8 +118,83 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "searchTerm",
-                        "name": "searchTerm",
+                        "description": "accountIdentifier",
+                        "name": "accountIdentifier",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "orgIdentifier",
+                        "name": "orgIdentifier",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "projectIdentifier",
+                        "name": "projectIdentifier",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "availability",
+                            "latency",
+                            "security",
+                            "other"
+                        ],
+                        "type": "string",
+                        "description": "type",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "SEV1",
+                            "SEV2",
+                            "SEV3",
+                            "SEV4"
+                        ],
+                        "type": "string",
+                        "description": "severity",
+                        "name": "severity",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "started",
+                            "detected",
+                            "acknowledged",
+                            "identified",
+                            "mitigated",
+                            "investigating",
+                            "postmortemStarted",
+                            "PostmortemCompleted",
+                            "resolved"
+                        ],
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "active",
+                        "name": "active",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "slack"
+                        ],
+                        "type": "string",
+                        "description": "incidentChannelType",
+                        "name": "incidentChannelType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "search",
+                        "name": "search",
                         "in": "query"
                     },
                     {
@@ -68,7 +226,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/incident.IncidentList"
+                            "$ref": "#/definitions/incident.ListResponseDTO"
                         }
                     },
                     "400": {
@@ -188,6 +346,37 @@ const docTemplate = `{
                 }
             }
         },
+        "incident.AddConference": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "$ref": "#/definitions/incident.ConferenceType"
+                }
+            }
+        },
+        "incident.Attachment": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/incident.AttachmentType"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "incident.AttachmentType": {
+            "type": "string",
+            "enum": [
+                "link"
+            ],
+            "x-enum-varnames": [
+                "Link"
+            ]
+        },
         "incident.Channel": {
             "type": "object",
             "properties": {
@@ -249,6 +438,227 @@ const docTemplate = `{
                 "Zoom"
             ]
         },
+        "incident.CreateRequest": {
+            "type": "object",
+            "required": [
+                "identifier",
+                "incidentChannel",
+                "name",
+                "severity",
+                "summary",
+                "type"
+            ],
+            "properties": {
+                "addConference": {
+                    "$ref": "#/definitions/incident.AddConference"
+                },
+                "attachments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Attachment"
+                    }
+                },
+                "channels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Channel"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "environments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Environment"
+                    }
+                },
+                "functionalities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Functionality"
+                    }
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "incidentChannel": {
+                    "$ref": "#/definitions/incident.IncidentChannel"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Service"
+                    }
+                },
+                "severity": {
+                    "$ref": "#/definitions/incident.Severity"
+                },
+                "status": {
+                    "$ref": "#/definitions/incident.Status"
+                },
+                "summary": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "$ref": "#/definitions/incident.Type"
+                }
+            }
+        },
+        "incident.CreateResponse": {
+            "type": "object",
+            "required": [
+                "active",
+                "id",
+                "identifier",
+                "name",
+                "severity",
+                "status",
+                "summary"
+            ],
+            "properties": {
+                "accountIdentifier": {
+                    "type": "string"
+                },
+                "active": {
+                    "type": "boolean"
+                },
+                "attachments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Attachment"
+                    }
+                },
+                "channels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Channel"
+                    }
+                },
+                "conferenceDetails": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Conference"
+                    }
+                },
+                "correlationID": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "$ref": "#/definitions/utils.UserDetails"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "environments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Environment"
+                    }
+                },
+                "functionalities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Functionality"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "incidentChannel": {
+                    "$ref": "#/definitions/incident.IncidentChannel"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "orgIdentifier": {
+                    "type": "string"
+                },
+                "projectIdentifier": {
+                    "type": "string"
+                },
+                "removed": {
+                    "type": "boolean"
+                },
+                "removedAt": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Role"
+                    }
+                },
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Service"
+                    }
+                },
+                "severity": {
+                    "$ref": "#/definitions/incident.Severity"
+                },
+                "stages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Stage"
+                    }
+                },
+                "status": {
+                    "$ref": "#/definitions/incident.Status"
+                },
+                "summary": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "$ref": "#/definitions/incident.Type"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "$ref": "#/definitions/utils.UserDetails"
+                }
+            }
+        },
+        "incident.CreateResponseDTO": {
+            "type": "object",
+            "properties": {
+                "correlationId": {
+                    "type": "string"
+                },
+                "data": {
+                    "$ref": "#/definitions/incident.CreateResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "incident.Environment": {
             "type": "object",
             "properties": {
@@ -275,6 +685,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "active",
+                "id",
                 "identifier",
                 "name",
                 "severity",
@@ -282,10 +693,19 @@ const docTemplate = `{
                 "summary"
             ],
             "properties": {
+                "accountIdentifier": {
+                    "type": "string"
+                },
                 "active": {
                     "type": "boolean"
                 },
-                "channel": {
+                "attachments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Attachment"
+                    }
+                },
+                "channels": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/incident.Channel"
@@ -324,7 +744,16 @@ const docTemplate = `{
                 "identifier": {
                     "type": "string"
                 },
+                "incidentChannel": {
+                    "$ref": "#/definitions/incident.IncidentChannel"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "orgIdentifier": {
+                    "type": "string"
+                },
+                "projectIdentifier": {
                     "type": "string"
                 },
                 "removed": {
@@ -348,9 +777,6 @@ const docTemplate = `{
                 "severity": {
                     "$ref": "#/definitions/incident.Severity"
                 },
-                "slack": {
-                    "$ref": "#/definitions/incident.Slack"
-                },
                 "stages": {
                     "type": "array",
                     "items": {
@@ -369,6 +795,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "type": {
+                    "$ref": "#/definitions/incident.Type"
+                },
                 "updatedAt": {
                     "type": "string"
                 },
@@ -377,17 +806,57 @@ const docTemplate = `{
                 }
             }
         },
-        "incident.IncidentList": {
+        "incident.IncidentChannel": {
             "type": "object",
             "properties": {
-                "data": {
+                "slack": {
+                    "$ref": "#/definitions/incident.Slack"
+                },
+                "type": {
+                    "$ref": "#/definitions/incident.IncidentChannelType"
+                }
+            }
+        },
+        "incident.IncidentChannelType": {
+            "type": "string",
+            "enum": [
+                "slack"
+            ],
+            "x-enum-varnames": [
+                "ChannelSlack"
+            ]
+        },
+        "incident.ListResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/incident.Incident"
                     }
                 },
-                "page": {
+                "correlationID": {
+                    "type": "string"
+                },
+                "pagination": {
                     "$ref": "#/definitions/api.Pagination"
+                }
+            }
+        },
+        "incident.ListResponseDTO": {
+            "type": "object",
+            "properties": {
+                "correlationId": {
+                    "type": "string"
+                },
+                "data": {
+                    "$ref": "#/definitions/incident.ListResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },
@@ -476,6 +945,9 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                },
+                "userDetails": {
+                    "$ref": "#/definitions/utils.UserDetails"
                 }
             }
         },
@@ -502,6 +974,21 @@ const docTemplate = `{
                 "PostmortemStarted",
                 "PostmortemCompleted",
                 "Resolved"
+            ]
+        },
+        "incident.Type": {
+            "type": "string",
+            "enum": [
+                "availability",
+                "latency",
+                "security",
+                "other"
+            ],
+            "x-enum-varnames": [
+                "Availability",
+                "Latency",
+                "Security",
+                "Other"
             ]
         },
         "utils.DefaultResponseDTO": {

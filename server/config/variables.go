@@ -7,7 +7,12 @@ type Configuration struct {
 	Flags                 Flags
 	MongoConfig           MongoConfig
 	MaxQueryExecutionTime time.Duration `split_words:"true" default:"4s"`
-	SkipSecureVerify      bool          `split_words:"true" default:"true"`
+	Conferences           DefaultConferences
+	SkipSecureVerify      bool `split_words:"true" default:"true"`
+}
+
+type DefaultConferences struct {
+	ZoomLink string `envconfig:"ZOOM_LINK" split_words:"true"`
 }
 
 type Ports struct {

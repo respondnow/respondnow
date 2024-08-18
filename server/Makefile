@@ -65,6 +65,7 @@ run-dev-server: go-dep-update gen-server-api-doc
 	MONGO_DB_NAME=respondnow \
 	MONGO_DB_USERNAME='' \
 	MONGO_DB_PASSWORD='' \
+	ZOOM_LINK='http://my-example-zoom-link' \
 	go run ./cmd/ \
 		--debug=true \
 		--config-file=./cmd/config.yaml

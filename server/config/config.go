@@ -8,9 +8,9 @@ import (
 )
 
 type Config struct {
-	Address          string `json:"address"`
-	ServerURL        string `json:"serverURL"`
-	SkipSecureVerify bool   `json:"skipSecureVerify"`
+	// Address          string `json:"address"`
+	// ServerURL        string `json:"serverURL"`
+	// SkipSecureVerify bool   `json:"skipSecureVerify"`
 }
 
 func New(configFilePath string) (*Config, error) {
