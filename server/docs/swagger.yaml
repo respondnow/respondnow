@@ -13,6 +13,84 @@ definitions:
       totalPages:
         type: integer
     type: object
+  auth.AddUserInput:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      userId:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - userId
+    type: object
+  auth.ChangePasswordResponseDTO:
+    properties:
+      correlationId:
+        type: string
+      data:
+        $ref: '#/definitions/auth.LoginResponse'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  auth.ChangeUserPasswordInput:
+    properties:
+      email:
+        type: string
+      newPassword:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - newPassword
+    - password
+    type: object
+  auth.LoginResponse:
+    properties:
+      changeUserPassword:
+        type: boolean
+      token:
+        type: string
+    type: object
+  auth.LoginResponseDTO:
+    properties:
+      correlationId:
+        type: string
+      data:
+        $ref: '#/definitions/auth.LoginResponse'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  auth.LoginUserInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  auth.SignupResponseDTO:
+    properties:
+      correlationId:
+        type: string
+      data: {}
+      message:
+        type: string
+      status:
+        type: string
+    type: object
   handlers.APIStatus:
     properties:
       status:
@@ -534,6 +612,111 @@ info:
   title: RespondNow Server
   version: "1.0"
 paths:
+  /auth/changePassword:
+    post:
+      consumes:
+      - application/json
+      description: ChangePassword of RespondNow
+      operationId: ChangePassword
+      parameters:
+      - description: ChangePassword of RespondNow
+        in: body
+        name: '"changePassword"'
+        required: true
+        schema:
+          $ref: '#/definitions/auth.ChangeUserPasswordInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.ChangePasswordResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+      summary: ChangePassword of RespondNow
+      tags:
+      - Auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login to RespondNow
+      operationId: Login
+      parameters:
+      - description: Login to RespondNow
+        in: body
+        name: '"login"'
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LoginResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+      summary: Login to RespondNow
+      tags:
+      - Auth
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Signup to RespondNow
+      operationId: SignUp
+      parameters:
+      - description: Signup to RespondNow
+        in: body
+        name: '"signup"'
+        required: true
+        schema:
+          $ref: '#/definitions/auth.AddUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.SignupResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+      summary: Signup to RespondNow
+      tags:
+      - Auth
   /incident/create:
     post:
       consumes:

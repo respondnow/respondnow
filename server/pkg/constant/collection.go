@@ -1,5 +1,6 @@
 package constant
 
 const (
-	IncidentCollection = "incident"
+	IncidentCollection = "incidents"
+	UserCollection     = "users"
 )

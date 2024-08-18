@@ -87,6 +87,7 @@ func registerRoutes(app, metricApp *gin.Engine) {
 	routes.BaseRouter(app.Group("/"))
 	routes.MetricRouter(metricApp.Group("/promMetrics"))
 	routes.IncidentRouter(app.Group("/incident"))
+	routes.AuthRouter(app.Group("/auth"))
 
 	app.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, utils.DefaultResponseDTO{
