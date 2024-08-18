@@ -13,6 +13,12 @@ type ResourceDetails struct {
 	Tags        []string `bson:"tags" json:"tags"`
 }
 
+type IdentifierDetails struct {
+	AccountIdentifier string `bson:"accountIdentifier" json:"accountIdentifier"`
+	OrgIdentifier     string `bson:"orgIdentifier" json:"orgIdentifier"`
+	ProjectIdentifier string `bson:"projectIdentifier" json:"projectIdentifier"`
+}
+
 type AuditDetails struct {
 	CreatedAt time.Time         `bson:"createdAt" json:"createdAt"`
 	UpdatedAt *time.Time        `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`

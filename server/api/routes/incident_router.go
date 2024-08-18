@@ -6,5 +6,6 @@ import (
 )
 
 func IncidentRouter(router *gin.RouterGroup) {
+	router.POST("/create", handlers.CreateIncident())
 	router.GET("/list", handlers.ListIncidents())
 }
