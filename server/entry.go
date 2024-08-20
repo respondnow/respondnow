@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+	"github.com/respondnow/respond/server/pkg/auth"
+	auth2 "github.com/respondnow/respond/server/pkg/database/mongodb/auth"
 	"net/http"
 	"os"
 	"os/signal"
@@ -46,6 +48,8 @@ func run() error {
 	srv := startServer(ctx, app, config.EnvConfig.Ports.HttpPort, "HTTP server")
 	metricSrv := startServer(ctx, metricApp, config.EnvConfig.Ports.MetricPort, "Metric server")
 
+	backgroundProcess()
+
 	<-ctx.Done()
 	logrus.Infof("Received shutdown signal, shutting down servers...")
 
@@ -87,6 +91,7 @@ func registerRoutes(app, metricApp *gin.Engine) {
 	routes.BaseRouter(app.Group("/"))
 	routes.MetricRouter(metricApp.Group("/promMetrics"))
 	routes.IncidentRouter(app.Group("/incident"))
+	routes.AuthRouter(app.Group("/auth"))
 
 	app.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, utils.DefaultResponseDTO{
@@ -130,4 +135,20 @@ func shutdownServer(srv *http.Server, serverName string) {
 		logrus.Fatalf("Failed to shutdown %s gracefully: %v", serverName, err)
 	}
 	logrus.Infof("%s shutdown complete", serverName)
+}
+
+func backgroundProcess() {
+	go func() {
+		_, err := auth.NewAuthService(auth2.NewAuthOperator(mongodb.Operator)).Signup(context.Background(), auth.AddUserInput{
+			Name:     config.EnvConfig.Auth.DefaultUserName,
+			UserID:   config.EnvConfig.Auth.DefaultUserID,
+			Email:    config.EnvConfig.Auth.DefaultUserEmail,
+			Password: config.EnvConfig.Auth.DefaultUserPassword,
+		})
+		if err != nil {
+			logrus.Warnf("failed to create default user, err: %v", err)
+		}
+
+		logrus.Infof("Default user has been created successfully")
+	}()
 }

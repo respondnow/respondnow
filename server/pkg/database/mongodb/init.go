@@ -15,6 +15,7 @@ import (
 // Enum for Database collections
 const (
 	IncidentCollection = iota
+	UsersCollection
 )
 
 var (
@@ -22,6 +23,7 @@ var (
 	MgoClient   *mongo.Client
 	Collections = map[int]string{
 		IncidentCollection: constant.IncidentCollection,
+		UsersCollection:    constant.UsersCollection,
 	}
 )
 
@@ -38,6 +40,7 @@ type MongoInterface interface {
 type MongoClient struct {
 	Database           *mongo.Database
 	IncidentCollection *mongo.Collection
+	UsersCollection    *mongo.Collection
 }
 
 // Initialize initializes database connection
@@ -65,7 +68,7 @@ func (m *MongoClient) initAllCollection() error {
 func (m *MongoClient) initCollection(ctx context.Context, collectionName string) error {
 	logrus.Infof("setting up `%s` collection", collectionName)
 	var (
-		indexes *index.IndexList
+		indexes = &index.IndexList{}
 	)
 
 	cs, err := m.Database.ListCollectionSpecifications(ctx,
@@ -86,13 +89,17 @@ func (m *MongoClient) initCollection(ctx context.Context, collectionName string)
 	case constant.IncidentCollection:
 		m.IncidentCollection = coll
 		indexes = index.GetIncidentIndexList()
+	case constant.UsersCollection:
+		m.UsersCollection = coll
 	default:
 		return fmt.Errorf("unknown collection given to initialize: %s", collectionName)
 	}
+
 	sc, err := coll.Indexes().ListSpecifications(ctx)
 	if err != nil {
 		return err
 	}
+
 	indexavailable := make(map[string]string)
 	for _, item := range sc {
 		indexavailable[item.Name] = item.Name
