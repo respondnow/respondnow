@@ -41,6 +41,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/auth.ChangeUserPasswordInput"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "correlationId",
+                        "name": "correlationId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -94,6 +100,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/auth.LoginUserInput"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "correlationId",
+                        "name": "correlationId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -147,6 +159,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/auth.AddUserInput"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "correlationId",
+                        "name": "correlationId",
+                        "in": "query"
                     }
                 ],
                 "responses": {

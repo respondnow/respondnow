@@ -625,6 +625,10 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/auth.ChangeUserPasswordInput'
+      - description: correlationId
+        in: query
+        name: correlationId
+        type: string
       produces:
       - application/json
       responses:
@@ -660,6 +664,10 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/auth.LoginUserInput'
+      - description: correlationId
+        in: query
+        name: correlationId
+        type: string
       produces:
       - application/json
       responses:
@@ -695,6 +703,10 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/auth.AddUserInput'
+      - description: correlationId
+        in: query
+        name: correlationId
+        type: string
       produces:
       - application/json
       responses:

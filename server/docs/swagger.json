@@ -35,6 +35,12 @@
                         "schema": {
                             "$ref": "#/definitions/auth.ChangeUserPasswordInput"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "correlationId",
+                        "name": "correlationId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -88,6 +94,12 @@
                         "schema": {
                             "$ref": "#/definitions/auth.LoginUserInput"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "correlationId",
+                        "name": "correlationId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -141,6 +153,12 @@
                         "schema": {
                             "$ref": "#/definitions/auth.AddUserInput"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "correlationId",
+                        "name": "correlationId",
+                        "in": "query"
                     }
                 ],
                 "responses": {

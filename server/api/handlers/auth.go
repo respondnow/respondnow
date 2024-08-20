@@ -24,11 +24,12 @@ import (
 //	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			"signup"	body		auth.AddUserInput	true	"Signup to RespondNow"
-//	@Success		200			{object}	auth.SignupResponseDTO
-//	@Failure		400			{object}	utils.DefaultResponseDTO
-//	@Failure		404			{object}	utils.DefaultResponseDTO
-//	@Failure		500			{object}	utils.DefaultResponseDTO
+//	@Param			"signup"		body		auth.AddUserInput	true	"Signup to RespondNow"
+//	@Param			correlationId	query		string				false	"correlationId"
+//	@Success		200				{object}	auth.SignupResponseDTO
+//	@Failure		400				{object}	utils.DefaultResponseDTO
+//	@Failure		404				{object}	utils.DefaultResponseDTO
+//	@Failure		500				{object}	utils.DefaultResponseDTO
 //	@Router			/auth/signup [post]
 func SignUp() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -94,11 +95,12 @@ func SignUp() gin.HandlerFunc {
 //	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			"login"	body		auth.LoginUserInput	true	"Login to RespondNow"
-//	@Success		200		{object}	auth.LoginResponseDTO
-//	@Failure		400		{object}	utils.DefaultResponseDTO
-//	@Failure		404		{object}	utils.DefaultResponseDTO
-//	@Failure		500		{object}	utils.DefaultResponseDTO
+//	@Param			"login"			body		auth.LoginUserInput	true	"Login to RespondNow"
+//	@Param			correlationId	query		string				false	"correlationId"
+//	@Success		200				{object}	auth.LoginResponseDTO
+//	@Failure		400				{object}	utils.DefaultResponseDTO
+//	@Failure		404				{object}	utils.DefaultResponseDTO
+//	@Failure		500				{object}	utils.DefaultResponseDTO
 //	@Router			/auth/login [post]
 func Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -178,6 +180,7 @@ func Login() gin.HandlerFunc {
 //	@Accept			json
 //	@Produce		json
 //	@Param			"changePassword"	body		auth.ChangeUserPasswordInput	true	"ChangePassword of RespondNow"
+//	@Param			correlationId		query		string							false	"correlationId"
 //	@Success		200					{object}	auth.ChangePasswordResponseDTO
 //	@Failure		400					{object}	utils.DefaultResponseDTO
 //	@Failure		404					{object}	utils.DefaultResponseDTO
