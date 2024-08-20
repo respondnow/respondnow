@@ -15,7 +15,7 @@ import (
 // Enum for Database collections
 const (
 	IncidentCollection = iota
-	UserCollection     = iota
+	UserCollection
 )
 
 var (
