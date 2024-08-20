@@ -1,16 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "RespondNow Server APIs.",
-        "title": "RespondNow Server",
-        "termsOfService": "https://www.harness.io/legal/subscription-terms",
-        "contact": {
-            "name": "RespondNow"
-        },
-        "version": "1.0"
+        "contact": {}
     },
-    "host": "localhost:8080",
-    "basePath": "/",
     "paths": {
         "/auth/changePassword": {
             "post": {
@@ -413,15 +405,6 @@
                         "in": "query"
                     },
                     {
-                        "enum": [
-                            "slack"
-                        ],
-                        "type": "string",
-                        "description": "incidentChannelType",
-                        "name": "incidentChannelType",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "description": "search",
                         "name": "search",
@@ -650,7 +633,7 @@
             "type": "object",
             "properties": {
                 "type": {
-                    "$ref": "#/definitions/incident.ConferenceType"
+                    "type": "string"
                 }
             }
         },
@@ -661,7 +644,7 @@
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/incident.AttachmentType"
+                    "type": "string"
                 },
                 "url": {
                     "type": "string"
@@ -700,33 +683,15 @@
                     "type": "string"
                 },
                 "source": {
-                    "$ref": "#/definitions/incident.ChannelSource"
+                    "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/incident.ChannelStatus"
+                    "type": "string"
                 },
                 "url": {
                     "type": "string"
                 }
             }
-        },
-        "incident.ChannelSource": {
-            "type": "string",
-            "enum": [
-                "slack"
-            ],
-            "x-enum-varnames": [
-                "SlackSource"
-            ]
-        },
-        "incident.ChannelStatus": {
-            "type": "string",
-            "enum": [
-                "operational"
-            ],
-            "x-enum-varnames": [
-                "Operational"
-            ]
         },
         "incident.Conference": {
             "type": "object",
@@ -735,21 +700,12 @@
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/incident.ConferenceType"
+                    "type": "string"
                 },
                 "url": {
                     "type": "string"
                 }
             }
-        },
-        "incident.ConferenceType": {
-            "type": "string",
-            "enum": [
-                "zoom"
-            ],
-            "x-enum-varnames": [
-                "Zoom"
-            ]
         },
         "incident.CreateRequest": {
             "type": "object",
@@ -814,10 +770,10 @@
                     }
                 },
                 "severity": {
-                    "$ref": "#/definitions/incident.Severity"
+                    "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/incident.Status"
+                    "type": "string"
                 },
                 "summary": {
                     "type": "string"
@@ -829,7 +785,7 @@
                     }
                 },
                 "type": {
-                    "$ref": "#/definitions/incident.Type"
+                    "type": "string"
                 }
             }
         },
@@ -930,7 +886,7 @@
                     }
                 },
                 "severity": {
-                    "$ref": "#/definitions/incident.Severity"
+                    "type": "string"
                 },
                 "stages": {
                     "type": "array",
@@ -939,7 +895,7 @@
                     }
                 },
                 "status": {
-                    "$ref": "#/definitions/incident.Status"
+                    "type": "string"
                 },
                 "summary": {
                     "type": "string"
@@ -957,7 +913,7 @@
                     }
                 },
                 "type": {
-                    "$ref": "#/definitions/incident.Type"
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "integer"
@@ -1117,7 +1073,7 @@
                     }
                 },
                 "severity": {
-                    "$ref": "#/definitions/incident.Severity"
+                    "type": "string"
                 },
                 "stages": {
                     "type": "array",
@@ -1126,7 +1082,7 @@
                     }
                 },
                 "status": {
-                    "$ref": "#/definitions/incident.Status"
+                    "type": "string"
                 },
                 "summary": {
                     "type": "string"
@@ -1144,7 +1100,7 @@
                     }
                 },
                 "type": {
-                    "$ref": "#/definitions/incident.Type"
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "integer"
@@ -1161,18 +1117,9 @@
                     "$ref": "#/definitions/incident.Slack"
                 },
                 "type": {
-                    "$ref": "#/definitions/incident.IncidentChannelType"
+                    "type": "string"
                 }
             }
-        },
-        "incident.IncidentChannelType": {
-            "type": "string",
-            "enum": [
-                "slack"
-            ],
-            "x-enum-varnames": [
-                "ChannelSlack"
-            ]
         },
         "incident.ListResponse": {
             "type": "object",
@@ -1212,7 +1159,7 @@
             "type": "object",
             "properties": {
                 "roleType": {
-                    "$ref": "#/definitions/incident.RoleType"
+                    "type": "string"
                 },
                 "userDetails": {
                     "$ref": "#/definitions/utils.UserDetails"
@@ -1296,7 +1243,7 @@
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/incident.Status"
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "integer"
@@ -1560,15 +1507,6 @@
                 }
             }
         },
-        "utils.Source": {
-            "type": "string",
-            "enum": [
-                "slack"
-            ],
-            "x-enum-varnames": [
-                "Slack"
-            ]
-        },
         "utils.UserDetails": {
             "type": "object",
             "properties": {
@@ -1579,7 +1517,7 @@
                     "type": "string"
                 },
                 "source": {
-                    "$ref": "#/definitions/utils.Source"
+                    "type": "string"
                 },
                 "userId": {
                     "type": "string"
@@ -1648,16 +1586,5 @@
                 }
             }
         }
-    },
-    "securityDefinitions": {
-        "BearerAuth": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
-        }
-    },
-    "externalDocs": {
-        "description": "OpenAPI",
-        "url": "https://swagger.io/resources/open-api/"
     }
 }
