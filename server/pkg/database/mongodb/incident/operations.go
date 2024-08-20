@@ -270,3 +270,44 @@ func (i *incidentOperator) Validate(in *Incident) error {
 
 	return nil
 }
+
+func (i *incidentOperator) GetIncidentTypes() []Type {
+	return []Type{
+		Availability,
+		Latency,
+		Security,
+		Other,
+	}
+}
+
+func (i *incidentOperator) GetIncidentSeverities() []Severity {
+	return []Severity{
+		Severity0,
+		Severity1,
+		Severity2,
+	}
+}
+
+func (i *incidentOperator) GetIncidentAttachmentType() []AttachmentType {
+	return []AttachmentType{
+		Link,
+	}
+}
+
+func (i *incidentOperator) GetIncidentStageStatuses() []Status {
+	return []Status{
+		Started,
+		Acknowledged,
+		Investigating,
+		Identified,
+		Mitigated,
+		Resolved,
+	}
+}
+
+func (i *incidentOperator) GetIncidentRoles() []RoleType {
+	return []RoleType{
+		IncidentCommander,
+		CommunicationsLead,
+	}
+}

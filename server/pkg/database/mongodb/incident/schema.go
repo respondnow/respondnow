@@ -11,33 +11,33 @@ import (
 type Status string
 
 const (
-	Started             Status = "started"
-	Detected            Status = "detected"
-	Acknowledged        Status = "acknowledged"
-	Identified          Status = "identified"
-	Mitigated           Status = "mitigated"
-	Investigating       Status = "investigating"
-	PostmortemStarted   Status = "postmortemStarted"
-	PostmortemCompleted Status = "PostmortemCompleted"
-	Resolved            Status = "resolved"
+	Started       Status = "Started"
+	Acknowledged  Status = "Acknowledged"
+	Investigating Status = "Investigating"
+	Identified    Status = "Identified"
+	Mitigated     Status = "Mitigated"
+	Resolved      Status = "Resolved"
+
+	// Detected            Status = "detected"
+	// PostmortemStarted   Status = "postmortemStarted"
+	// PostmortemCompleted Status = "PostmortemCompleted"
 )
 
 type Severity string
 
 const (
-	Severity1 Severity = "SEV1"
-	Severity2 Severity = "SEV2"
-	Severity3 Severity = "SEV3"
-	Severity4 Severity = "SEV4"
+	Severity0 Severity = "SEV0 - Critical, High Impact"
+	Severity1 Severity = "SEV1 - Major, Significant Impact"
+	Severity2 Severity = "SEV2 - Minor, Low Impact"
 )
 
 type Type string
 
 const (
-	Availability Type = "availability"
-	Latency      Type = "latency"
-	Security     Type = "security"
-	Other        Type = "other"
+	Availability Type = "Availability"
+	Latency      Type = "Latency"
+	Security     Type = "Security"
+	Other        Type = "Other"
 )
 
 type Incident struct {
@@ -102,8 +102,8 @@ type Conference struct {
 type RoleType string
 
 const (
-	IncidentCommander     RoleType = "incidentCommander"
-	CommunicationsLiaison RoleType = "communicationsLiaison"
+	IncidentCommander  RoleType = "Incident Commander"
+	CommunicationsLead RoleType = "Communications Lead"
 )
 
 type Role struct {
@@ -153,9 +153,16 @@ type IncidentChannel struct {
 }
 
 type Slack struct {
+	SlackTeam          `bson:",inline" json:",inline"`
 	ChannelID          string        `bson:"channelId" json:"channelId"`
 	ChannelName        string        `bson:"channelName" json:"channelName"`
 	ChannelReference   string        `bson:"channelReference" json:"channelReference"`
 	ChannelDescription string        `bson:"channelDescription" json:"channelDescription"`
 	ChannelStatus      ChannelStatus `bson:"channelStatus" json:"channelStatus"`
+}
+
+type SlackTeam struct {
+	TeamID     string `bson:"teamId" json:"teamId"`
+	TeamName   string `bson:"teamName" json:"teamName"`
+	TeamDomain string `bson:"teamDomain" json:"teamDomain"`
 }

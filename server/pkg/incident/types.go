@@ -37,6 +37,7 @@ type CreateRequest struct {
 	Environments            []incident.Environment    `json:"environments,omitempty"`
 	Functionalities         []incident.Functionality  `json:"functionalities,omitempty"`
 	Channels                []incident.Channel        `json:"channels,omitempty"`
+	Roles                   []incident.Role           `json:"roles,omitempty"`
 	AddConference           *AddConference            `json:"addConference,omitempty"`
 	Attachments             []incident.Attachment     `json:"attachments,omitempty"`
 }

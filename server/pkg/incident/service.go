@@ -92,6 +92,7 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 				},
 			},
 		},
+		Roles: request.Roles,
 		AuditDetails: mongodb.AuditDetails{
 			CreatedBy: utils.UserDetails{
 				UserName: currentUser.Username,
