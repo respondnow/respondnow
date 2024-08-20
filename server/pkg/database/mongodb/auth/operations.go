@@ -11,7 +11,7 @@ import (
 )
 
 func (a *authOperator) AddUser(ctx context.Context, user User, opts ...*options.InsertOneOptions) (User, error) {
-	res, err := a.operator.Create(ctx, mongodb.UserCollection, user, opts...)
+	res, err := a.operator.Create(ctx, mongodb.UsersCollection, user, opts...)
 	if err != nil {
 		return User{}, err
 	}
@@ -24,7 +24,7 @@ func (a *authOperator) GetUserByQuery(ctx context.Context, query bson.M, opts ..
 	out := User{}
 
 	// Execute the query
-	res, err := a.operator.Get(ctx, mongodb.UserCollection, query, opts...)
+	res, err := a.operator.Get(ctx, mongodb.UsersCollection, query, opts...)
 	if err != nil {
 		return out, err
 	}
@@ -42,7 +42,7 @@ func (a *authOperator) UpdateUserByField(ctx context.Context, field string, valu
 
 	update := bson.M{"$set": updates}
 
-	result, err := a.operator.Update(ctx, mongodb.UserCollection, filter, update, opts...)
+	result, err := a.operator.Update(ctx, mongodb.UsersCollection, filter, update, opts...)
 	if err != nil {
 		return nil, err
 	}

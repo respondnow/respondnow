@@ -20,7 +20,7 @@ func (g *GetCollectionStruct) getCollection(collectionType int) (*mongo.Collecti
 	switch collectionType {
 	case IncidentCollection:
 		return mongoClient.(*MongoClient).IncidentCollection, nil
-	case UserCollection:
+	case UsersCollection:
 		return mongoClient.(*MongoClient).UsersCollection, nil
 	default:
 		return nil, errors.New("unknown collection name")

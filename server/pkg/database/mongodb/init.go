@@ -15,7 +15,7 @@ import (
 // Enum for Database collections
 const (
 	IncidentCollection = iota
-	UserCollection
+	UsersCollection
 )
 
 var (
@@ -23,7 +23,7 @@ var (
 	MgoClient   *mongo.Client
 	Collections = map[int]string{
 		IncidentCollection: constant.IncidentCollection,
-		UserCollection:     constant.UserCollection,
+		UsersCollection:    constant.UsersCollection,
 	}
 )
 
@@ -89,7 +89,7 @@ func (m *MongoClient) initCollection(ctx context.Context, collectionName string)
 	case constant.IncidentCollection:
 		m.IncidentCollection = coll
 		indexes = index.GetIncidentIndexList()
-	case constant.UserCollection:
+	case constant.UsersCollection:
 		m.UsersCollection = coll
 	default:
 		return fmt.Errorf("unknown collection given to initialize: %s", collectionName)
