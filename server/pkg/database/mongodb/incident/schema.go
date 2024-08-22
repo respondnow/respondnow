@@ -1,8 +1,6 @@
 package incident
 
 import (
-	"time"
-
 	"github.com/respondnow/respond/server/pkg/database/mongodb"
 	"github.com/respondnow/respond/server/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -53,12 +51,30 @@ type Incident struct {
 	Environments              []Environment    `bson:"environments,omitempty" json:"environments,omitempty"`
 	Functionalities           []Functionality  `bson:"functionalities,omitempty" json:"functionalities,omitempty"`
 	Roles                     []Role           `bson:"roles,omitempty" json:"roles,omitempty"`
+	Timelines                 []Timeline       `bson:"timelines,omitempty" json:"timelines,omitempty"`
 	Stages                    []Stage          `bson:"stages,omitempty" json:"stages,omitempty"`
 	Channels                  []Channel        `bson:"channels,omitempty" json:"channels,omitempty"`
 	IncidentChannel           *IncidentChannel `bson:"incidentChannel,omitempty" json:"incidentChannel,omitempty"`
 	ConferenceDetails         []Conference     `bson:"conferenceDetails,omitempty" json:"conferenceDetails,omitempty"`
 	Attachments               []Attachment     `bson:"attachments,omitempty" json:"attachments,omitempty"`
 	mongodb.AuditDetails      `bson:",inline" json:",inline"`
+}
+
+type ChangeType string
+
+const (
+	UpdateSeverity ChangeType = "updateSeverity"
+	UpdateStatus   ChangeType = "updateStatus"
+	AddComment     ChangeType = "addComment"
+)
+
+type Timeline struct {
+	ID        string            `bson:"id" json:"id"`
+	Type      ChangeType        `bson:"type" json:"type"`
+	Change    interface{}       `bson:"change" json:"change"`
+	CreatedAt int64             `bson:"createdAt" json:"createdAt"`
+	UpdatedAt *int64            `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
+	User      utils.UserDetails `bson:"userDetails" json:"userDetails"`
 }
 
 type AttachmentType string
@@ -130,8 +146,8 @@ type Stage struct {
 	ID        string            `bson:"stageId" json:"stageId"`
 	Type      Status            `bson:"type" json:"type"`
 	Duration  int64             `bson:"duration" json:"duration"`
-	CreatedAt time.Time         `bson:"createdAt" json:"createdAt"`
-	UpdatedAt *time.Time        `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
+	CreatedAt int64             `bson:"createdAt" json:"createdAt"`
+	UpdatedAt *int64            `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
 	User      utils.UserDetails `bson:"userDetails" json:"userDetails"`
 }
 

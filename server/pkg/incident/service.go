@@ -54,7 +54,7 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 		return resp, err
 	}
 
-	ts := time.Now()
+	ts := time.Now().Unix()
 	// Set default values
 	if request.Status == "" {
 		request.Status = incident.Started

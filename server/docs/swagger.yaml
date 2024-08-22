@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   api.Pagination:
     properties:
@@ -107,17 +108,33 @@ definitions:
   incident.AddConference:
     properties:
       type:
-        type: string
+        $ref: '#/definitions/incident.ConferenceType'
     type: object
   incident.Attachment:
     properties:
       description:
         type: string
       type:
-        type: string
+        $ref: '#/definitions/incident.AttachmentType'
       url:
         type: string
     type: object
+  incident.AttachmentType:
+    enum:
+    - link
+    type: string
+    x-enum-varnames:
+    - Link
+  incident.ChangeType:
+    enum:
+    - updateSeverity
+    - updateStatus
+    - addComment
+    type: string
+    x-enum-varnames:
+    - UpdateSeverity
+    - UpdateStatus
+    - AddComment
   incident.Channel:
     properties:
       id:
@@ -125,21 +142,39 @@ definitions:
       name:
         type: string
       source:
-        type: string
+        $ref: '#/definitions/incident.ChannelSource'
       status:
-        type: string
+        $ref: '#/definitions/incident.ChannelStatus'
       url:
         type: string
     type: object
+  incident.ChannelSource:
+    enum:
+    - slack
+    type: string
+    x-enum-varnames:
+    - SlackSource
+  incident.ChannelStatus:
+    enum:
+    - operational
+    type: string
+    x-enum-varnames:
+    - Operational
   incident.Conference:
     properties:
       conferenceId:
         type: string
       type:
-        type: string
+        $ref: '#/definitions/incident.ConferenceType'
       url:
         type: string
     type: object
+  incident.ConferenceType:
+    enum:
+    - zoom
+    type: string
+    x-enum-varnames:
+    - Zoom
   incident.CreateRequest:
     properties:
       addConference:
@@ -177,9 +212,9 @@ definitions:
           $ref: '#/definitions/incident.Service'
         type: array
       severity:
-        type: string
+        $ref: '#/definitions/incident.Severity'
       status:
-        type: string
+        $ref: '#/definitions/incident.Status'
       summary:
         type: string
       tags:
@@ -187,7 +222,7 @@ definitions:
           type: string
         type: array
       type:
-        type: string
+        $ref: '#/definitions/incident.Type'
     required:
     - identifier
     - incidentChannel
@@ -217,7 +252,7 @@ definitions:
       correlationID:
         type: string
       createdAt:
-        type: string
+        type: integer
       createdBy:
         $ref: '#/definitions/utils.UserDetails'
       description:
@@ -245,7 +280,7 @@ definitions:
       removed:
         type: boolean
       removedAt:
-        type: string
+        type: integer
       roles:
         items:
           $ref: '#/definitions/incident.Role'
@@ -255,23 +290,27 @@ definitions:
           $ref: '#/definitions/incident.Service'
         type: array
       severity:
-        type: string
+        $ref: '#/definitions/incident.Severity'
       stages:
         items:
           $ref: '#/definitions/incident.Stage'
         type: array
       status:
-        type: string
+        $ref: '#/definitions/incident.Status'
       summary:
         type: string
       tags:
         items:
           type: string
         type: array
+      timelines:
+        items:
+          $ref: '#/definitions/incident.Timeline'
+        type: array
       type:
-        type: string
+        $ref: '#/definitions/incident.Type'
       updatedAt:
-        type: string
+        type: integer
       updatedBy:
         $ref: '#/definitions/utils.UserDetails'
     required:
@@ -327,7 +366,7 @@ definitions:
           $ref: '#/definitions/incident.Conference'
         type: array
       createdAt:
-        type: string
+        type: integer
       createdBy:
         $ref: '#/definitions/utils.UserDetails'
       description:
@@ -355,7 +394,7 @@ definitions:
       removed:
         type: boolean
       removedAt:
-        type: string
+        type: integer
       roles:
         items:
           $ref: '#/definitions/incident.Role'
@@ -365,23 +404,27 @@ definitions:
           $ref: '#/definitions/incident.Service'
         type: array
       severity:
-        type: string
+        $ref: '#/definitions/incident.Severity'
       stages:
         items:
           $ref: '#/definitions/incident.Stage'
         type: array
       status:
-        type: string
+        $ref: '#/definitions/incident.Status'
       summary:
         type: string
       tags:
         items:
           type: string
         type: array
+      timelines:
+        items:
+          $ref: '#/definitions/incident.Timeline'
+        type: array
       type:
-        type: string
+        $ref: '#/definitions/incident.Type'
       updatedAt:
-        type: string
+        type: integer
       updatedBy:
         $ref: '#/definitions/utils.UserDetails'
     required:
@@ -398,8 +441,14 @@ definitions:
       slack:
         $ref: '#/definitions/incident.Slack'
       type:
-        type: string
+        $ref: '#/definitions/incident.IncidentChannelType'
     type: object
+  incident.IncidentChannelType:
+    enum:
+    - slack
+    type: string
+    x-enum-varnames:
+    - ChannelSlack
   incident.ListResponse:
     properties:
       content:
@@ -425,10 +474,18 @@ definitions:
   incident.Role:
     properties:
       roleType:
-        type: string
+        $ref: '#/definitions/incident.RoleType'
       userDetails:
         $ref: '#/definitions/utils.UserDetails'
     type: object
+  incident.RoleType:
+    enum:
+    - Incident Commander
+    - Communications Lead
+    type: string
+    x-enum-varnames:
+    - IncidentCommander
+    - CommunicationsLead
   incident.Service:
     properties:
       serviceId:
@@ -436,6 +493,16 @@ definitions:
       serviceName:
         type: string
     type: object
+  incident.Severity:
+    enum:
+    - SEV0 - Critical, High Impact
+    - SEV1 - Major, Significant Impact
+    - SEV2 - Minor, Low Impact
+    type: string
+    x-enum-varnames:
+    - Severity0
+    - Severity1
+    - Severity2
   incident.Slack:
     properties:
       channelDescription:
@@ -447,7 +514,7 @@ definitions:
       channelReference:
         type: string
       channelStatus:
-        type: string
+        $ref: '#/definitions/incident.ChannelStatus'
       teamDomain:
         type: string
       teamId:
@@ -458,18 +525,60 @@ definitions:
   incident.Stage:
     properties:
       createdAt:
-        type: string
+        type: integer
       duration:
         type: integer
       stageId:
         type: string
       type:
-        type: string
+        $ref: '#/definitions/incident.Status'
       updatedAt:
-        type: string
+        type: integer
       userDetails:
         $ref: '#/definitions/utils.UserDetails'
     type: object
+  incident.Status:
+    enum:
+    - Started
+    - Acknowledged
+    - Investigating
+    - Identified
+    - Mitigated
+    - Resolved
+    type: string
+    x-enum-varnames:
+    - Started
+    - Acknowledged
+    - Investigating
+    - Identified
+    - Mitigated
+    - Resolved
+  incident.Timeline:
+    properties:
+      change: {}
+      createdAt:
+        type: integer
+      id:
+        type: string
+      type:
+        $ref: '#/definitions/incident.ChangeType'
+      updatedAt:
+        type: integer
+      userDetails:
+        $ref: '#/definitions/utils.UserDetails'
+    type: object
+  incident.Type:
+    enum:
+    - Availability
+    - Latency
+    - Security
+    - Other
+    type: string
+    x-enum-varnames:
+    - Availability
+    - Latency
+    - Security
+    - Other
   utils.DefaultResponseDTO:
     properties:
       correlationId:
@@ -479,12 +588,20 @@ definitions:
       status:
         type: string
     type: object
+  utils.Source:
+    enum:
+    - slack
+    type: string
+    x-enum-varnames:
+    - Slack
   utils.UserDetails:
     properties:
       email:
         type: string
-      source:
+      name:
         type: string
+      source:
+        $ref: '#/definitions/utils.Source'
       userId:
         type: string
       userName:
@@ -528,8 +645,17 @@ definitions:
       version:
         type: string
     type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8080
 info:
-  contact: {}
+  contact:
+    name: RespondNow
+  description: RespondNow Server APIs.
+  termsOfService: https://www.harness.io/legal/subscription-terms
+  title: RespondNow Server
+  version: "1.0"
 paths:
   /auth/changePassword:
     post:
@@ -722,10 +848,44 @@ paths:
         in: query
         name: projectIdentifier
         type: string
+      - description: type
+        enum:
+        - Availability
+        - Latency
+        - Security
+        - Other
+        in: query
+        name: type
+        type: string
+      - description: severity
+        enum:
+        - SEV0 - Critical, High Impact
+        - SEV1 - Major, Significant Impact
+        - SEV2 - Minor, Low Impact
+        in: query
+        name: severity
+        type: string
+      - description: status
+        enum:
+        - Started
+        - Acknowledged
+        - Investigating
+        - Identified
+        - Mitigated
+        - Resolved
+        in: query
+        name: status
+        type: string
       - description: active
         in: query
         name: active
         type: boolean
+      - description: incidentChannelType
+        enum:
+        - slack
+        in: query
+        name: incidentChannelType
+        type: string
       - description: search
         in: query
         name: search
@@ -812,4 +972,9 @@ paths:
       summary: Version of RespondNow Server
       tags:
       - Miscellaneous
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
