@@ -14,3 +14,4 @@ bin/
 _vendor-*
 tmp/
 .env
+mkdocs/site
