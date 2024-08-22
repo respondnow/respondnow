@@ -1,17 +1,27 @@
 import React from 'react';
 import { StringsContextProvider } from '@strings';
 import { AppStoreProvider, ReactQueryProvider } from '@context';
-import { Routes } from '@routes/RouteDestinations';
+import { RoutesWithAuthentication, RoutesWithoutAuthentication } from '@routes/RouteDestinations';
 import strings from 'strings/strings.en.yaml';
 
-export function App(): React.ReactElement {
+export function AppWithAuthentication(): React.ReactElement {
   return (
-    <AppStoreProvider updateAppStore={() => void 0}>
+    <AppStoreProvider scope={{}} updateAppStore={() => void 0}>
       <StringsContextProvider data={strings}>
         <ReactQueryProvider>
-          <Routes />
+          <RoutesWithAuthentication />
         </ReactQueryProvider>
       </StringsContextProvider>
     </AppStoreProvider>
+  );
+}
+
+export function AppWithoutAuthentication(): React.ReactElement {
+  return (
+    <StringsContextProvider data={strings}>
+      <ReactQueryProvider>
+        <RoutesWithoutAuthentication />
+      </ReactQueryProvider>
+    </StringsContextProvider>
   );
 }

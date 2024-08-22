@@ -1,0 +1,70 @@
+.sideNavMainContainer {
+  box-shadow: 0px 4px 8px 0px #60617029, 0px 0px 2px 0px #28293d0a;
+  position: relative;
+  z-index: 10;
+}
+
+.sideNavLinkContainer {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  gap: 0.2rem;
+}
+
+.link {
+  display: block;
+  padding: var(--spacing-small) var(--spacing-medium);
+  z-index: 1;
+  border-radius: 4px;
+  .text {
+    color: var(--grey-600) !important;
+    svg {
+      fill: var(--grey-600);
+    }
+  }
+
+  &:hover {
+    text-decoration: none;
+    background-color: #ddedff;
+    .text {
+      color: var(--primary-8) !important;
+      svg {
+        fill: var(--primary-8);
+      }
+    }
+  }
+
+  &.selected {
+    background-color: #ddedff;
+    .text {
+      color: var(--primary-8) !important;
+      svg {
+        fill: var(--primary-8);
+      }
+    }
+  }
+
+  .text {
+    color: var(--black);
+  }
+}
+
+.userButtonContainer {
+  .userButton {
+    background: none;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    &:focus {
+      outline: none;
+    }
+  }
+
+  :global {
+    .bp3-popover-wrapper {
+      display: block;
+      .bp3-popover-target {
+        display: block;
+      }
+    }
+  }
+}

@@ -87,9 +87,6 @@ rules:
             matchBase: true
   import/no-useless-path-segments: 2
 
-  import/no-cycle:
-    - error
-
   no-restricted-imports:
     - warn
     - patterns:

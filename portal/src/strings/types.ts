@@ -5,7 +5,21 @@
 export type PrimitiveObject<T extends string> = Partial<Record<T, string | number | boolean>>;
 
 export interface StringsMap {
-  home: unknown;
+  '404Error': unknown;
+  continue: unknown;
+  documentation: unknown;
+  email: unknown;
+  emailRequired: unknown;
+  enter: unknown;
+  goBack: unknown;
+  goToHome: unknown;
+  incidents: unknown;
   login: unknown;
+  loginFooterText: unknown;
+  loginSubHeading: unknown;
+  logout: unknown;
+  password: unknown;
+  passwordRequired: unknown;
   respondNow: unknown;
+  termsAndConditions: unknown;
 }

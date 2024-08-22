@@ -1,14 +1,18 @@
 import React, { createContext } from 'react';
 
+export interface Scope {
+  accountId?: string;
+  orgIdentifier?: string;
+  projectIdentifier?: string;
+}
+
 export interface AppStoreContextProps {
-  readonly matchPath?: string;
-  readonly renderUrl?: string;
-  updateAppStore(data: Partial<Pick<AppStoreContextProps, 'matchPath' | 'renderUrl'>>): void;
+  scope: Scope;
+  updateAppStore(data: Partial<AppStoreContextProps>): void;
 }
 
 export const AppStoreContext = createContext<AppStoreContextProps>({
-  matchPath: '',
-  renderUrl: '',
+  scope: {},
   updateAppStore: () => void 0
 });
 
@@ -18,8 +22,7 @@ export function useAppStore(): AppStoreContextProps {
 
 export const AppStoreProvider: React.FC<AppStoreContextProps> = ({ children }) => {
   const [appStore, setAppStore] = React.useState<AppStoreContextProps>({
-    renderUrl: '',
-    matchPath: '',
+    scope: {},
     updateAppStore: () => void 0
   });
   const updateAppStore = React.useCallback(

@@ -1,3 +1,17 @@
 respondNow: Respond Now
 login: Login
-home: Home
+continue: Continue
+loginSubHeading: Sign in to start managing incidents
+email: Email
+password: Password
+enter: Enter
+loginFooterText: By signing in, you are agreeing to our
+termsAndConditions: terms of service
+emailRequired: Email is required
+passwordRequired: Password is required
+incidents: Incidents
+documentation: Documentation
+logout: Logout
+404Error: Oops, we could not find this page.
+goToHome: Go to Home
+goBack: Go Back
