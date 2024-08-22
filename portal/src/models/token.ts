@@ -1,6 +1,6 @@
 export interface DecodedTokenType {
-  exp: number;
-  role: string;
-  uid: string;
+  email: string;
+  name: string;
   username: string;
+  exp: number;
 }

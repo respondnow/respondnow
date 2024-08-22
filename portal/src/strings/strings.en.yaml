@@ -8,6 +8,7 @@ enter: Enter
 loginFooterText: By signing in, you are agreeing to our
 termsAndConditions: terms of service
 emailRequired: Email is required
+emailInvalid: Email is invalid
 passwordRequired: Password is required
 incidents: Incidents
 documentation: Documentation
@@ -15,3 +16,11 @@ logout: Logout
 404Error: Oops, we could not find this page.
 goToHome: Go to Home
 goBack: Go Back
+gettingStarted: Getting Started
+setUpSlackApp: Set up Slack App
+getStarted: Get Started
+welcomeText: Welcome {{name}}
+getStartedHeading: Let's install the RespondNow Slack app!
+slackConfigHeader: Next, configure the slack app.
+slackConfigDescription: You're just one step away! Manage your entire organization's incident flow - from report to resolution - all through your Slack workspace.
+slackButtonText: Get Started with Slack

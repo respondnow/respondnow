@@ -8,9 +8,10 @@ import cx from 'classnames';
 import { PopoverInteractionKind, Position } from '@blueprintjs/core';
 import { Fallback } from '@errors';
 import respondNowLogo from '@images/respondNow.svg';
+import gettingStarted from '@images/gettingStarted.svg';
 import { useStrings } from '@strings';
-import { useRouteWithBaseUrl } from '@hooks';
-import { useLogout } from '@utils';
+import { getUserDetails, useLogout } from '@utils';
+import { paths } from '@routes/RouteDefinitions';
 import css from './SideNav.module.scss';
 
 interface SidebarLinkProps extends NavLinkProps {
@@ -28,10 +29,35 @@ export const SidebarLink: React.FC<SidebarLinkProps> = ({ label, icon, className
   </NavLink>
 );
 
+export const GettingStartedLink: React.FC<Pick<SidebarLinkProps, 'to'>> = ({ to }) => {
+  const { getString } = useStrings();
+
+  return (
+    <NavLink className={css.gettingStarted} activeClassName={css.gettingStartedSelected} to={to}>
+      <Layout.Vertical width="100%" style={{ gap: '0.5rem' }}>
+        <img src={gettingStarted} alt="Getting Started" height={20} width={20} />
+        <Text className={css.text} font={{ variation: FontVariation.SMALL_SEMI }}>
+          {getString('getStarted')}
+        </Text>
+        <Text
+          className={css.text}
+          font={{ variation: FontVariation.BODY }}
+          rightIcon="chevron-right"
+          color={Color.PURPLE_700}
+        >
+          {getString('setUpSlackApp')}
+        </Text>
+      </Layout.Vertical>
+    </NavLink>
+  );
+};
+
 const SideNav: React.FC = () => {
   const { getString } = useStrings();
-  const paths = useRouteWithBaseUrl();
   const { forceLogout } = useLogout();
+  const currentUserInfo = getUserDetails();
+
+  const currentUserName = currentUserInfo.name || currentUserInfo.username;
 
   return (
     <Layout.Vertical height="100%" width={250} background={Color.PRIMARY_BG} className={css.sideNavMainContainer}>
@@ -39,7 +65,8 @@ const SideNav: React.FC = () => {
         <img src={respondNowLogo} alt="RespondNow" height={25} />
       </Container>
       <Layout.Vertical padding="medium" className={css.sideNavLinkContainer}>
-        <SidebarLink label={getString('incidents')} to={paths.toDummy()} icon="home" />
+        <GettingStartedLink to={paths.toGetStarted()} />
+        <SidebarLink label={getString('incidents')} to={paths.toIncidentDashboard()} icon="home" />
       </Layout.Vertical>
       <Layout.Vertical>
         <Container padding="medium" border={{ top: true }}>
@@ -71,16 +98,16 @@ const SideNav: React.FC = () => {
                     size="normal"
                     hoverCard={false}
                     autoFocus={false}
-                    name="Aandu"
-                    email="aandu@email.com"
+                    name={currentUserName}
+                    email={currentUserInfo.email}
                     style={{ margin: 0 }}
                   />
                   <Layout.Vertical style={{ flexGrow: 1, width: 'calc(100% - 48px)' }}>
                     <Text width="100%" lineClamp={1} font={{ variation: FontVariation.H6 }}>
-                      Aandu
+                      {currentUserName}
                     </Text>
                     <Text width="100%" lineClamp={1} font={{ variation: FontVariation.SMALL }}>
-                      aandu@email.com
+                      {currentUserInfo.email}
                     </Text>
                   </Layout.Vertical>
                 </Layout.Horizontal>
@@ -105,8 +132,8 @@ const SideNav: React.FC = () => {
             }}
           >
             <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }}>
-              <Avatar name="Aandu" email="aandu@email.com" size="normal" />
-              <Text font={{ variation: FontVariation.SMALL_BOLD }}>Aandu</Text>
+              <Avatar name={currentUserName} email={currentUserInfo.email} size="normal" />
+              <Text font={{ variation: FontVariation.SMALL_BOLD }}>{currentUserName}</Text>
             </Layout.Horizontal>
           </Button>
         </Container>

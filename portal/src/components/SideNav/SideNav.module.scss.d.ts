@@ -1,5 +1,7 @@
 declare namespace SideNavModuleScssNamespace {
   export interface ISideNavModuleScss {
+    gettingStarted: string;
+    gettingStartedSelected: string;
     link: string;
     selected: string;
     sideNavLinkContainer: string;

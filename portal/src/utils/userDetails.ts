@@ -3,10 +3,9 @@ import { DecodedTokenType } from 'models';
 
 export interface UserDetailsProps {
   accessToken: string;
-  projectRole: string;
-  projectID: string;
-  accountID: string;
-  accountRole: string;
+  email: string;
+  name: string;
+  username: string;
   isInitialLogin: boolean;
 }
 
@@ -16,22 +15,17 @@ export function decode<T = unknown>(arg: string): T {
 
 export function getUserDetails(): UserDetailsProps {
   const accessToken = localStorage.getItem('accessToken') ?? '';
-  const accountID = accessToken ? (jwtDecode(accessToken) as DecodedTokenType).uid : '';
-  const accountRole = accessToken ? (jwtDecode(accessToken) as DecodedTokenType).role : '';
-  const projectRole = localStorage.getItem('projectRole') ?? '';
-  const projectID = localStorage.getItem('projectID') ?? '';
+  const email = accessToken ? (jwtDecode(accessToken) as DecodedTokenType).email : '';
+  const name = accessToken ? (jwtDecode(accessToken) as DecodedTokenType).name : '';
+  const username = accessToken ? (jwtDecode(accessToken) as DecodedTokenType).username : '';
   const isInitialLogin = localStorage.getItem('isInitialLogin') === 'true';
-  return { accessToken, projectRole, projectID, accountID, accountRole, isInitialLogin };
+  return { accessToken, email, isInitialLogin, name, username };
 }
 
 export function setUserDetails({
   accessToken,
-  projectRole,
-  projectID,
   isInitialLogin
 }: Partial<Omit<UserDetailsProps, 'accountID' | 'accountRole'>>): void {
   if (accessToken) localStorage.setItem('accessToken', accessToken);
-  if (projectRole) localStorage.setItem('projectRole', projectRole);
-  if (projectID) localStorage.setItem('projectID', projectID);
   if (isInitialLogin !== undefined) localStorage.setItem('isInitialLogin', `${isInitialLogin}`);
 }

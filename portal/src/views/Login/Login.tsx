@@ -1,20 +1,31 @@
 import React from 'react';
-import { Button, ButtonVariation, Card, Container, FormInput, Layout, Text } from '@harnessio/uicore';
+import { Button, ButtonVariation, Card, Container, FormInput, Layout, Text, useToaster } from '@harnessio/uicore';
 import { Color, FontVariation } from '@harnessio/design-system';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
+import { UseMutateFunction } from '@tanstack/react-query';
+import { withErrorBoundary } from 'react-error-boundary';
 import mainLogo from '@images/respondNow.svg';
 import { useStrings } from '@strings';
 import PasswordInput from '@components/PasswordInput';
+import { AuthLoginResponseDto, UtilsDefaultResponseDto, LoginMutationProps } from '@services/server';
+import { Fallback } from '@errors';
 import css from './Login.module.scss';
 
-interface LoginFormProps {
-  username: string | undefined;
-  password: string | undefined;
+interface LoginViewProps {
+  mutation: UseMutateFunction<AuthLoginResponseDto, UtilsDefaultResponseDto, LoginMutationProps<never>, unknown>;
+  loading: boolean;
 }
 
-const LoginView: React.FC = () => {
+interface LoginFormProps {
+  username: string;
+  password: string;
+}
+
+const LoginView: React.FC<LoginViewProps> = props => {
+  const { mutation, loading } = props;
   const { getString } = useStrings();
+  const { showError } = useToaster();
 
   return (
     <Container height="100%" background={Color.PRIMARY_BG} flex={{ align: 'center-center' }}>
@@ -27,12 +38,25 @@ const LoginView: React.FC = () => {
             </Text>
           </Layout.Vertical>
           <Formik<LoginFormProps>
-            initialValues={{ username: undefined, password: undefined }}
+            initialValues={{ username: '', password: '' }}
             validationSchema={Yup.object().shape({
-              username: Yup.string().email().required(getString('emailRequired')),
+              username: Yup.string().email(getString('emailInvalid')).required(getString('emailRequired')),
               password: Yup.string().required(getString('passwordRequired'))
             })}
-            onSubmit={() => void 0}
+            onSubmit={values => {
+              mutation(
+                {
+                  queryParams: {},
+                  body: {
+                    email: values.username,
+                    password: values.password
+                  }
+                },
+                {
+                  onError: error => showError(error.message)
+                }
+              );
+            }}
           >
             <Form className={css.formContainer}>
               <FormInput.Text
@@ -49,7 +73,14 @@ const LoginView: React.FC = () => {
                 placeholder={`${getString('enter')} ${getString('password')}`}
                 disabled={false}
               />
-              <Button type="submit" text={getString('continue')} variation={ButtonVariation.PRIMARY} width="100%" />
+              <Button
+                type="submit"
+                text={getString('continue')}
+                variation={ButtonVariation.PRIMARY}
+                width="100%"
+                disabled={loading}
+                loading={loading}
+              />
             </Form>
           </Formik>
           <Layout.Horizontal flex={{ align: 'center-center' }} spacing="xsmall">
@@ -64,4 +95,4 @@ const LoginView: React.FC = () => {
   );
 };
 
-export default LoginView;
+export default withErrorBoundary(LoginView, { FallbackComponent: Fallback });

@@ -14,6 +14,6 @@ export const paths: UseRouteDefinitionsProps = {
   toRoot: () => '/',
   toLogin: () => '/login',
   toPasswordReset: () => '/settings/password-reset',
-  toGetStarted: () => '/get-started',
+  toGetStarted: () => '/getting-started',
   toIncidentDashboard: () => '/incidents'
 };

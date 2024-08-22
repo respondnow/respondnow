@@ -9,8 +9,12 @@ export interface StringsMap {
   continue: unknown;
   documentation: unknown;
   email: unknown;
+  emailInvalid: unknown;
   emailRequired: unknown;
   enter: unknown;
+  getStarted: unknown;
+  getStartedHeading: unknown;
+  gettingStarted: unknown;
   goBack: unknown;
   goToHome: unknown;
   incidents: unknown;
@@ -21,5 +25,10 @@ export interface StringsMap {
   password: unknown;
   passwordRequired: unknown;
   respondNow: unknown;
+  setUpSlackApp: unknown;
+  slackButtonText: unknown;
+  slackConfigDescription: unknown;
+  slackConfigHeader: unknown;
   termsAndConditions: unknown;
+  welcomeText: PrimitiveObject<'name'>;
 }

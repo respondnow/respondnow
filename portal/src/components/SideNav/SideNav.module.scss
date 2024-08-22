@@ -26,9 +26,9 @@
     text-decoration: none;
     background-color: #ddedff;
     .text {
-      color: var(--primary-8) !important;
+      color: var(--primary-7) !important;
       svg {
-        fill: var(--primary-8);
+        fill: var(--primary-7);
       }
     }
   }
@@ -36,9 +36,9 @@
   &.selected {
     background-color: #ddedff;
     .text {
-      color: var(--primary-8) !important;
+      color: var(--primary-7) !important;
       svg {
-        fill: var(--primary-8);
+        fill: var(--primary-7);
       }
     }
   }
@@ -66,5 +66,27 @@
         display: block;
       }
     }
+  }
+}
+
+.gettingStarted {
+  display: block;
+  padding: var(--spacing-small) var(--spacing-medium);
+  z-index: 1;
+  border-radius: 4px;
+  border: 1px solid var(--purple-400);
+  svg {
+    path {
+      fill: var(--purple-700);
+    }
+  }
+
+  &:hover {
+    text-decoration: none;
+    background: var(--purple-50);
+  }
+
+  &.gettingStartedSelected {
+    background: var(--purple-50);
   }
 }
