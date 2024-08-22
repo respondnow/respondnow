@@ -67,12 +67,6 @@ func ConnectSlackInSocketMode() error {
 	// Handle a specific Interaction
 	socketmodeHandler.HandleInteraction(slack.InteractionTypeBlockActions, middlewareInteractionTypeBlockActions)
 
-	// Handle all SlashCommand
-	socketmodeHandler.Handle(socketmode.EventTypeSlashCommand, middlewareSlashCommand)
-	socketmodeHandler.HandleSlashCommand("/rocket", middlewareSlashCommand)
-
-	// socketmodeHandler.HandleDefault(middlewareDefault)
-
 	socketmodeHandler.RunEventLoopContext(context.Background())
 
 	return nil
@@ -116,7 +110,7 @@ func middlewareEventsAPI(evt *socketmode.Event, client *socketmode.Client) {
 			logrus.Infof("user %q joined to channel %q", ev.User, ev.Channel)
 		}
 	default:
-		client.Debugf("unsupported Events API event received")
+		logrus.Errorf("unsupported Events API event received: %+v", eventsAPIEvent.Type)
 	}
 }
 
@@ -157,15 +151,14 @@ func middlewareInteractive(evt *socketmode.Event, client *socketmode.Client) {
 	switch callback.Type {
 	case slack.InteractionTypeBlockActions:
 		// See https://api.slack.com/apis/connections/socket-implement#button
-		client.Debugf("button clicked!")
+		middlewareInteractionTypeBlockActions(evt, client)
 	case slack.InteractionTypeShortcut:
 		middlewareInteractionTypeShortcut(evt, client)
 	case slack.InteractionTypeViewSubmission:
 		// See https://api.slack.com/apis/connections/socket-implement#modal
 		middlewareInteractionTypeViewSubmission(evt, client)
-	case slack.InteractionTypeDialogSubmission:
 	default:
-
+		logrus.Errorf("unsupported interactive event received: %+v", callback.Type)
 	}
 
 	client.Ack(*evt.Request, payload)
@@ -220,39 +213,3 @@ func middlewareInteractionTypeBlockActions(evt *socketmode.Event, client *socket
 		}
 	}
 }
-
-func middlewareSlashCommand(evt *socketmode.Event, client *socketmode.Client) {
-	cmd, ok := evt.Data.(slack.SlashCommand)
-	if !ok {
-		logrus.Infof("Ignored %+v\n", evt)
-		return
-	}
-
-	client.Debugf("Slash command received: %+v", cmd)
-
-	payload := map[string]interface{}{
-		"blocks": []slack.Block{
-			slack.NewSectionBlock(
-				&slack.TextBlockObject{
-					Type: slack.MarkdownType,
-					Text: "foo",
-				},
-				nil,
-				slack.NewAccessory(
-					slack.NewButtonBlockElement(
-						"",
-						"somevalue",
-						&slack.TextBlockObject{
-							Type: slack.PlainTextType,
-							Text: "bar",
-						},
-					),
-				),
-			),
-		}}
-	client.Ack(*evt.Request, payload)
-}
-
-// func middlewareDefault(evt *socketmode.Event, client *socketmode.Client) {
-// 	// fmt.Fprintf(os.Stderr, "Unexpected event type received: %s\n", evt.Type)
-// }
