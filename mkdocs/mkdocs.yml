@@ -1,1 +1,51 @@
-site_name: Respond Now
+site_name: RespondNow
+site_url: https://respondnow.github.io/respond
+site_description: Documentation for RespondNow
+repo_name: respondnow/respond
+repo_url: https://github.com/respondnow/respond
+theme:
+  name: material
+  custom_dir: overrides
+  font:
+    text: Work Sans
+  highlightjs: true
+  logo: images/logo.svg
+  palette:
+    - scheme: default
+      primary: white
+      accent: indigo
+      toggle:
+        icon: material/lightbulb-off
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/lightbulb-on
+        name: Switch to light mode
+  hljs_languages:
+    - yaml
+  features:
+    - content.code.annotate
+    - content.tabs.link
+    - header.autohide
+    - navigation.indexes
+    - navigation.instant
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.tracking
+    - search.share
+    - search.suggest
+extra:
+  version:
+    provider: mike
+markdown_extensions:
+  - codehilite
+  - admonition
+  - abbr
+  - attr_list
+  - def_list
+  - footnotes
+  - meta
+  - md_in_html
+
+nav:
+  - Home: index.md
