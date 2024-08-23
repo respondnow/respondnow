@@ -10,8 +10,9 @@ import { Fallback } from '@errors';
 import respondNowLogo from '@images/respondNow.svg';
 import gettingStarted from '@images/gettingStarted.svg';
 import { useStrings } from '@strings';
-import { getUserDetails, useLogout } from '@utils';
+import { useLogout } from '@utils';
 import { paths } from '@routes/RouteDefinitions';
+import { useAppStore } from '@hooks';
 import css from './SideNav.module.scss';
 
 interface SidebarLinkProps extends NavLinkProps {
@@ -55,13 +56,13 @@ export const GettingStartedLink: React.FC<Pick<SidebarLinkProps, 'to'>> = ({ to 
 const SideNav: React.FC = () => {
   const { getString } = useStrings();
   const { forceLogout } = useLogout();
-  const currentUserInfo = getUserDetails();
+  const { currentUserInfo } = useAppStore();
 
   const currentUserName = currentUserInfo.name || currentUserInfo.username;
 
   return (
     <Layout.Vertical height="100%" width={250} background={Color.PRIMARY_BG} className={css.sideNavMainContainer}>
-      <Container padding="medium">
+      <Container padding="medium" flex={{ align: 'center-center' }}>
         <img src={respondNowLogo} alt="RespondNow" height={25} />
       </Container>
       <Layout.Vertical padding="medium" className={css.sideNavLinkContainer}>

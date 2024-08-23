@@ -1,11 +1,10 @@
 import React from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
-import { getUserDetails, isUserAuthenticated } from '@utils';
+import { isUserAuthenticated } from '@utils';
 import { paths } from './RouteDefinitions';
 
 function UnauthenticatedRoute(props: RouteProps): React.ReactElement {
-  const { accessToken: token } = getUserDetails();
-  const isUserLoggedIn = token && isUserAuthenticated();
+  const isUserLoggedIn = isUserAuthenticated();
 
   if (!isUserLoggedIn) {
     return <Route {...props} />;

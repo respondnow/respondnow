@@ -6,7 +6,7 @@ import strings from 'strings/strings.en.yaml';
 
 export function App(): React.ReactElement {
   return (
-    <AppStoreProvider scope={{}} updateAppStore={() => void 0}>
+    <AppStoreProvider>
       <StringsContextProvider data={strings}>
         <ReactQueryProvider>
           <Routes />

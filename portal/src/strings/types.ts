@@ -24,7 +24,9 @@ export interface StringsMap {
   logout: unknown;
   password: unknown;
   passwordRequired: unknown;
+  resetFilters: unknown;
   respondNow: unknown;
+  searchForAnIncident: unknown;
   setUpSlackApp: unknown;
   slackButtonText: unknown;
   slackConfigDescription: unknown;

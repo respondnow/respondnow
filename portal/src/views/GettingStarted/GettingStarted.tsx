@@ -5,20 +5,20 @@ import { withErrorBoundary } from 'react-error-boundary';
 import { DefaultLayout } from '@layouts';
 import getStartedSlack from '@images/getStartedSlack.svg';
 import { useStrings } from '@strings';
-import { getUserDetails } from '@utils';
 import { Fallback } from '@errors';
+import { useAppStore } from '@hooks';
 import css from './GettingStarted.module.scss';
 
 const GettingStartedView: React.FC = () => {
   const { getString } = useStrings();
-  const { name } = getUserDetails();
+  const { currentUserInfo } = useAppStore();
 
   return (
     <DefaultLayout scale="full-screen">
       <Layout.Vertical height="100%" flex={{ align: 'center-center' }} style={{ gap: '1rem', overflow: 'auto' }}>
         <Layout.Vertical width="100%" style={{ gap: '0.5rem' }} flex={{ align: 'center-center' }}>
           <Text font={{ variation: FontVariation.H6 }} color={Color.GREY_800}>
-            {getString('welcomeText', { name })},
+            {getString('welcomeText', { name: currentUserInfo.name })},
           </Text>
           <Text font={{ variation: FontVariation.H4 }} color={Color.GREY_800}>
             {getString('getStartedHeading')}

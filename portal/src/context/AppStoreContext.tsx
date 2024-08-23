@@ -1,30 +1,35 @@
 import React, { createContext } from 'react';
 
-export interface Scope {
-  accountId?: string;
+interface Scope {
+  accountIdentifier?: string;
   orgIdentifier?: string;
   projectIdentifier?: string;
 }
 
 export interface AppStoreContextProps {
   scope: Scope;
-  updateAppStore(data: Partial<AppStoreContextProps>): void;
+  currentUserInfo: {
+    name?: string;
+    username?: string;
+    email: string;
+  };
+  isInitialLogin?: boolean;
+  updateAppStore: (data: Partial<AppStoreContextProps>) => void;
 }
 
-export const AppStoreContext = createContext<AppStoreContextProps>({
+export const initialAppContext: AppStoreContextProps = {
   scope: {},
+  currentUserInfo: {
+    email: ''
+  },
   updateAppStore: () => void 0
-});
+};
 
-export function useAppStore(): AppStoreContextProps {
-  return React.useContext(AppStoreContext);
-}
+export const AppStoreContext = createContext<AppStoreContextProps>(initialAppContext);
 
-export const AppStoreProvider: React.FC<AppStoreContextProps> = ({ children }) => {
-  const [appStore, setAppStore] = React.useState<AppStoreContextProps>({
-    scope: {},
-    updateAppStore: () => void 0
-  });
+export const AppStoreProvider: React.FC = ({ children }) => {
+  const [appStore, setAppStore] = React.useState<AppStoreContextProps>(initialAppContext);
+
   const updateAppStore = React.useCallback(
     (data: Partial<AppStoreContextProps>) => {
       setAppStore(prev => ({ ...prev, ...data }));

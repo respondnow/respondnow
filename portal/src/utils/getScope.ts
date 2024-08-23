@@ -1,7 +1,7 @@
-import { useAppStore } from '@context';
+import { useAppStore } from '@hooks';
 
-interface Scope {
-  accountId: string;
+export interface Scope {
+  accountIdentifier: string;
   orgIdentifier: string;
   projectIdentifier: string;
 }
@@ -10,7 +10,7 @@ export function getScope(): Scope {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { scope } = useAppStore();
   return {
-    accountId: scope.accountId || '',
+    accountIdentifier: scope.accountIdentifier || '',
     orgIdentifier: scope.orgIdentifier || '',
     projectIdentifier: scope.projectIdentifier || ''
   };
