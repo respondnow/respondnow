@@ -969,9 +969,14 @@ paths:
     get:
       consumes:
       - application/json
-      description: List incidents
-      operationId: ListIncidents
+      description: Get incident
+      operationId: GetIncident
       parameters:
+      - description: incident identifier
+        in: path
+        name: incidentIdentifier
+        required: true
+        type: string
       - description: accountIdentifier
         in: query
         name: accountIdentifier
@@ -985,71 +990,13 @@ paths:
         in: query
         name: projectIdentifier
         type: string
-      - description: type
-        enum:
-        - Availability
-        - Latency
-        - Security
-        - Other
-        in: query
-        name: type
-        type: string
-      - description: severity
-        enum:
-        - SEV0 - Critical, High Impact
-        - SEV1 - Major, Significant Impact
-        - SEV2 - Minor, Low Impact
-        in: query
-        name: severity
-        type: string
-      - description: status
-        enum:
-        - Started
-        - Acknowledged
-        - Investigating
-        - Identified
-        - Mitigated
-        - Resolved
-        in: query
-        name: status
-        type: string
-      - description: active
-        in: query
-        name: active
-        type: boolean
-      - description: incidentChannelType
-        enum:
-        - slack
-        in: query
-        name: incidentChannelType
-        type: string
-      - description: search
-        in: query
-        name: search
-        type: string
-      - description: page
-        in: query
-        name: page
-        type: integer
-      - description: limit
-        in: query
-        name: limit
-        type: integer
-      - description: correlationId
-        in: query
-        name: correlationId
-        type: string
-      - description: all
-        in: query
-        name: all
-        type: boolean
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/incident.ListResponseDTO'
+            $ref: '#/definitions/incident.GetResponseDTO'
         "400":
           description: Bad Request
           schema:
@@ -1062,7 +1009,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.DefaultResponseDTO'
-      summary: List incidents
+      summary: Get incident
       tags:
       - Incident Management
   /status:

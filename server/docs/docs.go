@@ -343,7 +343,7 @@ const docTemplate = `{
         },
         "/incident/list": {
             "get": {
-                "description": "List incidents",
+                "description": "Get incident",
                 "consumes": [
                     "application/json"
                 ],
@@ -353,9 +353,16 @@ const docTemplate = `{
                 "tags": [
                     "Incident Management"
                 ],
-                "summary": "List incidents",
-                "operationId": "ListIncidents",
+                "summary": "Get incident",
+                "operationId": "GetIncident",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "incident identifier",
+                        "name": "incidentIdentifier",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "accountIdentifier",
@@ -374,95 +381,13 @@ const docTemplate = `{
                         "description": "projectIdentifier",
                         "name": "projectIdentifier",
                         "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "Availability",
-                            "Latency",
-                            "Security",
-                            "Other"
-                        ],
-                        "type": "string",
-                        "description": "type",
-                        "name": "type",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "SEV0 - Critical, High Impact",
-                            "SEV1 - Major, Significant Impact",
-                            "SEV2 - Minor, Low Impact"
-                        ],
-                        "type": "string",
-                        "description": "severity",
-                        "name": "severity",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "Started",
-                            "Acknowledged",
-                            "Investigating",
-                            "Identified",
-                            "Mitigated",
-                            "Resolved"
-                        ],
-                        "type": "string",
-                        "description": "status",
-                        "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "active",
-                        "name": "active",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "slack"
-                        ],
-                        "type": "string",
-                        "description": "incidentChannelType",
-                        "name": "incidentChannelType",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "search",
-                        "name": "search",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "limit",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "correlationId",
-                        "name": "correlationId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "all",
-                        "name": "all",
-                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/incident.ListResponseDTO"
+                            "$ref": "#/definitions/incident.GetResponseDTO"
                         }
                     },
                     "400": {
