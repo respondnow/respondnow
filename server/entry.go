@@ -2,14 +2,15 @@ package server
 
 import (
 	"context"
-	"github.com/respondnow/respond/server/pkg/auth"
-	auth2 "github.com/respondnow/respond/server/pkg/database/mongodb/auth"
 	"net/http"
 	"os"
 	"os/signal"
 	"runtime"
 	"syscall"
 	"time"
+
+	"github.com/respondnow/respond/server/pkg/auth"
+	auth2 "github.com/respondnow/respond/server/pkg/database/mongodb/auth"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kelseyhightower/envconfig"

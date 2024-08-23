@@ -29,12 +29,19 @@ definitions:
     - password
     - userId
     type: object
+  auth.ChangePasswordResponse:
+    properties:
+      lastLoginAt:
+        type: integer
+      token:
+        type: string
+    type: object
   auth.ChangePasswordResponseDTO:
     properties:
       correlationId:
         type: string
       data:
-        $ref: '#/definitions/auth.LoginResponse'
+        $ref: '#/definitions/auth.ChangePasswordResponse'
       message:
         type: string
       status:
@@ -57,6 +64,8 @@ definitions:
     properties:
       changeUserPassword:
         type: boolean
+      lastLoginAt:
+        type: integer
       token:
         type: string
     type: object

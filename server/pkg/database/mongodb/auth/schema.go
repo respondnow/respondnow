@@ -18,6 +18,7 @@ type User struct {
 	UpdatedBy              string             `bson:"updatedBy" json:"updatedBy"`
 	RemovedAt              *int64             `bson:"removedAt,omitempty" json:"removedAt,omitempty"`
 	Removed                bool               `bson:"removed" json:"removed"`
+	LastLoginAt            int64              `bson:"lastLoginAt" json:"lastLoginAt"`
 }
 
 const (

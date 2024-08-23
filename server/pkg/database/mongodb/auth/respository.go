@@ -12,7 +12,7 @@ import (
 type AuthOperator interface {
 	AddUser(ctx context.Context, user User, opts ...*options.InsertOneOptions) (User, error)
 	GetUserByQuery(ctx context.Context, query bson.M, opts ...*options.FindOneOptions) (User, error)
-	UpdateUserByField(ctx context.Context, field string, value interface{}, updates bson.M, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error)
+	UpdateUser(ctx context.Context, filter bson.M, updates bson.M, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error)
 }
 
 type authOperator struct {

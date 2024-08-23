@@ -46,6 +46,7 @@ func (a *authService) Signup(ctx context.Context, input AddUserInput) (auth.User
 		UpdatedBy:              "",
 		RemovedAt:              nil,
 		Removed:                false,
+		LastLoginAt:            0,
 	}
 
 	createdUser, err := a.authOperator.AddUser(ctx, user)
@@ -62,7 +63,7 @@ func (a *authService) Login(ctx context.Context, input LoginUserInput) (auth.Use
 	user, err := a.authOperator.GetUserByQuery(ctx, query)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return auth.User{}, fmt.Errorf("email %v not found", auth.Email)
+			return auth.User{}, fmt.Errorf("email %v not found", input.Email)
 		}
 		return auth.User{}, fmt.Errorf("error fetching user: %w", err)
 	}
@@ -76,6 +77,18 @@ func (a *authService) Login(ctx context.Context, input LoginUserInput) (auth.Use
 	}
 
 	return user, nil
+}
+
+func (a *authService) UpdateLastLogin(ctx context.Context, input LoginUserInput) error {
+	query := bson.M{auth.Email: input.Email, "removed": false}
+	updates := bson.M{"lastLoginAt": time.Now().Unix(), "updatedAt": time.Now().Unix()}
+
+	_, err := a.authOperator.UpdateUser(ctx, query, updates)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *authService) ChangePassword(ctx context.Context, input ChangeUserPasswordInput) error {
@@ -95,7 +108,7 @@ func (a *authService) ChangePassword(ctx context.Context, input ChangeUserPasswo
 	}
 
 	updates := bson.M{"password": string(hashedPassword), "updatedAt": time.Now().Unix(), "changePasswordRequired": false, "active": true}
-	_, err = a.authOperator.UpdateUserByField(ctx, auth.Email, input.Email, updates)
+	_, err = a.authOperator.UpdateUser(ctx, query, updates)
 	if err != nil {
 		return err
 	}

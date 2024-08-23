@@ -538,6 +538,17 @@ const docTemplate = `{
                 }
             }
         },
+        "auth.ChangePasswordResponse": {
+            "type": "object",
+            "properties": {
+                "lastLoginAt": {
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "auth.ChangePasswordResponseDTO": {
             "type": "object",
             "properties": {
@@ -545,7 +556,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "data": {
-                    "$ref": "#/definitions/auth.LoginResponse"
+                    "$ref": "#/definitions/auth.ChangePasswordResponse"
                 },
                 "message": {
                     "type": "string"
@@ -579,6 +590,9 @@ const docTemplate = `{
             "properties": {
                 "changeUserPassword": {
                     "type": "boolean"
+                },
+                "lastLoginAt": {
+                    "type": "integer"
                 },
                 "token": {
                     "type": "string"
