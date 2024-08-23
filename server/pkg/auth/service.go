@@ -63,7 +63,7 @@ func (a *authService) Login(ctx context.Context, input LoginUserInput) (auth.Use
 	user, err := a.authOperator.GetUserByQuery(ctx, query)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return auth.User{}, fmt.Errorf("email %v not found", auth.Email)
+			return auth.User{}, fmt.Errorf("email %v not found", input.Email)
 		}
 		return auth.User{}, fmt.Errorf("error fetching user: %w", err)
 	}

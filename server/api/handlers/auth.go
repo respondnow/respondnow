@@ -261,6 +261,18 @@ func ChangePassword() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, response)
 			return
 		}
+
+		err = authService.UpdateLastLogin(ctx, auth.LoginUserInput{
+			Email:    user.Email,
+			Password: changePasswordReq.NewPassword,
+		})
+		if err != nil {
+			response.DefaultResponseDTO.Message = "Login failed: " + err.Error()
+			response.Status = string(utils.ERROR)
+			c.JSON(http.StatusUnauthorized, response)
+			return
+		}
+
 		response.DefaultResponseDTO.Message = "Password has been changed"
 		response.Data.Token = token
 		response.Data.LastLoginAt = user.LastLoginAt
