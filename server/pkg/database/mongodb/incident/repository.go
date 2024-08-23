@@ -20,6 +20,11 @@ type IncidentOperator interface {
 		opts ...*options.BulkWriteOptions) error
 	WithDefaults(in *Incident)
 	Validate(in *Incident) error
+	GetIncidentTypes() []Type
+	GetIncidentSeverities() []Severity
+	GetIncidentAttachmentType() []AttachmentType
+	GetIncidentStageStatuses() []Status
+	GetIncidentRoles() []RoleType
 }
 
 // Operator is the struct for incident operator

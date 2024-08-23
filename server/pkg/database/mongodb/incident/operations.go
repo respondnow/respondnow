@@ -17,7 +17,7 @@ import (
 func (i *incidentOperator) Create(ctx context.Context, in Incident,
 	opts ...*options.InsertOneOptions) (Incident, error) {
 	// set or reset some fields
-	now := time.Now()
+	now := time.Now().Unix()
 	in.ID = primitive.NilObjectID
 	in.CreatedAt = now
 	in.UpdatedAt = &now
@@ -86,7 +86,7 @@ func (i *incidentOperator) CountDocuments(ctx context.Context, filter interface{
 func (i *incidentOperator) UpdateByID(ctx context.Context, in Incident,
 	opts ...*options.UpdateOptions) (Incident, error) {
 	// set or reset some fields
-	now := time.Now()
+	now := time.Now().Unix()
 	in.UpdatedAt = &now
 	if in.Removed {
 		in.RemovedAt = &now
@@ -181,7 +181,7 @@ func (i *incidentOperator) BulkProcessWithSessionContext(ctx mongo.SessionContex
 	}
 	// set or reset some fields
 	wModels := make([]mongo.WriteModel, 0)
-	now := time.Now()
+	now := time.Now().Unix()
 	for _, item := range createList {
 		item.ID = primitive.NilObjectID
 		item.CreatedAt = now
@@ -269,4 +269,45 @@ func (i *incidentOperator) Validate(in *Incident) error {
 	}
 
 	return nil
+}
+
+func (i *incidentOperator) GetIncidentTypes() []Type {
+	return []Type{
+		Availability,
+		Latency,
+		Security,
+		Other,
+	}
+}
+
+func (i *incidentOperator) GetIncidentSeverities() []Severity {
+	return []Severity{
+		Severity0,
+		Severity1,
+		Severity2,
+	}
+}
+
+func (i *incidentOperator) GetIncidentAttachmentType() []AttachmentType {
+	return []AttachmentType{
+		Link,
+	}
+}
+
+func (i *incidentOperator) GetIncidentStageStatuses() []Status {
+	return []Status{
+		Started,
+		Acknowledged,
+		Investigating,
+		Identified,
+		Mitigated,
+		Resolved,
+	}
+}
+
+func (i *incidentOperator) GetIncidentRoles() []RoleType {
+	return []RoleType{
+		IncidentCommander,
+		CommunicationsLead,
+	}
 }

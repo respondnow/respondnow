@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -16,6 +17,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/respondnow/respond/server/api/middleware"
 	"github.com/respondnow/respond/server/api/routes"
+	"github.com/respondnow/respond/server/clients/slack/socketmode"
 	"github.com/respondnow/respond/server/config"
 	"github.com/respondnow/respond/server/pkg/database/mongodb"
 	"github.com/respondnow/respond/server/pkg/prometheus"
@@ -46,8 +48,11 @@ func run() error {
 	defer stop()
 
 	app, metricApp := setupServers()
-	srv := startServer(ctx, app, config.EnvConfig.Ports.HttpPort, "HTTP server")
-	metricSrv := startServer(ctx, metricApp, config.EnvConfig.Ports.MetricPort, "Metric server")
+	srv := startServer(app, config.EnvConfig.Ports.HttpPort, "HTTP server")
+	metricSrv := startServer(metricApp, config.EnvConfig.Ports.MetricPort, "Metric server")
+
+	// Setup clients
+	go setupClients()
 
 	backgroundProcess()
 
@@ -58,6 +63,34 @@ func run() error {
 	shutdownServer(metricSrv, "Metric server")
 
 	return ctx.Err()
+}
+
+func setupClients() {
+	defer func() {
+		if r := recover(); r != nil {
+			logrus.Errorf("panic recovered: setup clients, recover: %+v", r)
+		}
+	}()
+	if config.EnvConfig.SlackConfig.EnableSlackClient {
+		err := setupSlackClient()
+		if err != nil {
+			logrus.Errorf("failed to setup slack client: %+v", err)
+		}
+	}
+}
+
+func setupSlackClient() error {
+	switch config.EnvConfig.SlackConfig.ConnectionMode {
+	case "SOCKET":
+		err := socketmode.ConnectSlackInSocketMode()
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("unsupported connection mode provided: %s, supported mode: %s",
+			config.EnvConfig.SlackConfig.ConnectionMode, "SOCKET")
+	}
+	return nil
 }
 
 func loadConfig() {
@@ -111,7 +144,7 @@ func logRegisteredRoutes(engine *gin.Engine) {
 	}
 }
 
-func startServer(ctx context.Context, engine *gin.Engine, port, serverName string) *http.Server {
+func startServer(engine *gin.Engine, port, serverName string) *http.Server {
 	srv := &http.Server{
 		Addr:    ":" + port,
 		Handler: engine,

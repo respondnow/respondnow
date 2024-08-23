@@ -17,6 +17,7 @@ import (
 )
 
 type IncidentService interface {
+	Get(ctx context.Context, id string) (incident.Incident, error)
 	List(ctx context.Context, token string, listFilters ListFilters, correlationID, search string,
 		limit, page int64, all bool) (ListResponse, error)
 	Create(ctx context.Context, request CreateRequest,
@@ -54,7 +55,7 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 		return resp, err
 	}
 
-	ts := time.Now()
+	ts := time.Now().Unix()
 	// Set default values
 	if request.Status == "" {
 		request.Status = incident.Started
@@ -92,6 +93,7 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 				},
 			},
 		},
+		Roles: request.Roles,
 		AuditDetails: mongodb.AuditDetails{
 			CreatedBy: utils.UserDetails{
 				UserName: currentUser.Username,
@@ -161,14 +163,19 @@ func (is incidentService) List(ctx context.Context, token string, listFilters Li
 		Key:   constant.AccountIdentifier,
 		Value: is.accountIdentifier,
 	})
-	filter = append(filter, bson.E{
-		Key:   constant.OrgIdentifier,
-		Value: is.orgIdentifier,
-	})
-	filter = append(filter, bson.E{
-		Key:   constant.ProjectIdentifier,
-		Value: is.projectIdentifier,
-	})
+	if is.orgIdentifier != "" {
+		filter = append(filter, bson.E{
+			Key:   constant.OrgIdentifier,
+			Value: is.orgIdentifier,
+		})
+	}
+	if is.projectIdentifier != "" {
+		filter = append(filter, bson.E{
+			Key:   constant.ProjectIdentifier,
+			Value: is.projectIdentifier,
+		})
+	}
+
 	filter = append(filter, bson.E{
 		Key:   "removed",
 		Value: false,
@@ -225,4 +232,40 @@ func (is incidentService) List(ctx context.Context, token string, listFilters Li
 		Pagination:    api.GetPagination(page, limit, count, all),
 		CorrelationID: correlationID,
 	}, nil
+}
+
+func (is incidentService) Get(ctx context.Context, id string) (incident.Incident, error) {
+	filter := bson.D{}
+	filter = append(filter, bson.E{
+		Key:   constant.AccountIdentifier,
+		Value: is.accountIdentifier,
+	})
+	if is.orgIdentifier != "" {
+		filter = append(filter, bson.E{
+			Key:   constant.OrgIdentifier,
+			Value: is.orgIdentifier,
+		})
+	}
+	if is.projectIdentifier != "" {
+		filter = append(filter, bson.E{
+			Key:   constant.ProjectIdentifier,
+			Value: is.projectIdentifier,
+		})
+	}
+
+	filter = append(filter, bson.E{
+		Key:   "identifier",
+		Value: id,
+	})
+	filter = append(filter, bson.E{
+		Key:   "removed",
+		Value: false,
+	})
+
+	resp, err := is.incidentOperator.Get(ctx, filter)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
 }
