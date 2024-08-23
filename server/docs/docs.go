@@ -341,7 +341,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/incident/list": {
+        "/incident/get": {
             "get": {
                 "description": "Get incident",
                 "consumes": [

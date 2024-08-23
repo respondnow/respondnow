@@ -965,7 +965,7 @@ paths:
       summary: Create an incident
       tags:
       - Incident
-  /incident/list:
+  /incident/get:
     get:
       consumes:
       - application/json
@@ -1010,6 +1010,106 @@ paths:
           schema:
             $ref: '#/definitions/utils.DefaultResponseDTO'
       summary: Get incident
+      tags:
+      - Incident Management
+  /incident/list:
+    get:
+      consumes:
+      - application/json
+      description: List incidents
+      operationId: ListIncidents
+      parameters:
+      - description: accountIdentifier
+        in: query
+        name: accountIdentifier
+        required: true
+        type: string
+      - description: orgIdentifier
+        in: query
+        name: orgIdentifier
+        type: string
+      - description: projectIdentifier
+        in: query
+        name: projectIdentifier
+        type: string
+      - description: type
+        enum:
+        - Availability
+        - Latency
+        - Security
+        - Other
+        in: query
+        name: type
+        type: string
+      - description: severity
+        enum:
+        - SEV0 - Critical, High Impact
+        - SEV1 - Major, Significant Impact
+        - SEV2 - Minor, Low Impact
+        in: query
+        name: severity
+        type: string
+      - description: status
+        enum:
+        - Started
+        - Acknowledged
+        - Investigating
+        - Identified
+        - Mitigated
+        - Resolved
+        in: query
+        name: status
+        type: string
+      - description: active
+        in: query
+        name: active
+        type: boolean
+      - description: incidentChannelType
+        enum:
+        - slack
+        in: query
+        name: incidentChannelType
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: correlationId
+        in: query
+        name: correlationId
+        type: string
+      - description: all
+        in: query
+        name: all
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/incident.ListResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+      summary: List incidents
       tags:
       - Incident Management
   /status:
