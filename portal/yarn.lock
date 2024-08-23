@@ -512,10 +512,10 @@
     openapi-types "^12.1.0"
     zod "^3.19.1"
 
-"@harnessio/uicore@^4.1.2":
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/@harnessio/uicore/-/uicore-4.1.2.tgz#731c8da3f53531b90f5b5cde4589b248129ef306"
-  integrity sha512-xlV47pFpVd5LHBarMm18xgveUxoss5qpHhHAg8FKnfr6S+gy5OgfAsqWJAIiOCaUmwRbEvT/pAZeAQGh6fFUCA==
+"@harnessio/uicore@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@harnessio/uicore/-/uicore-4.1.3.tgz#10dab6a51d568e7c354ba4f3bfc9a176e01fa11e"
+  integrity sha512-Z8+eJuyxdeHJmrmqul7J+wixePINkddAwF0r3wPdZHFPM7eUyGzcgPgMkQ2uZb3oVBG/THeR4bj1pyS6mf4Qhg==
 
 "@humanwhocodes/config-array@^0.5.0":
   version "0.5.0"
@@ -1129,13 +1129,6 @@
   integrity sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==
   dependencies:
     "@types/node" "*"
-
-"@types/jwt-decode@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@types/jwt-decode/-/jwt-decode-3.1.0.tgz#eb1b24f436962b8857beaf8addfd542de56670a2"
-  integrity sha512-tthwik7TKkou3mVnBnvVuHnHElbjtdbM63pdBCbZTirCt3WAdM73Y79mOri7+ljsS99ZVwUFZHLMxJuJnv/z1w==
-  dependencies:
-    jwt-decode "*"
 
 "@types/lodash-es@^4.17.12":
   version "4.17.12"
@@ -6093,10 +6086,10 @@ jsprim@^1.2.2:
     object.assign "^4.1.4"
     object.values "^1.1.6"
 
-jwt-decode@*, jwt-decode@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-4.0.0.tgz#2270352425fd413785b2faf11f6e755c5151bd4b"
-  integrity sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==
+jwt-decode@3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-3.1.2.tgz#3fb319f3675a2df0c2895c8f5e9fa4b67b04ed59"
+  integrity sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==
 
 kebab-case@^1.0.0:
   version "1.0.2"

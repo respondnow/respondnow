@@ -1,4 +1,4 @@
-import { jwtDecode } from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import { DecodedTokenType } from 'models';
 import { AppStoreContextProps } from '@context';
 
