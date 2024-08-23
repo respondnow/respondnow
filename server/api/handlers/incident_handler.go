@@ -171,15 +171,15 @@ func ListIncidents() gin.HandlerFunc {
 //	@Tags			Incident Management
 //	@Accept			json
 //	@Produce		json
-//	@Param			incidentIdentifier				path	string	true	"incident identifier"
-//	@Param			accountIdentifier	query		string							true	"accountIdentifier"		"accountIdentifier is the account where you want to access the resource"
-//	@Param			orgIdentifier		query		string							false	"orgIdentifier"			"orgIdentifier is the org where you want to access the resource"
-//	@Param			projectIdentifier	query		string							false	"projectIdentifier"		"projectIdentifier is the project where you want to access the resource"
+//	@Param			incidentIdentifier	path		string	true	"incident identifier"
+//	@Param			accountIdentifier	query		string	true	"accountIdentifier"	"accountIdentifier is the account where you want to access the resource"
+//	@Param			orgIdentifier		query		string	false	"orgIdentifier"		"orgIdentifier is the org where you want to access the resource"
+//	@Param			projectIdentifier	query		string	false	"projectIdentifier"	"projectIdentifier is the project where you want to access the resource"
 //	@Success		200					{object}	incident.GetResponseDTO
 //	@Failure		400					{object}	utils.DefaultResponseDTO
 //	@Failure		404					{object}	utils.DefaultResponseDTO
 //	@Failure		500					{object}	utils.DefaultResponseDTO
-//	@Router			/incident/list [get]
+//	@Router			/incident/get [get]
 func GetIncident() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var response = incident.GetResponseDTO{
