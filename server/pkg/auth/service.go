@@ -107,7 +107,7 @@ func (a *authService) ChangePassword(ctx context.Context, input ChangeUserPasswo
 		return err
 	}
 
-	updates := bson.M{"password": string(hashedPassword), "updatedAt": time.Now().Unix(), "changePasswordRequired": false, "active": true}
+	updates := bson.M{"lastLoginAt": time.Now().Unix(), "password": string(hashedPassword), "updatedAt": time.Now().Unix(), "changePasswordRequired": false, "active": true}
 	_, err = a.authOperator.UpdateUser(ctx, query, updates)
 	if err != nil {
 		return err
