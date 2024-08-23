@@ -37,9 +37,7 @@ func (a *authOperator) GetUserByQuery(ctx context.Context, query bson.M, opts ..
 	return out, nil
 }
 
-func (a *authOperator) UpdateUserByField(ctx context.Context, field string, value interface{}, updates bson.M, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error) {
-	filter := bson.D{{Key: field, Value: value}}
-
+func (a *authOperator) UpdateUser(ctx context.Context, filter bson.M, updates bson.M, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error) {
 	update := bson.M{"$set": updates}
 
 	result, err := a.operator.Update(ctx, mongodb.UsersCollection, filter, update, opts...)

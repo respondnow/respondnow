@@ -151,6 +151,7 @@ func Login() gin.HandlerFunc {
 		if user.ChangePasswordRequired {
 			response.DefaultResponseDTO.Message = "Change Password is required"
 			response.Data.ChangeUserPassword = user.ChangePasswordRequired
+			response.Data.LastLoginAt = user.LastLoginAt
 			response.Status = string(utils.SUCCESS)
 			c.JSON(http.StatusOK, response)
 			return
@@ -163,9 +164,19 @@ func Login() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, response)
 			return
 		}
+
+		err = authService.UpdateLastLogin(ctx, loginReq)
+		if err != nil {
+			response.DefaultResponseDTO.Message = "Login failed: " + err.Error()
+			response.Status = string(utils.ERROR)
+			c.JSON(http.StatusUnauthorized, response)
+			return
+		}
+
 		response.Status = string(utils.SUCCESS)
 		response.DefaultResponseDTO.Message = "Login successful"
 		response.Data.Token = token
+		response.Data.LastLoginAt = user.LastLoginAt
 		c.JSON(http.StatusOK, response)
 	}
 }
@@ -226,7 +237,7 @@ func ChangePassword() gin.HandlerFunc {
 		authService := auth.NewAuthService(auth2.NewAuthOperator(mongodb.Operator))
 		err := authService.ChangePassword(ctx, changePasswordReq)
 		if err != nil {
-			response.DefaultResponseDTO.Message = "Login failed: " + err.Error()
+			response.DefaultResponseDTO.Message = "Change Password Failed: " + err.Error()
 			response.Status = string(utils.ERROR)
 			c.JSON(http.StatusUnauthorized, response)
 			return
@@ -237,7 +248,7 @@ func ChangePassword() gin.HandlerFunc {
 			Password: changePasswordReq.NewPassword,
 		})
 		if err != nil {
-			response.DefaultResponseDTO.Message = "Login failed: " + err.Error()
+			response.DefaultResponseDTO.Message = "Change Password Failed: " + err.Error()
 			response.Status = string(utils.ERROR)
 			c.JSON(http.StatusUnauthorized, response)
 			return
@@ -252,6 +263,7 @@ func ChangePassword() gin.HandlerFunc {
 		}
 		response.DefaultResponseDTO.Message = "Password has been changed"
 		response.Data.Token = token
+		response.Data.LastLoginAt = user.LastLoginAt
 		response.Status = string(utils.SUCCESS)
 		c.JSON(http.StatusOK, response)
 	}

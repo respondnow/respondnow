@@ -11,6 +11,7 @@ type AuthService interface {
 	Login(ctx context.Context, input LoginUserInput) (auth.User, error)
 	ChangePassword(ctx context.Context, input ChangeUserPasswordInput) error
 	CreateJWTToken(email, userID, name string) (string, error)
+	UpdateLastLogin(ctx context.Context, input LoginUserInput) error
 }
 
 type authService struct {

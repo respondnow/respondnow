@@ -46,10 +46,16 @@ type LoginResponseDTO struct {
 
 type LoginResponse struct {
 	Token              string `json:"token,omitempty"`
+	LastLoginAt        int64  `json:"lastLoginAt"`
 	ChangeUserPassword bool   `json:"changeUserPassword"`
 }
 
 type ChangePasswordResponseDTO struct {
 	utils.DefaultResponseDTO `json:",inline"`
-	Data                     LoginResponse `json:"data"`
+	Data                     ChangePasswordResponse `json:"data"`
+}
+
+type ChangePasswordResponse struct {
+	Token       string `json:"token,omitempty"`
+	LastLoginAt int64  `json:"lastLoginAt"`
 }
