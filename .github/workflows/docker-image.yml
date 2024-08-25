@@ -1,0 +1,52 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+      - pipeline-test
+      - release/*
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20' # Adjust the Go version as necessary
+
+      - name: Build the Go project
+        run: |
+          cd server/package
+          go build -o app .
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build the Docker image
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest ./server/package
+          
+      - name: Tag the Docker image
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            docker tag ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:stable
+          elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
+            release_version=$(echo "${{ github.ref }}" | sed 's|refs/heads/release/||')
+            docker tag ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${release_version}
+          fi
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:stable
+          elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
+            release_version=$(echo "${{ github.ref }}" | sed 's|refs/heads/release/||')
+            docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${release_version}
+          fi
