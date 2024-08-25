@@ -19,7 +19,15 @@ type Configuration struct {
 	MongoConfig           MongoConfig
 	MaxQueryExecutionTime time.Duration `split_words:"true" default:"4s"`
 	Conferences           DefaultConferences
+	SlackConfig           SlackConfig
 	SkipSecureVerify      bool `split_words:"true" default:"true"`
+}
+
+type SlackConfig struct {
+	EnableSlackClient bool   `envconfig:"ENABLE_SLACK_CLIENT" split_words:"true"`
+	ConnectionMode    string `envconfig:"CONNECTION_MODE" split_words:"true"`
+	SlackAppToken     string `envconfig:"SLACK_APP_TOKEN" split_words:"true"`
+	SlackBotToken     string `envconfig:"SLACK_BOT_TOKEN" split_words:"true"`
 }
 
 type DefaultConferences struct {

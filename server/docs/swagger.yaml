@@ -38,6 +38,16 @@ definitions:
     type: string
     x-enum-varnames:
     - Link
+  incident.ChangeType:
+    enum:
+    - updateSeverity
+    - updateStatus
+    - addComment
+    type: string
+    x-enum-varnames:
+    - UpdateSeverity
+    - UpdateStatus
+    - AddComment
   incident.Channel:
     properties:
       id:
@@ -106,6 +116,10 @@ definitions:
         $ref: '#/definitions/incident.IncidentChannel'
       name:
         type: string
+      roles:
+        items:
+          $ref: '#/definitions/incident.Role'
+        type: array
       services:
         items:
           $ref: '#/definitions/incident.Service'
@@ -151,7 +165,7 @@ definitions:
       correlationID:
         type: string
       createdAt:
-        type: string
+        type: integer
       createdBy:
         $ref: '#/definitions/utils.UserDetails'
       description:
@@ -179,7 +193,7 @@ definitions:
       removed:
         type: boolean
       removedAt:
-        type: string
+        type: integer
       roles:
         items:
           $ref: '#/definitions/incident.Role'
@@ -202,10 +216,14 @@ definitions:
         items:
           type: string
         type: array
+      timelines:
+        items:
+          $ref: '#/definitions/incident.Timeline'
+        type: array
       type:
         $ref: '#/definitions/incident.Type'
       updatedAt:
-        type: string
+        type: integer
       updatedBy:
         $ref: '#/definitions/utils.UserDetails'
     required:
@@ -242,6 +260,17 @@ definitions:
       functionalityName:
         type: string
     type: object
+  incident.GetResponseDTO:
+    properties:
+      correlationId:
+        type: string
+      data:
+        $ref: '#/definitions/incident.Incident'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
   incident.Incident:
     properties:
       accountIdentifier:
@@ -261,7 +290,7 @@ definitions:
           $ref: '#/definitions/incident.Conference'
         type: array
       createdAt:
-        type: string
+        type: integer
       createdBy:
         $ref: '#/definitions/utils.UserDetails'
       description:
@@ -289,7 +318,7 @@ definitions:
       removed:
         type: boolean
       removedAt:
-        type: string
+        type: integer
       roles:
         items:
           $ref: '#/definitions/incident.Role'
@@ -312,10 +341,14 @@ definitions:
         items:
           type: string
         type: array
+      timelines:
+        items:
+          $ref: '#/definitions/incident.Timeline'
+        type: array
       type:
         $ref: '#/definitions/incident.Type'
       updatedAt:
-        type: string
+        type: integer
       updatedBy:
         $ref: '#/definitions/utils.UserDetails'
     required:
@@ -371,12 +404,12 @@ definitions:
     type: object
   incident.RoleType:
     enum:
-    - incidentCommander
-    - communicationsLiaison
+    - Incident Commander
+    - Communications Lead
     type: string
     x-enum-varnames:
     - IncidentCommander
-    - CommunicationsLiaison
+    - CommunicationsLead
   incident.Service:
     properties:
       serviceId:
@@ -386,16 +419,14 @@ definitions:
     type: object
   incident.Severity:
     enum:
-    - SEV1
-    - SEV2
-    - SEV3
-    - SEV4
+    - SEV0 - Critical, High Impact
+    - SEV1 - Major, Significant Impact
+    - SEV2 - Minor, Low Impact
     type: string
     x-enum-varnames:
+    - Severity0
     - Severity1
     - Severity2
-    - Severity3
-    - Severity4
   incident.Slack:
     properties:
       channelDescription:
@@ -408,11 +439,17 @@ definitions:
         type: string
       channelStatus:
         $ref: '#/definitions/incident.ChannelStatus'
+      teamDomain:
+        type: string
+      teamId:
+        type: string
+      teamName:
+        type: string
     type: object
   incident.Stage:
     properties:
       createdAt:
-        type: string
+        type: integer
       duration:
         type: integer
       stageId:
@@ -420,38 +457,46 @@ definitions:
       type:
         $ref: '#/definitions/incident.Status'
       updatedAt:
-        type: string
+        type: integer
       userDetails:
         $ref: '#/definitions/utils.UserDetails'
     type: object
   incident.Status:
     enum:
-    - started
-    - detected
-    - acknowledged
-    - identified
-    - mitigated
-    - investigating
-    - postmortemStarted
-    - PostmortemCompleted
-    - resolved
+    - Started
+    - Acknowledged
+    - Investigating
+    - Identified
+    - Mitigated
+    - Resolved
     type: string
     x-enum-varnames:
     - Started
-    - Detected
     - Acknowledged
+    - Investigating
     - Identified
     - Mitigated
-    - Investigating
-    - PostmortemStarted
-    - PostmortemCompleted
     - Resolved
+  incident.Timeline:
+    properties:
+      change: {}
+      createdAt:
+        type: integer
+      id:
+        type: string
+      type:
+        $ref: '#/definitions/incident.ChangeType'
+      updatedAt:
+        type: integer
+      userDetails:
+        $ref: '#/definitions/utils.UserDetails'
+    type: object
   incident.Type:
     enum:
-    - availability
-    - latency
-    - security
-    - other
+    - Availability
+    - Latency
+    - Security
+    - Other
     type: string
     x-enum-varnames:
     - Availability
@@ -592,6 +637,8 @@ definitions:
   utils.UserDetails:
     properties:
       email:
+        type: string
+      name:
         type: string
       source:
         $ref: '#/definitions/utils.Source'
@@ -863,6 +910,53 @@ paths:
       summary: Create an incident
       tags:
       - Incident
+  /incident/get:
+    get:
+      consumes:
+      - application/json
+      description: Get incident
+      operationId: GetIncident
+      parameters:
+      - description: incident identifier
+        in: path
+        name: incidentIdentifier
+        required: true
+        type: string
+      - description: accountIdentifier
+        in: query
+        name: accountIdentifier
+        required: true
+        type: string
+      - description: orgIdentifier
+        in: query
+        name: orgIdentifier
+        type: string
+      - description: projectIdentifier
+        in: query
+        name: projectIdentifier
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/incident.GetResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+      summary: Get incident
+      tags:
+      - Incident Management
   /incident/list:
     get:
       consumes:
@@ -885,33 +979,29 @@ paths:
         type: string
       - description: type
         enum:
-        - availability
-        - latency
-        - security
-        - other
+        - Availability
+        - Latency
+        - Security
+        - Other
         in: query
         name: type
         type: string
       - description: severity
         enum:
-        - SEV1
-        - SEV2
-        - SEV3
-        - SEV4
+        - SEV0 - Critical, High Impact
+        - SEV1 - Major, Significant Impact
+        - SEV2 - Minor, Low Impact
         in: query
         name: severity
         type: string
       - description: status
         enum:
-        - started
-        - detected
-        - acknowledged
-        - identified
-        - mitigated
-        - investigating
-        - postmortemStarted
-        - PostmortemCompleted
-        - resolved
+        - Started
+        - Acknowledged
+        - Investigating
+        - Identified
+        - Mitigated
+        - Resolved
         in: query
         name: status
         type: string

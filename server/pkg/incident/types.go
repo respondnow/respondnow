@@ -18,6 +18,16 @@ type ListResponse struct {
 	CorrelationID string              `json:"correlationID"`
 }
 
+type GetResponseDTO struct {
+	utils.DefaultResponseDTO `json:",inline"`
+	Data                     incident.Incident `json:"data"`
+}
+
+type GetFilters struct {
+	mongodb.IdentifierDetails `json:",inline"`
+	IncidentId                string `json:"incidentId"`
+}
+
 type ListFilters struct {
 	Type                incident.Type
 	Severity            incident.Severity
@@ -37,6 +47,7 @@ type CreateRequest struct {
 	Environments            []incident.Environment    `json:"environments,omitempty"`
 	Functionalities         []incident.Functionality  `json:"functionalities,omitempty"`
 	Channels                []incident.Channel        `json:"channels,omitempty"`
+	Roles                   []incident.Role           `json:"roles,omitempty"`
 	AddConference           *AddConference            `json:"addConference,omitempty"`
 	Attachments             []incident.Attachment     `json:"attachments,omitempty"`
 }

@@ -341,6 +341,76 @@ const docTemplate = `{
                 }
             }
         },
+        "/incident/get": {
+            "get": {
+                "description": "Get incident",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Incident Management"
+                ],
+                "summary": "Get incident",
+                "operationId": "GetIncident",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "incident identifier",
+                        "name": "incidentIdentifier",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "accountIdentifier",
+                        "name": "accountIdentifier",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "orgIdentifier",
+                        "name": "orgIdentifier",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "projectIdentifier",
+                        "name": "projectIdentifier",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/incident.GetResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/incident/list": {
             "get": {
                 "description": "List incidents",
@@ -377,10 +447,10 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            "availability",
-                            "latency",
-                            "security",
-                            "other"
+                            "Availability",
+                            "Latency",
+                            "Security",
+                            "Other"
                         ],
                         "type": "string",
                         "description": "type",
@@ -389,10 +459,9 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            "SEV1",
-                            "SEV2",
-                            "SEV3",
-                            "SEV4"
+                            "SEV0 - Critical, High Impact",
+                            "SEV1 - Major, Significant Impact",
+                            "SEV2 - Minor, Low Impact"
                         ],
                         "type": "string",
                         "description": "severity",
@@ -401,15 +470,12 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            "started",
-                            "detected",
-                            "acknowledged",
-                            "identified",
-                            "mitigated",
-                            "investigating",
-                            "postmortemStarted",
-                            "PostmortemCompleted",
-                            "resolved"
+                            "Started",
+                            "Acknowledged",
+                            "Investigating",
+                            "Identified",
+                            "Mitigated",
+                            "Resolved"
                         ],
                         "type": "string",
                         "description": "status",
@@ -617,6 +683,19 @@ const docTemplate = `{
                 "Link"
             ]
         },
+        "incident.ChangeType": {
+            "type": "string",
+            "enum": [
+                "updateSeverity",
+                "updateStatus",
+                "addComment"
+            ],
+            "x-enum-varnames": [
+                "UpdateSeverity",
+                "UpdateStatus",
+                "AddComment"
+            ]
+        },
         "incident.Channel": {
             "type": "object",
             "properties": {
@@ -728,6 +807,12 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Role"
+                    }
+                },
                 "services": {
                     "type": "array",
                     "items": {
@@ -794,7 +879,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "createdAt": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "createdBy": {
                     "$ref": "#/definitions/utils.UserDetails"
@@ -836,7 +921,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "removedAt": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "roles": {
                     "type": "array",
@@ -871,11 +956,17 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "timelines": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Timeline"
+                    }
+                },
                 "type": {
                     "$ref": "#/definitions/incident.Type"
                 },
                 "updatedAt": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "updatedBy": {
                     "$ref": "#/definitions/utils.UserDetails"
@@ -921,6 +1012,23 @@ const docTemplate = `{
                 }
             }
         },
+        "incident.GetResponseDTO": {
+            "type": "object",
+            "properties": {
+                "correlationId": {
+                    "type": "string"
+                },
+                "data": {
+                    "$ref": "#/definitions/incident.Incident"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "incident.Incident": {
             "type": "object",
             "required": [
@@ -958,7 +1066,7 @@ const docTemplate = `{
                     }
                 },
                 "createdAt": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "createdBy": {
                     "$ref": "#/definitions/utils.UserDetails"
@@ -1000,7 +1108,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "removedAt": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "roles": {
                     "type": "array",
@@ -1035,11 +1143,17 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "timelines": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/incident.Timeline"
+                    }
+                },
                 "type": {
                     "$ref": "#/definitions/incident.Type"
                 },
                 "updatedAt": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "updatedBy": {
                     "$ref": "#/definitions/utils.UserDetails"
@@ -1114,12 +1228,12 @@ const docTemplate = `{
         "incident.RoleType": {
             "type": "string",
             "enum": [
-                "incidentCommander",
-                "communicationsLiaison"
+                "Incident Commander",
+                "Communications Lead"
             ],
             "x-enum-varnames": [
                 "IncidentCommander",
-                "CommunicationsLiaison"
+                "CommunicationsLead"
             ]
         },
         "incident.Service": {
@@ -1136,16 +1250,14 @@ const docTemplate = `{
         "incident.Severity": {
             "type": "string",
             "enum": [
-                "SEV1",
-                "SEV2",
-                "SEV3",
-                "SEV4"
+                "SEV0 - Critical, High Impact",
+                "SEV1 - Major, Significant Impact",
+                "SEV2 - Minor, Low Impact"
             ],
             "x-enum-varnames": [
+                "Severity0",
                 "Severity1",
-                "Severity2",
-                "Severity3",
-                "Severity4"
+                "Severity2"
             ]
         },
         "incident.Slack": {
@@ -1165,6 +1277,15 @@ const docTemplate = `{
                 },
                 "channelStatus": {
                     "$ref": "#/definitions/incident.ChannelStatus"
+                },
+                "teamDomain": {
+                    "type": "string"
+                },
+                "teamId": {
+                    "type": "string"
+                },
+                "teamName": {
+                    "type": "string"
                 }
             }
         },
@@ -1172,7 +1293,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "createdAt": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "duration": {
                     "type": "integer"
@@ -1184,7 +1305,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/incident.Status"
                 },
                 "updatedAt": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "userDetails": {
                     "$ref": "#/definitions/utils.UserDetails"
@@ -1194,35 +1315,50 @@ const docTemplate = `{
         "incident.Status": {
             "type": "string",
             "enum": [
-                "started",
-                "detected",
-                "acknowledged",
-                "identified",
-                "mitigated",
-                "investigating",
-                "postmortemStarted",
-                "PostmortemCompleted",
-                "resolved"
+                "Started",
+                "Acknowledged",
+                "Investigating",
+                "Identified",
+                "Mitigated",
+                "Resolved"
             ],
             "x-enum-varnames": [
                 "Started",
-                "Detected",
                 "Acknowledged",
+                "Investigating",
                 "Identified",
                 "Mitigated",
-                "Investigating",
-                "PostmortemStarted",
-                "PostmortemCompleted",
                 "Resolved"
             ]
+        },
+        "incident.Timeline": {
+            "type": "object",
+            "properties": {
+                "change": {},
+                "createdAt": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/incident.ChangeType"
+                },
+                "updatedAt": {
+                    "type": "integer"
+                },
+                "userDetails": {
+                    "$ref": "#/definitions/utils.UserDetails"
+                }
+            }
         },
         "incident.Type": {
             "type": "string",
             "enum": [
-                "availability",
-                "latency",
-                "security",
-                "other"
+                "Availability",
+                "Latency",
+                "Security",
+                "Other"
             ],
             "x-enum-varnames": [
                 "Availability",
@@ -1434,6 +1570,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 },
                 "source": {

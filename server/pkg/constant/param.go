@@ -12,6 +12,7 @@ const (
 	DefaultPage         int64 = 0
 	ID                        = "_id"
 	IncidentChannelType       = "incidentChannel.type"
+	IncidentIdentifier        = "incidentIdentifier"
 	Limit                     = "limit"
 	Name                      = "name"
 	Namespace                 = "namespace"

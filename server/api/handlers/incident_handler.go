@@ -162,3 +162,49 @@ func ListIncidents() gin.HandlerFunc {
 		c.JSON(http.StatusOK, response)
 	}
 }
+
+// GetIncident godoc
+//
+//	@Summary		Get incident
+//	@Description	Get incident
+//	@id				GetIncident
+//
+//	@Tags			Incident Management
+//	@Accept			json
+//	@Produce		json
+//	@Param			incidentIdentifier	path		string	true	"incident identifier"
+//	@Param			accountIdentifier	query		string	true	"accountIdentifier"	"accountIdentifier is the account where you want to access the resource"
+//	@Param			orgIdentifier		query		string	false	"orgIdentifier"		"orgIdentifier is the org where you want to access the resource"
+//	@Param			projectIdentifier	query		string	false	"projectIdentifier"	"projectIdentifier is the project where you want to access the resource"
+//	@Success		200					{object}	incident.GetResponseDTO
+//	@Failure		400					{object}	utils.DefaultResponseDTO
+//	@Failure		404					{object}	utils.DefaultResponseDTO
+//	@Failure		500					{object}	utils.DefaultResponseDTO
+//	@Router			/incident/get [get]
+func GetIncident() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var response = incident.GetResponseDTO{
+			DefaultResponseDTO: utils.DefaultResponseDTO{
+				CorrelationId: utils.NewUtils().GetCorrelationID(c),
+			},
+		}
+		incidentIdentifier := c.Query(constant.IncidentIdentifier)
+		aID := c.Query(constant.AccountIdentifier)
+		oID := c.Query(constant.OrgIdentifier)
+		pID := c.Query(constant.ProjectIdentifier)
+
+		response.Status = string(utils.SUCCESS)
+		result, err := incident.NewIncidentService(
+			incidentdb.NewIncidentOperator(mongodb.Operator), aID, oID, pID).
+			Get(context.TODO(), incidentIdentifier)
+		if err != nil {
+			logrus.Errorf("unable to get incident, error : %v", err)
+			response.Status = string(utils.ERROR)
+			response.Message = err.Error()
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		}
+		response.Data = result
+
+		c.JSON(http.StatusOK, response)
+	}
+}
