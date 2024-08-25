@@ -25,11 +25,11 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          pwd
-          ls
-          cd server
-          ls
-          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest package
+          docker build \
+            --build-arg TARGETOS=linux \
+            --build-arg TARGETARCH=amd64 \  # You can modify this based on your architecture
+            -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest \
+            -f server/package/Dockerfile .
           
       - name: Tag the Docker image
         run: |
