@@ -28,7 +28,7 @@ jobs:
           pwd
           ls
           cd server
-          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest ./package/Dockerfile
+          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest package/Dockerfile
           
       - name: Tag the Docker image
         run: |
