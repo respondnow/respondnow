@@ -27,9 +27,9 @@ jobs:
         run: |
           docker build \
             --build-arg TARGETOS=linux \
-            --build-arg TARGETARCH=amd64 \  # You can modify this based on your architecture
+            --build-arg TARGETARCH=amd64 \  # Adjust based on your architecture
             -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest \
-            -f server/package/Dockerfile .
+            -f server/package/Dockerfile server/package  # Updated context and Dockerfile path
           
       - name: Tag the Docker image
         run: |
