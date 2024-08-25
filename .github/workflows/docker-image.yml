@@ -29,7 +29,7 @@ jobs:
           ls
           cd server
           ls
-          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest package/Dockerfile
+          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest package
           
       - name: Tag the Docker image
         run: |
