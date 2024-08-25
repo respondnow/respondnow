@@ -16,14 +16,22 @@ import (
 const (
 	IncidentCollection = iota
 	UsersCollection
+	AccountsCollection
+	OrganizationsCollection
+	ProjectsCollection
+	UserMappingsCollection
 )
 
 var (
 	MClient     MongoInterface = &MongoClient{}
 	MgoClient   *mongo.Client
 	Collections = map[int]string{
-		IncidentCollection: constant.IncidentCollection,
-		UsersCollection:    constant.UsersCollection,
+		IncidentCollection:      constant.IncidentCollection,
+		UsersCollection:         constant.UsersCollection,
+		AccountsCollection:      constant.AccountsCollection,
+		OrganizationsCollection: constant.OrganizationsCollection,
+		ProjectsCollection:      constant.ProjectsCollection,
+		UserMappingsCollection:  constant.UserMappingsCollection,
 	}
 )
 
@@ -38,9 +46,13 @@ type MongoInterface interface {
 
 // MongoClient structure contains all the Database collections and the instance of the Database
 type MongoClient struct {
-	Database           *mongo.Database
-	IncidentCollection *mongo.Collection
-	UsersCollection    *mongo.Collection
+	Database                *mongo.Database
+	IncidentCollection      *mongo.Collection
+	UsersCollection         *mongo.Collection
+	AccountsCollection      *mongo.Collection
+	OrganizationsCollection *mongo.Collection
+	ProjectsCollection      *mongo.Collection
+	UserMappingsCollection  *mongo.Collection
 }
 
 // Initialize initializes database connection
@@ -91,6 +103,15 @@ func (m *MongoClient) initCollection(ctx context.Context, collectionName string)
 		indexes = index.GetIncidentIndexList()
 	case constant.UsersCollection:
 		m.UsersCollection = coll
+	case constant.AccountsCollection:
+		m.AccountsCollection = coll
+	case constant.OrganizationsCollection:
+		m.OrganizationsCollection = coll
+	case constant.ProjectsCollection:
+		m.ProjectsCollection = coll
+	case constant.UserMappingsCollection:
+		m.UserMappingsCollection = coll
+
 	default:
 		return fmt.Errorf("unknown collection given to initialize: %s", collectionName)
 	}
@@ -100,12 +121,12 @@ func (m *MongoClient) initCollection(ctx context.Context, collectionName string)
 		return err
 	}
 
-	indexavailable := make(map[string]string)
+	indexAvailable := make(map[string]string)
 	for _, item := range sc {
-		indexavailable[item.Name] = item.Name
+		indexAvailable[item.Name] = item.Name
 	}
 	for name := range indexes.GetInactiveIndexes() {
-		if _, ok := indexavailable[name]; ok {
+		if _, ok := indexAvailable[name]; ok {
 			_, err := coll.Indexes().DropOne(ctx, name)
 			if err != nil {
 				return err
@@ -116,7 +137,7 @@ func (m *MongoClient) initCollection(ctx context.Context, collectionName string)
 		logrus.Infof("index `%s` not available", name)
 	}
 	for name, indexModel := range indexes.GetActiveIndexes() {
-		if _, ok := indexavailable[name]; !ok {
+		if _, ok := indexAvailable[name]; !ok {
 			res, err := coll.Indexes().CreateOne(ctx, indexModel)
 			if err != nil {
 				return err

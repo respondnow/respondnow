@@ -1,4 +1,4 @@
-package auth
+package user
 
 import (
 	"context"
@@ -13,6 +13,7 @@ type AuthOperator interface {
 	AddUser(ctx context.Context, user User, opts ...*options.InsertOneOptions) (User, error)
 	GetUserByQuery(ctx context.Context, query bson.M, opts ...*options.FindOneOptions) (User, error)
 	UpdateUser(ctx context.Context, filter bson.M, updates bson.M, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error)
+	DeleteUser(ctx context.Context, filter bson.M, opts ...*options.DeleteOptions) (*mongo.DeleteResult, error)
 }
 
 type authOperator struct {

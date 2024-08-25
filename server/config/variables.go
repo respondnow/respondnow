@@ -2,10 +2,20 @@ package config
 
 import "time"
 
+const (
+	BearerType    string = "Bearer"
+	Authorization        = "Authorization"
+	AccountUUID          = "accountUUID"
+	PrincipalType        = "principalType"
+	AuthToken            = "authToken"
+	SYSTEM               = "SYSTEM"
+)
+
 type Configuration struct {
 	Ports                 Ports
 	Flags                 Flags
 	Auth                  Auth
+	DefaultHierarchy      DefaultHierarchy
 	MongoConfig           MongoConfig
 	MaxQueryExecutionTime time.Duration `split_words:"true" default:"4s"`
 	Conferences           DefaultConferences
@@ -39,6 +49,15 @@ type Auth struct {
 	DefaultUserName     string `envconfig:"DEFAULT_USER_NAME" default:"Admin"`
 	DefaultUserPassword string `envconfig:"DEFAULT_USER_PASSWORD" default:"respondnow"`
 	JWTSecret           string `envconfig:"JWT_SECRET" default:"83820c2001b55fb6c401d08cfd050973ff31084d5b1e66478cf0f951cc4a9e60"`
+}
+
+type DefaultHierarchy struct {
+	DefaultAccountId   string `envconfig:"DEFAULT_ACCOUNT_ID" default:"default_account_id"`
+	DefaultAccountName string `envconfig:"DEFAULT_ACCOUNT_NAME" default:"Default Account"`
+	DefaultOrgId       string `envconfig:"DEFAULT_ORG_ID" default:"default_org_id"`
+	DefaultOrgName     string `envconfig:"DEFAULT_ORG_NAME" default:"Default Org"`
+	DefaultProjectId   string `envconfig:"DEFAULT_PROJECT_ID" default:"default_project_id"`
+	DefaultProjectName string `envconfig:"DEFAULT_PROJECT_NAME" default:"Default Project"`
 }
 
 var EnvConfig Configuration

@@ -1,4 +1,4 @@
-package auth
+package user
 
 import (
 	"context"
@@ -6,34 +6,36 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/respondnow/respond/server/pkg/database/mongodb/user"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/respondnow/respond/server/config"
-	"github.com/respondnow/respond/server/pkg/database/mongodb/auth"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (a *authService) Signup(ctx context.Context, input AddUserInput) (auth.User, error) {
-	query := bson.M{auth.Email: input.Email, "removed": false}
+func (a *authService) Signup(ctx context.Context, input AddUserInput) (user.User, error) {
+	query := bson.M{user.Email: input.Email, "removed": false}
 	_, err := a.authOperator.GetUserByQuery(ctx, query)
 	if err == nil {
 		// Email already exists, return an error indicating duplicate user
-		return auth.User{}, fmt.Errorf("email: %v already exists", input.Email)
+		return user.User{}, fmt.Errorf("email: %v already exists", input.Email)
 	}
 
 	if !errors.Is(err, mongo.ErrNoDocuments) {
-		return auth.User{}, err
+		return user.User{}, err
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), config.EnvConfig.Auth.PasswordHashCost)
 	if err != nil {
-		return auth.User{}, fmt.Errorf("failed to hash password: %w", err)
+		return user.User{}, fmt.Errorf("failed to hash password: %w", err)
 	}
 
 	currentTime := time.Now().Unix()
 
-	user := auth.User{
+	u := user.User{
 		Active:                 false,
 		Name:                   input.Name,
 		UserID:                 input.UserID,
@@ -49,38 +51,38 @@ func (a *authService) Signup(ctx context.Context, input AddUserInput) (auth.User
 		LastLoginAt:            0,
 	}
 
-	createdUser, err := a.authOperator.AddUser(ctx, user)
+	createdUser, err := a.authOperator.AddUser(ctx, u)
 	if err != nil {
-		return auth.User{}, fmt.Errorf("failed to create user: %w", err)
+		return user.User{}, fmt.Errorf("failed to create user: %w", err)
 	}
 
 	return createdUser, nil
 
 }
 
-func (a *authService) Login(ctx context.Context, input LoginUserInput) (auth.User, error) {
-	query := bson.M{auth.Email: input.Email, "removed": false}
-	user, err := a.authOperator.GetUserByQuery(ctx, query)
+func (a *authService) Login(ctx context.Context, input LoginUserInput) (user.User, error) {
+	query := bson.M{user.Email: input.Email, "removed": false}
+	u, err := a.authOperator.GetUserByQuery(ctx, query)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return auth.User{}, fmt.Errorf("email %v not found", input.Email)
+			return user.User{}, fmt.Errorf("email %v not found", input.Email)
 		}
-		return auth.User{}, fmt.Errorf("error fetching user: %w", err)
+		return user.User{}, fmt.Errorf("error fetching user: %w", err)
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(input.Password))
 	if err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return auth.User{}, errors.New("invalid user ID or password")
+			return user.User{}, errors.New("invalid user ID or password")
 		}
-		return auth.User{}, fmt.Errorf("error comparing passwords: %w", err)
+		return user.User{}, fmt.Errorf("error comparing passwords: %w", err)
 	}
 
-	return user, nil
+	return u, nil
 }
 
 func (a *authService) UpdateLastLogin(ctx context.Context, input LoginUserInput) error {
-	query := bson.M{auth.Email: input.Email, "removed": false}
+	query := bson.M{user.Email: input.Email, "removed": false}
 	updates := bson.M{"lastLoginAt": time.Now().Unix(), "updatedAt": time.Now().Unix()}
 
 	_, err := a.authOperator.UpdateUser(ctx, query, updates)
@@ -91,8 +93,29 @@ func (a *authService) UpdateLastLogin(ctx context.Context, input LoginUserInput)
 	return nil
 }
 
+func (a *authService) UpdateUser(ctx context.Context, query bson.M, updates bson.M) error {
+	_, err := a.authOperator.UpdateUser(ctx, query, updates)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *authService) DeleteUser(ctx context.Context, id primitive.ObjectID) error {
+	query := bson.M{
+		"_id": id,
+	}
+	_, err := a.authOperator.DeleteUser(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (a *authService) ChangePassword(ctx context.Context, input ChangeUserPasswordInput) error {
-	query := bson.M{auth.Email: input.Email, "removed": false}
+	query := bson.M{user.Email: input.Email, "removed": false}
 	user, err := a.authOperator.GetUserByQuery(ctx, query)
 	if err != nil {
 		return err
@@ -123,6 +146,7 @@ func (a *authService) CreateJWTToken(email, userID, name string) (string, error)
 	claims := &CustomClaims{
 		Email:    email,
 		Name:     name,
+		Type:     UserPrincipalType,
 		Username: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),

@@ -22,6 +22,14 @@ func (g *GetCollectionStruct) getCollection(collectionType int) (*mongo.Collecti
 		return mongoClient.(*MongoClient).IncidentCollection, nil
 	case UsersCollection:
 		return mongoClient.(*MongoClient).UsersCollection, nil
+	case AccountsCollection:
+		return mongoClient.(*MongoClient).AccountsCollection, nil
+	case OrganizationsCollection:
+		return mongoClient.(*MongoClient).OrganizationsCollection, nil
+	case ProjectsCollection:
+		return mongoClient.(*MongoClient).ProjectsCollection, nil
+	case UserMappingsCollection:
+		return mongoClient.(*MongoClient).UserMappingsCollection, nil
 	default:
 		return nil, errors.New("unknown collection name")
 	}

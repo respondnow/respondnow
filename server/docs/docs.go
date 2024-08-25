@@ -39,7 +39,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.ChangeUserPasswordInput"
+                            "$ref": "#/definitions/user.ChangeUserPasswordInput"
                         }
                     },
                     {
@@ -53,7 +53,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/auth.ChangePasswordResponseDTO"
+                            "$ref": "#/definitions/user.ChangePasswordResponseDTO"
                         }
                     },
                     "400": {
@@ -98,7 +98,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginUserInput"
+                            "$ref": "#/definitions/user.LoginUserInput"
                         }
                     },
                     {
@@ -112,7 +112,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginResponseDTO"
+                            "$ref": "#/definitions/user.LoginResponseDTO"
                         }
                     },
                     "400": {
@@ -157,7 +157,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.AddUserInput"
+                            "$ref": "#/definitions/user.AddUserInput"
                         }
                     },
                     {
@@ -171,7 +171,70 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/auth.SignupResponseDTO"
+                            "$ref": "#/definitions/user.SignupResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/userMapping": {
+            "get": {
+                "description": "GetUserMapping of RespondNow",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "GetUserMapping of RespondNow",
+                "operationId": "GetUserMapping",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "correlationId",
+                        "name": "correlationId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "userId",
+                        "name": "userId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.GetUserMappingResponseDTO"
                         }
                     },
                     "400": {
@@ -512,137 +575,6 @@ const docTemplate = `{
                 },
                 "totalPages": {
                     "type": "integer"
-                }
-            }
-        },
-        "auth.AddUserInput": {
-            "type": "object",
-            "required": [
-                "email",
-                "name",
-                "password",
-                "userId"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "string"
-                }
-            }
-        },
-        "auth.ChangePasswordResponse": {
-            "type": "object",
-            "properties": {
-                "lastLoginAt": {
-                    "type": "integer"
-                },
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "auth.ChangePasswordResponseDTO": {
-            "type": "object",
-            "properties": {
-                "correlationId": {
-                    "type": "string"
-                },
-                "data": {
-                    "$ref": "#/definitions/auth.ChangePasswordResponse"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "auth.ChangeUserPasswordInput": {
-            "type": "object",
-            "required": [
-                "email",
-                "newPassword",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "newPassword": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "auth.LoginResponse": {
-            "type": "object",
-            "properties": {
-                "changeUserPassword": {
-                    "type": "boolean"
-                },
-                "lastLoginAt": {
-                    "type": "integer"
-                },
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "auth.LoginResponseDTO": {
-            "type": "object",
-            "properties": {
-                "correlationId": {
-                    "type": "string"
-                },
-                "data": {
-                    "$ref": "#/definitions/auth.LoginResponse"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "auth.LoginUserInput": {
-            "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "auth.SignupResponseDTO": {
-            "type": "object",
-            "properties": {
-                "correlationId": {
-                    "type": "string"
-                },
-                "data": {},
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
                 }
             }
         },
@@ -1298,6 +1230,182 @@ const docTemplate = `{
                 "Security",
                 "Other"
             ]
+        },
+        "user.AddUserInput": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password",
+                "userId"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.ChangePasswordResponse": {
+            "type": "object",
+            "properties": {
+                "lastLoginAt": {
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.ChangePasswordResponseDTO": {
+            "type": "object",
+            "properties": {
+                "correlationId": {
+                    "type": "string"
+                },
+                "data": {
+                    "$ref": "#/definitions/user.ChangePasswordResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.ChangeUserPasswordInput": {
+            "type": "object",
+            "required": [
+                "email",
+                "newPassword",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "newPassword": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.GetUserMappingResponseDTO": {
+            "type": "object",
+            "properties": {
+                "correlationId": {
+                    "type": "string"
+                },
+                "data": {
+                    "$ref": "#/definitions/user.UserMapping"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.Identifiers": {
+            "type": "object",
+            "properties": {
+                "accountId": {
+                    "type": "string"
+                },
+                "orgId": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "changeUserPassword": {
+                    "type": "boolean"
+                },
+                "lastLoginAt": {
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.LoginResponseDTO": {
+            "type": "object",
+            "properties": {
+                "correlationId": {
+                    "type": "string"
+                },
+                "data": {
+                    "$ref": "#/definitions/user.LoginResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.LoginUserInput": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.SignupResponseDTO": {
+            "type": "object",
+            "properties": {
+                "correlationId": {
+                    "type": "string"
+                },
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.UserMapping": {
+            "type": "object",
+            "properties": {
+                "defaultMapping": {
+                    "$ref": "#/definitions/user.Identifiers"
+                },
+                "mappings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/user.Identifiers"
+                    }
+                }
+            }
         },
         "utils.DefaultResponseDTO": {
             "type": "object",

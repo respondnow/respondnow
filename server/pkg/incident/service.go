@@ -6,7 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/respondnow/respond/server/api/middleware"
+	"github.com/respondnow/respond/server/pkg/auth"
+
 	"github.com/respondnow/respond/server/config"
 	"github.com/respondnow/respond/server/pkg/api"
 	"github.com/respondnow/respond/server/pkg/constant"
@@ -20,7 +21,7 @@ type IncidentService interface {
 	List(ctx context.Context, token string, listFilters ListFilters, correlationID, search string,
 		limit, page int64, all bool) (ListResponse, error)
 	Create(ctx context.Context, request CreateRequest,
-		currentUser middleware.CurrentUser, correlationID string) (CreateResponse, error)
+		currentUser auth.CurrentUser, correlationID string) (CreateResponse, error)
 	AddConferenceDetailsForIncident(conferenceType incident.ConferenceType) (incident.Conference, error)
 }
 
@@ -43,7 +44,7 @@ func NewIncidentService(
 }
 
 func (is incidentService) Create(ctx context.Context, request CreateRequest,
-	currentUser middleware.CurrentUser, correlationID string) (CreateResponse, error) {
+	currentUser auth.CurrentUser, correlationID string) (CreateResponse, error) {
 	resp := CreateResponse{
 		Incident:      incident.Incident{},
 		CorrelationID: correlationID,
