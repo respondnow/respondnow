@@ -2,9 +2,10 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
 	"github.com/respondnow/respond/server/config"
