@@ -25,7 +25,8 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest ./server/package
+          cd server
+          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest ./package/Dockerfile .
           
       - name: Tag the Docker image
         run: |
