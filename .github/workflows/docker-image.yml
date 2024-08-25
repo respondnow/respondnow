@@ -20,11 +20,6 @@ jobs:
         with:
           go-version: '1.22.5' # Adjust the Go version as necessary
 
-      - name: Build the Go project
-        run: |
-          cd server/package
-          go build -o app .
-
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
