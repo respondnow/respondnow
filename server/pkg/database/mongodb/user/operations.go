@@ -1,4 +1,4 @@
-package auth
+package user
 
 import (
 	"context"
@@ -41,6 +41,15 @@ func (a *authOperator) UpdateUser(ctx context.Context, filter bson.M, updates bs
 	update := bson.M{"$set": updates}
 
 	result, err := a.operator.Update(ctx, mongodb.UsersCollection, filter, update, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *authOperator) DeleteUser(ctx context.Context, filter bson.M, opts ...*options.DeleteOptions) (*mongo.DeleteResult, error) {
+	result, err := a.operator.Delete(ctx, mongodb.UsersCollection, filter, opts...)
 	if err != nil {
 		return nil, err
 	}

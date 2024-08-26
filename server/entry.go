@@ -10,8 +10,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/respondnow/respond/server/pkg/auth"
-	auth2 "github.com/respondnow/respond/server/pkg/database/mongodb/auth"
+	"github.com/respondnow/respond/server/pkg/database/mongodb/hierarchy"
+	hierarchy2 "github.com/respondnow/respond/server/pkg/hierarchy"
+	"github.com/respondnow/respond/server/pkg/user"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	auth2 "github.com/respondnow/respond/server/pkg/database/mongodb/user"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kelseyhightower/envconfig"
@@ -171,18 +175,180 @@ func shutdownServer(srv *http.Server, serverName string) {
 	logrus.Infof("%s shutdown complete", serverName)
 }
 
+const retryLimit = 3
+
 func backgroundProcess() {
 	go func() {
-		_, err := auth.NewAuthService(auth2.NewAuthOperator(mongodb.Operator)).Signup(context.Background(), auth.AddUserInput{
+		ctx := context.Background()
+		userService := user.NewAuthService(auth2.NewAuthOperator(mongodb.Operator))
+		hierarchyService := hierarchy2.NewHierarchyManager(hierarchy.NewHierarchyOperator(mongodb.Operator))
+
+		createdUser, err := createDefaultUser(ctx, userService)
+		if err != nil {
+			return
+		}
+
+		defaultAccount, err := createDefaultAccount(ctx, hierarchyService)
+		if err != nil {
+			fallbackCleanup(ctx, userService, hierarchyService, createdUser.ID, nil, nil, nil)
+			return
+		}
+
+		defaultOrg, err := createDefaultOrganization(ctx, hierarchyService, defaultAccount)
+		if err != nil {
+			fallbackCleanup(ctx, userService, hierarchyService, createdUser.ID, &defaultAccount, nil, nil)
+			return
+		}
+
+		defaultProject, err := createDefaultProject(ctx, hierarchyService, defaultAccount, defaultOrg)
+		if err != nil {
+			fallbackCleanup(ctx, userService, hierarchyService, createdUser.ID, &defaultAccount, &defaultOrg, nil)
+			return
+		}
+
+		_, err = createUserMapping(ctx, hierarchyService, createdUser, defaultAccount, defaultOrg, defaultProject)
+		if err != nil {
+			fallbackCleanup(ctx, userService, hierarchyService, createdUser.ID, &defaultAccount, &defaultOrg, &defaultProject)
+			return
+		}
+
+		logrus.Infof("All resources have been successfully created: User, Account, Organization, Project, and User Mapping.")
+	}()
+}
+
+func createDefaultUser(ctx context.Context, userService user.AuthService) (auth2.User, error) {
+	var createdUser auth2.User
+	err := retry(retryLimit, func() error {
+		var err error
+		createdUser, err = userService.Signup(ctx, user.AddUserInput{
 			Name:     config.EnvConfig.Auth.DefaultUserName,
 			UserID:   config.EnvConfig.Auth.DefaultUserID,
 			Email:    config.EnvConfig.Auth.DefaultUserEmail,
 			Password: config.EnvConfig.Auth.DefaultUserPassword,
 		})
-		if err != nil {
-			logrus.Warnf("failed to create default user, err: %v", err)
-		}
+		return err
+	})
+	if err != nil {
+		logrus.Warnf("Failed to create default user after retries, err: %v", err)
+	}
+	return createdUser, err
+}
 
-		logrus.Infof("Default user has been created successfully")
-	}()
+func createDefaultAccount(ctx context.Context, hierarchyService hierarchy2.HierarchyManager) (hierarchy.Account, error) {
+	defaultAccount := hierarchy.Account{
+		ID:        primitive.NewObjectID(),
+		AccountID: config.EnvConfig.DefaultHierarchy.DefaultAccountId,
+		Name:      config.EnvConfig.DefaultHierarchy.DefaultAccountName,
+		CreatedBy: config.SYSTEM,
+		UpdatedBy: config.SYSTEM,
+		CreatedAt: time.Now().Unix(),
+	}
+	err := retry(retryLimit, func() error {
+		return hierarchyService.CreateAccount(ctx, defaultAccount)
+	})
+	if err != nil {
+		logrus.Warnf("Failed to create default account after retries, err: %v", err)
+	}
+	return defaultAccount, err
+}
+
+func createDefaultOrganization(ctx context.Context, hierarchyService hierarchy2.HierarchyManager, defaultAccount hierarchy.Account) (hierarchy.Organization, error) {
+	defaultOrg := hierarchy.Organization{
+		ID:        primitive.NewObjectID(),
+		OrgID:     config.EnvConfig.DefaultHierarchy.DefaultOrgId,
+		Name:      config.EnvConfig.DefaultHierarchy.DefaultOrgName,
+		AccountID: defaultAccount.AccountID,
+		CreatedBy: config.SYSTEM,
+		UpdatedBy: config.SYSTEM,
+		CreatedAt: time.Now().Unix(),
+	}
+	err := retry(retryLimit, func() error {
+		return hierarchyService.CreateOrganization(ctx, defaultOrg)
+	})
+	if err != nil {
+		logrus.Warnf("Failed to create default organization after retries, err: %v", err)
+	}
+	return defaultOrg, err
+}
+
+func createDefaultProject(ctx context.Context, hierarchyService hierarchy2.HierarchyManager, defaultAccount hierarchy.Account, defaultOrg hierarchy.Organization) (hierarchy.Project, error) {
+	defaultProject := hierarchy.Project{
+		ID:        primitive.NewObjectID(),
+		ProjectID: config.EnvConfig.DefaultHierarchy.DefaultProjectId,
+		Name:      config.EnvConfig.DefaultHierarchy.DefaultProjectName,
+		OrgID:     defaultOrg.OrgID,
+		AccountID: defaultAccount.AccountID,
+		CreatedBy: config.SYSTEM,
+		UpdatedBy: config.SYSTEM,
+		CreatedAt: time.Now().Unix(),
+	}
+	err := retry(retryLimit, func() error {
+		return hierarchyService.CreateProject(ctx, defaultProject)
+	})
+	if err != nil {
+		logrus.Warnf("Failed to create default project after retries, err: %v", err)
+	}
+	return defaultProject, err
+}
+
+func createUserMapping(ctx context.Context, hierarchyService hierarchy2.HierarchyManager, createdUser auth2.User, defaultAccount hierarchy.Account, defaultOrg hierarchy.Organization, defaultProject hierarchy.Project) (primitive.ObjectID, error) {
+	var userMappingID primitive.ObjectID
+	err := retry(retryLimit, func() error {
+		var err error
+		userMappingID, err = hierarchyService.CreateUserMapping(ctx, createdUser.UserID, defaultAccount.AccountID, defaultOrg.OrgID, defaultProject.ProjectID, true)
+		return err
+	})
+	if err != nil {
+		logrus.Warnf("Failed to create user mapping after retries, err: %v", err)
+	}
+	return userMappingID, err
+}
+
+func retry(limit int, fn func() error) error {
+	var err error
+	for i := 0; i < limit; i++ {
+		if err = fn(); err == nil {
+			return nil
+		}
+		time.Sleep(2 * time.Second)
+	}
+	return err
+}
+
+func fallbackCleanup(ctx context.Context, userService user.AuthService, hierarchyService hierarchy2.HierarchyManager, id primitive.ObjectID, account *hierarchy.Account, org *hierarchy.Organization, project *hierarchy.Project) {
+	logrus.Warnf("Cleaning up resources due to failure")
+
+	if project != nil {
+		err := hierarchyService.DeleteProject(ctx, project.ProjectID)
+		if err != nil {
+			logrus.Warnf("Failed to clean up project with ID: %v, err: %v", project.ProjectID, err)
+		} else {
+			logrus.Infof("Successfully cleaned up project with ID: %v", project.ProjectID)
+		}
+	}
+
+	if org != nil {
+		err := hierarchyService.DeleteOrganization(ctx, org.OrgID)
+		if err != nil {
+			logrus.Warnf("Failed to clean up organization with ID: %v, err: %v", org.OrgID, err)
+		} else {
+			logrus.Infof("Successfully cleaned up organization with ID: %v", org.OrgID)
+		}
+	}
+
+	if account != nil {
+		err := hierarchyService.DeleteAccount(ctx, account.AccountID)
+		if err != nil {
+			logrus.Warnf("Failed to clean up account with ID: %v, err: %v", account.AccountID, err)
+		} else {
+			logrus.Infof("Successfully cleaned up account with ID: %v", account.AccountID)
+		}
+	}
+
+	err := userService.DeleteUser(ctx, id)
+	if err != nil {
+		logrus.Warnf("Failed to clean up user with ID: %v, err: %v", id, err)
+	} else {
+		logrus.Infof("Successfully cleaned up user with ID: %v", id)
+	}
 }

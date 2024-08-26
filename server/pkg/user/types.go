@@ -1,4 +1,4 @@
-package auth
+package user
 
 import (
 	"github.com/golang-jwt/jwt/v4"
@@ -24,11 +24,19 @@ type ChangeUserPasswordInput struct {
 }
 
 type CustomClaims struct {
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Username string `json:"username"`
+	Type     PrincipalType `json:"type"`
+	Email    string        `json:"email"`
+	Name     string        `json:"name"`
+	Username string        `json:"username"`
 	jwt.RegisteredClaims
 }
+
+type PrincipalType string
+
+const (
+	UserPrincipalType    PrincipalType = "USER"
+	ServicePrincipalType PrincipalType = "SERVICE"
+)
 
 const (
 	JWTIssuer = "respondNow"
@@ -58,4 +66,23 @@ type ChangePasswordResponseDTO struct {
 type ChangePasswordResponse struct {
 	Token       string `json:"token,omitempty"`
 	LastLoginAt int64  `json:"lastLoginAt"`
+}
+
+type GetUserMappingResponseDTO struct {
+	utils.DefaultResponseDTO `json:",inline"`
+	Data                     UserMapping `json:"data"`
+}
+
+type UserMapping struct {
+	DefaultMapping Identifiers   `json:"defaultMapping"`
+	Mappings       []Identifiers `json:"mappings"`
+}
+
+type Identifiers struct {
+	AccountID   string `json:"accountIdentifier"`
+	AccountName string `json:"accountName"`
+	OrgID       string `json:"orgIdentifier,omitempty"`
+	OrgName     string `json:"orgName"`
+	ProjectID   string `json:"projectIdentifier,omitempty"`
+	ProjectName string `json:"projectName"`
 }

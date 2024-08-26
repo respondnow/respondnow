@@ -13,93 +13,6 @@ definitions:
       totalPages:
         type: integer
     type: object
-  auth.AddUserInput:
-    properties:
-      email:
-        type: string
-      name:
-        type: string
-      password:
-        type: string
-      userId:
-        type: string
-    required:
-    - email
-    - name
-    - password
-    - userId
-    type: object
-  auth.ChangePasswordResponse:
-    properties:
-      lastLoginAt:
-        type: integer
-      token:
-        type: string
-    type: object
-  auth.ChangePasswordResponseDTO:
-    properties:
-      correlationId:
-        type: string
-      data:
-        $ref: '#/definitions/auth.ChangePasswordResponse'
-      message:
-        type: string
-      status:
-        type: string
-    type: object
-  auth.ChangeUserPasswordInput:
-    properties:
-      email:
-        type: string
-      newPassword:
-        type: string
-      password:
-        type: string
-    required:
-    - email
-    - newPassword
-    - password
-    type: object
-  auth.LoginResponse:
-    properties:
-      changeUserPassword:
-        type: boolean
-      lastLoginAt:
-        type: integer
-      token:
-        type: string
-    type: object
-  auth.LoginResponseDTO:
-    properties:
-      correlationId:
-        type: string
-      data:
-        $ref: '#/definitions/auth.LoginResponse'
-      message:
-        type: string
-      status:
-        type: string
-    type: object
-  auth.LoginUserInput:
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-    required:
-    - email
-    - password
-    type: object
-  auth.SignupResponseDTO:
-    properties:
-      correlationId:
-        type: string
-      data: {}
-      message:
-        type: string
-      status:
-        type: string
-    type: object
   handlers.APIStatus:
     properties:
       status:
@@ -590,6 +503,128 @@ definitions:
     - Latency
     - Security
     - Other
+  user.AddUserInput:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      userId:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - userId
+    type: object
+  user.ChangePasswordResponse:
+    properties:
+      lastLoginAt:
+        type: integer
+      token:
+        type: string
+    type: object
+  user.ChangePasswordResponseDTO:
+    properties:
+      correlationId:
+        type: string
+      data:
+        $ref: '#/definitions/user.ChangePasswordResponse'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  user.ChangeUserPasswordInput:
+    properties:
+      email:
+        type: string
+      newPassword:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - newPassword
+    - password
+    type: object
+  user.GetUserMappingResponseDTO:
+    properties:
+      correlationId:
+        type: string
+      data:
+        $ref: '#/definitions/user.UserMapping'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  user.Identifiers:
+    properties:
+      accountIdentifier:
+        type: string
+      accountName:
+        type: string
+      orgIdentifier:
+        type: string
+      orgName:
+        type: string
+      projectIdentifier:
+        type: string
+      projectName:
+        type: string
+    type: object
+  user.LoginResponse:
+    properties:
+      changeUserPassword:
+        type: boolean
+      lastLoginAt:
+        type: integer
+      token:
+        type: string
+    type: object
+  user.LoginResponseDTO:
+    properties:
+      correlationId:
+        type: string
+      data:
+        $ref: '#/definitions/user.LoginResponse'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  user.LoginUserInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  user.SignupResponseDTO:
+    properties:
+      correlationId:
+        type: string
+      data: {}
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  user.UserMapping:
+    properties:
+      defaultMapping:
+        $ref: '#/definitions/user.Identifiers'
+      mappings:
+        items:
+          $ref: '#/definitions/user.Identifiers'
+        type: array
+    type: object
   utils.DefaultResponseDTO:
     properties:
       correlationId:
@@ -680,7 +715,7 @@ paths:
         name: '"changePassword"'
         required: true
         schema:
-          $ref: '#/definitions/auth.ChangeUserPasswordInput'
+          $ref: '#/definitions/user.ChangeUserPasswordInput'
       - description: correlationId
         in: query
         name: correlationId
@@ -691,7 +726,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/auth.ChangePasswordResponseDTO'
+            $ref: '#/definitions/user.ChangePasswordResponseDTO'
         "400":
           description: Bad Request
           schema:
@@ -719,7 +754,7 @@ paths:
         name: '"login"'
         required: true
         schema:
-          $ref: '#/definitions/auth.LoginUserInput'
+          $ref: '#/definitions/user.LoginUserInput'
       - description: correlationId
         in: query
         name: correlationId
@@ -730,7 +765,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/auth.LoginResponseDTO'
+            $ref: '#/definitions/user.LoginResponseDTO'
         "400":
           description: Bad Request
           schema:
@@ -758,7 +793,7 @@ paths:
         name: '"signup"'
         required: true
         schema:
-          $ref: '#/definitions/auth.AddUserInput'
+          $ref: '#/definitions/user.AddUserInput'
       - description: correlationId
         in: query
         name: correlationId
@@ -769,7 +804,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/auth.SignupResponseDTO'
+            $ref: '#/definitions/user.SignupResponseDTO'
         "400":
           description: Bad Request
           schema:
@@ -783,6 +818,48 @@ paths:
           schema:
             $ref: '#/definitions/utils.DefaultResponseDTO'
       summary: Signup to RespondNow
+      tags:
+      - Auth
+  /auth/userMapping:
+    get:
+      consumes:
+      - application/json
+      description: GetUserMapping of RespondNow
+      operationId: GetUserMapping
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: correlationId
+        in: query
+        name: correlationId
+        type: string
+      - description: userId
+        in: query
+        name: userId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.GetUserMappingResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DefaultResponseDTO'
+      summary: GetUserMapping of RespondNow
       tags:
       - Auth
   /incident/{incidentIdentifier}:

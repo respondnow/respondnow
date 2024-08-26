@@ -7,8 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/respondnow/respond/server/pkg/auth"
+
 	"github.com/google/uuid"
-	"github.com/respondnow/respond/server/api/middleware"
 	"github.com/respondnow/respond/server/pkg/database/mongodb"
 	incidentdb "github.com/respondnow/respond/server/pkg/database/mongodb/incident"
 	"github.com/respondnow/respond/server/pkg/incident"
@@ -347,7 +348,7 @@ func (is incidentService) CreateIncident(evt *socketmode.Event) {
 			},
 		},
 	}
-	user := middleware.CurrentUser{
+	user := auth.CurrentUser{
 		Name:      slackUser.Name,
 		Username:  slackUser.Name,
 		AccountID: "default",
