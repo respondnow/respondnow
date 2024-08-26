@@ -28,6 +28,7 @@ type SlackConfig struct {
 	ConnectionMode    string `envconfig:"CONNECTION_MODE" split_words:"true"`
 	SlackAppToken     string `envconfig:"SLACK_APP_TOKEN" split_words:"true"`
 	SlackBotToken     string `envconfig:"SLACK_BOT_TOKEN" split_words:"true"`
+	IncidentChannelID string `envconfig:"INCIDENT_CHANNEL_ID" split_words:"true"`
 }
 
 type DefaultConferences struct {

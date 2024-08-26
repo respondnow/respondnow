@@ -125,7 +125,7 @@ definitions:
           $ref: '#/definitions/incident.Service'
         type: array
       severity:
-        $ref: '#/definitions/incident.Severity'
+        type: string
       status:
         $ref: '#/definitions/incident.Status'
       summary:
@@ -135,7 +135,7 @@ definitions:
           type: string
         type: array
       type:
-        $ref: '#/definitions/incident.Type'
+        type: string
     required:
     - identifier
     - incidentChannel
@@ -203,7 +203,7 @@ definitions:
           $ref: '#/definitions/incident.Service'
         type: array
       severity:
-        $ref: '#/definitions/incident.Severity'
+        type: string
       stages:
         items:
           $ref: '#/definitions/incident.Stage'
@@ -221,7 +221,7 @@ definitions:
           $ref: '#/definitions/incident.Timeline'
         type: array
       type:
-        $ref: '#/definitions/incident.Type'
+        type: string
       updatedAt:
         type: integer
       updatedBy:
@@ -328,7 +328,7 @@ definitions:
           $ref: '#/definitions/incident.Service'
         type: array
       severity:
-        $ref: '#/definitions/incident.Severity'
+        type: string
       stages:
         items:
           $ref: '#/definitions/incident.Stage'
@@ -346,7 +346,7 @@ definitions:
           $ref: '#/definitions/incident.Timeline'
         type: array
       type:
-        $ref: '#/definitions/incident.Type'
+        type: string
       updatedAt:
         type: integer
       updatedBy:
@@ -417,16 +417,6 @@ definitions:
       serviceName:
         type: string
     type: object
-  incident.Severity:
-    enum:
-    - SEV0 - Critical, High Impact
-    - SEV1 - Major, Significant Impact
-    - SEV2 - Minor, Low Impact
-    type: string
-    x-enum-varnames:
-    - Severity0
-    - Severity1
-    - Severity2
   incident.Slack:
     properties:
       channelDescription:
@@ -464,19 +454,9 @@ definitions:
   incident.Status:
     enum:
     - Started
-    - Acknowledged
-    - Investigating
-    - Identified
-    - Mitigated
-    - Resolved
     type: string
     x-enum-varnames:
-    - Started
-    - Acknowledged
-    - Investigating
-    - Identified
-    - Mitigated
-    - Resolved
+    - DefaultStartStatus
   incident.Timeline:
     properties:
       change: {}
@@ -1032,31 +1012,9 @@ paths:
         in: query
         name: projectIdentifier
         type: string
-      - description: type
-        enum:
-        - Availability
-        - Latency
-        - Security
-        - Other
-        in: query
-        name: type
-        type: string
-      - description: severity
-        enum:
-        - SEV0 - Critical, High Impact
-        - SEV1 - Major, Significant Impact
-        - SEV2 - Minor, Low Impact
-        in: query
-        name: severity
-        type: string
       - description: status
         enum:
         - Started
-        - Acknowledged
-        - Investigating
-        - Identified
-        - Mitigated
-        - Resolved
         in: query
         name: status
         type: string

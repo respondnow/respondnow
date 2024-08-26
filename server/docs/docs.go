@@ -745,7 +745,7 @@ const docTemplate = `{
                     }
                 },
                 "severity": {
-                    "$ref": "#/definitions/incident.Severity"
+                    "type": "string"
                 },
                 "status": {
                     "$ref": "#/definitions/incident.Status"
@@ -760,7 +760,7 @@ const docTemplate = `{
                     }
                 },
                 "type": {
-                    "$ref": "#/definitions/incident.Type"
+                    "type": "string"
                 }
             }
         },
@@ -861,7 +861,7 @@ const docTemplate = `{
                     }
                 },
                 "severity": {
-                    "$ref": "#/definitions/incident.Severity"
+                    "type": "string"
                 },
                 "stages": {
                     "type": "array",
@@ -888,7 +888,7 @@ const docTemplate = `{
                     }
                 },
                 "type": {
-                    "$ref": "#/definitions/incident.Type"
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "integer"
@@ -1048,7 +1048,7 @@ const docTemplate = `{
                     }
                 },
                 "severity": {
-                    "$ref": "#/definitions/incident.Severity"
+                    "type": "string"
                 },
                 "stages": {
                     "type": "array",
@@ -1075,7 +1075,7 @@ const docTemplate = `{
                     }
                 },
                 "type": {
-                    "$ref": "#/definitions/incident.Type"
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "integer"
@@ -1172,19 +1172,6 @@ const docTemplate = `{
                 }
             }
         },
-        "incident.Severity": {
-            "type": "string",
-            "enum": [
-                "SEV0 - Critical, High Impact",
-                "SEV1 - Major, Significant Impact",
-                "SEV2 - Minor, Low Impact"
-            ],
-            "x-enum-varnames": [
-                "Severity0",
-                "Severity1",
-                "Severity2"
-            ]
-        },
         "incident.Slack": {
             "type": "object",
             "properties": {
@@ -1240,20 +1227,10 @@ const docTemplate = `{
         "incident.Status": {
             "type": "string",
             "enum": [
-                "Started",
-                "Acknowledged",
-                "Investigating",
-                "Identified",
-                "Mitigated",
-                "Resolved"
+                "Started"
             ],
             "x-enum-varnames": [
-                "Started",
-                "Acknowledged",
-                "Investigating",
-                "Identified",
-                "Mitigated",
-                "Resolved"
+                "DefaultStartStatus"
             ]
         },
         "incident.Timeline": {

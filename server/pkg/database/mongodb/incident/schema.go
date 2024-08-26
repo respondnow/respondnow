@@ -9,34 +9,38 @@ import (
 type Status string
 
 const (
-	Started       Status = "Started"
-	Acknowledged  Status = "Acknowledged"
-	Investigating Status = "Investigating"
-	Identified    Status = "Identified"
-	Mitigated     Status = "Mitigated"
-	Resolved      Status = "Resolved"
-
-	// Detected            Status = "detected"
-	// PostmortemStarted   Status = "postmortemStarted"
-	// PostmortemCompleted Status = "PostmortemCompleted"
+	DefaultStartStatus Status = "Started"
 )
+
+// const (
+// 	Started       Status = "Started"
+// 	Acknowledged  Status = "Acknowledged"
+// 	Investigating Status = "Investigating"
+// 	Identified    Status = "Identified"
+// 	Mitigated     Status = "Mitigated"
+// 	Resolved      Status = "Resolved"
+
+// 	// Detected            Status = "detected"
+// 	// PostmortemStarted   Status = "postmortemStarted"
+// 	// PostmortemCompleted Status = "PostmortemCompleted"
+// )
 
 type Severity string
 
-const (
-	Severity0 Severity = "SEV0 - Critical, High Impact"
-	Severity1 Severity = "SEV1 - Major, Significant Impact"
-	Severity2 Severity = "SEV2 - Minor, Low Impact"
-)
+// const (
+// 	Severity0 Severity = "SEV0 - Critical, High Impact"
+// 	Severity1 Severity = "SEV1 - Major, Significant Impact"
+// 	Severity2 Severity = "SEV2 - Minor, Low Impact"
+// )
 
 type Type string
 
-const (
-	Availability Type = "Availability"
-	Latency      Type = "Latency"
-	Security     Type = "Security"
-	Other        Type = "Other"
-)
+// const (
+// 	Availability Type = "Availability"
+// 	Latency      Type = "Latency"
+// 	Security     Type = "Security"
+// 	Other        Type = "Other"
+// )
 
 type Incident struct {
 	ID                        primitive.ObjectID `bson:"_id,omitempty" json:"id" binding:"required"`

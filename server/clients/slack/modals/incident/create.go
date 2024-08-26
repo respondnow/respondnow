@@ -326,7 +326,7 @@ func (is incidentService) CreateIncident(evt *socketmode.Event) {
 		Summary:  summary.Value,
 		Severity: incidentdb.Severity(severity.SelectedOption.Value),
 		Roles:    incidentRoles,
-		Status:   incidentdb.Started,
+		Status:   incidentdb.DefaultStartStatus,
 		IncidentChannel: &incidentdb.IncidentChannel{
 			Type: incidentdb.ChannelSlack,
 			Slack: &incidentdb.Slack{

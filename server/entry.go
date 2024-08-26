@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -98,6 +99,16 @@ func setupSlackClient() error {
 }
 
 func loadConfig() {
+	configFile := flag.String("config-file", "/etc/config/config.yaml", "config file location")
+	flag.Parse()
+
+	// Setting up config
+	cfg, err := config.New(*configFile)
+	if err != nil {
+		logrus.Fatalf("error getting config, error : %s", err)
+	}
+	config.ServerConfig = cfg
+
 	if err := envconfig.Process("", &config.EnvConfig); err != nil {
 		logrus.Fatal(err)
 	}
