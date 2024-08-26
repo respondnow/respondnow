@@ -18,9 +18,6 @@ export function Routes(): React.ReactElement {
       <AuthenticatedRoute exact path={paths.toGetStarted()} component={GettingStartedController} />
       <AuthenticatedRoute exact path={paths.toIncidentDashboard()} component={IncidentsController} />
       <AuthenticatedRoute exact path={paths.toIncidentDetails({ incidentId })} component={IncidentDetailsController} />
-      {/* TEMP */}
-      <AuthenticatedRoute exact path={paths.toIncidentDetailsDummy()} component={IncidentDetailsController} />
-      {/* REMOVE TEMP */}
       <UnauthenticatedRoute exact path={paths.toLogin()} component={LoginController} />
       <Route path="*" component={GenericErrorHandler} />
     </Switch>

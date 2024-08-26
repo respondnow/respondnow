@@ -18,7 +18,7 @@ module.exports = {
     children: false
   },
   output: {
-    publicPath: 'auto',
+    publicPath: '/',
     path: path.resolve(CONTEXT, 'dist/'),
     pathinfo: false
   },

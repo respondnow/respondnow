@@ -16,7 +16,7 @@ type CellRendererType = Renderer<CellProps<IncidentIncident>>;
 
 export const IncidentsName: CellRendererType = ({ row }) => {
   const { getString } = useStrings();
-  const { name, severity, description, tags } = row.original;
+  const { name, severity, description, tags, identifier } = row.original;
   return (
     <Layout.Horizontal
       flex={{ alignItems: 'center', justifyContent: 'flex-start' }}
@@ -25,7 +25,12 @@ export const IncidentsName: CellRendererType = ({ row }) => {
     >
       <SeverityBadge severity={severity} />
       <Layout.Vertical className={css.incidentsNameContainer}>
-        <Link to={paths.toIncidentDetailsDummy()} className={css.textLink}>
+        <Link
+          to={paths.toIncidentDetails({
+            incidentId: identifier
+          })}
+          className={css.textLink}
+        >
           <Text color={Color.PRIMARY_7} font={{ variation: FontVariation.BODY, weight: 'bold' }} lineClamp={1}>
             {name || getString('abbv.na')}
           </Text>

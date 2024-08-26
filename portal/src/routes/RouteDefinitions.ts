@@ -9,8 +9,6 @@ export interface UseRouteDefinitionsProps {
   toGetStarted(): string;
   toIncidentDashboard(): string;
   toIncidentDetails(params: { incidentId: string }): string;
-  // TEMP
-  toIncidentDetailsDummy(): string;
 }
 
 export const paths: UseRouteDefinitionsProps = {
@@ -19,9 +17,7 @@ export const paths: UseRouteDefinitionsProps = {
   toPasswordReset: () => '/settings/password-reset',
   toGetStarted: () => '/getting-started',
   toIncidentDashboard: () => '/incidents',
-  toIncidentDetails: ({ incidentId }) => `/incidents/${incidentId}`,
-  // TEMP
-  toIncidentDetailsDummy: () => '/incident'
+  toIncidentDetails: ({ incidentId }) => `/incidents/${incidentId}`
 };
 
 export interface IncidentDetailsPathProps {
