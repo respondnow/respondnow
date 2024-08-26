@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	hierarchy2 "github.com/respondnow/respond/server/pkg/hierarchy"
+
 	"github.com/respondnow/respond/server/pkg/database/mongodb/hierarchy"
 	"github.com/respondnow/respond/server/pkg/user"
 	"go.mongodb.org/mongo-driver/bson"
@@ -332,6 +334,7 @@ func GetUserMapping() gin.HandlerFunc {
 		defer cancel()
 
 		hierarchyMongoService := hierarchy.NewHierarchyOperator(mongodb.Operator)
+		hierarchyService := hierarchy2.NewHierarchyManager(hierarchy.NewHierarchyOperator(mongodb.Operator))
 
 		mappings, err := hierarchyMongoService.GetAllUserMappingsByQuery(ctx, bson.M{"userId": userID})
 		if err != nil {
@@ -350,24 +353,50 @@ func GetUserMapping() gin.HandlerFunc {
 		}
 
 		var defaultMapping user.Identifiers
-		for _, umap := range mappings {
-			if umap.IsDefault {
-				defaultMapping = user.Identifiers{
-					AccountID: umap.AccountID,
-					OrgID:     umap.OrgID,
-					ProjectID: umap.ProjectID,
-				}
-
-			}
-		}
-
 		var allMappings []user.Identifiers
-		for _, mapping := range mappings {
-			allMappings = append(allMappings, user.Identifiers{
-				AccountID: mapping.AccountID,
-				OrgID:     mapping.OrgID,
-				ProjectID: mapping.ProjectID,
-			})
+
+		for _, umap := range mappings {
+			account, err := hierarchyService.ReadAccount(ctx, umap.AccountID)
+			if err != nil {
+				logrus.WithFields(logFields).WithError(err).Error("failed to retrieve account details")
+				response.DefaultResponseDTO.Message = "Failed to retrieve account details: " + err.Error()
+				response.Status = string(utils.ERROR)
+				c.JSON(http.StatusInternalServerError, response)
+				return
+			}
+
+			org, err := hierarchyService.ReadOrganization(ctx, umap.OrgID)
+			if err != nil {
+				logrus.WithFields(logFields).WithError(err).Error("failed to retrieve organization details")
+				response.DefaultResponseDTO.Message = "Failed to retrieve organization details: " + err.Error()
+				response.Status = string(utils.ERROR)
+				c.JSON(http.StatusInternalServerError, response)
+				return
+			}
+
+			project, err := hierarchyService.ReadProject(ctx, umap.ProjectID)
+			if err != nil {
+				logrus.WithFields(logFields).WithError(err).Error("failed to retrieve project details")
+				response.DefaultResponseDTO.Message = "Failed to retrieve project details: " + err.Error()
+				response.Status = string(utils.ERROR)
+				c.JSON(http.StatusInternalServerError, response)
+				return
+			}
+
+			mappingIdentifiers := user.Identifiers{
+				AccountID:   umap.AccountID,
+				AccountName: account.Name,
+				OrgID:       umap.OrgID,
+				OrgName:     org.Name,
+				ProjectID:   umap.ProjectID,
+				ProjectName: project.Name,
+			}
+
+			allMappings = append(allMappings, mappingIdentifiers)
+
+			if umap.IsDefault {
+				defaultMapping = mappingIdentifiers
+			}
 		}
 
 		response.Data = user.UserMapping{

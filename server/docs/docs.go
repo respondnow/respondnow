@@ -1460,10 +1460,19 @@ const docTemplate = `{
                 "accountId": {
                     "type": "string"
                 },
+                "accountName": {
+                    "type": "string"
+                },
                 "orgId": {
                     "type": "string"
                 },
+                "orgName": {
+                    "type": "string"
+                },
                 "projectId": {
+                    "type": "string"
+                },
+                "projectName": {
                     "type": "string"
                 }
             }
