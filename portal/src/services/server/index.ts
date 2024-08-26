@@ -17,6 +17,14 @@ export type {
 } from './hooks/useCreateIncidentMutation';
 export { createIncident, useCreateIncidentMutation } from './hooks/useCreateIncidentMutation';
 export type {
+  GetIncidentErrorResponse,
+  GetIncidentOkResponse,
+  GetIncidentProps,
+  GetIncidentQueryPathParams,
+  GetIncidentQueryQueryParams
+} from './hooks/useGetIncidentQuery';
+export { getIncident, useGetIncidentQuery } from './hooks/useGetIncidentQuery';
+export type {
   ListIncidentsErrorResponse,
   ListIncidentsOkResponse,
   ListIncidentsProps,
@@ -43,6 +51,7 @@ export type {
 export { signUp, useSignUpMutation } from './hooks/useSignUpMutation';
 export type { ApiPagination } from './schemas/ApiPagination';
 export type { AuthAddUserInput } from './schemas/AuthAddUserInput';
+export type { AuthChangePasswordResponse } from './schemas/AuthChangePasswordResponse';
 export type { AuthChangePasswordResponseDto } from './schemas/AuthChangePasswordResponseDto';
 export type { AuthChangeUserPasswordInput } from './schemas/AuthChangeUserPasswordInput';
 export type { AuthLoginResponse } from './schemas/AuthLoginResponse';
@@ -63,6 +72,7 @@ export type { IncidentCreateResponse } from './schemas/IncidentCreateResponse';
 export type { IncidentCreateResponseDto } from './schemas/IncidentCreateResponseDto';
 export type { IncidentEnvironment } from './schemas/IncidentEnvironment';
 export type { IncidentFunctionality } from './schemas/IncidentFunctionality';
+export type { IncidentGetResponseDto } from './schemas/IncidentGetResponseDto';
 export type { IncidentIncident } from './schemas/IncidentIncident';
 export type { IncidentIncidentChannel } from './schemas/IncidentIncidentChannel';
 export type { IncidentIncidentChannelType } from './schemas/IncidentIncidentChannelType';

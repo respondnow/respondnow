@@ -25,7 +25,7 @@ export default defineConfig({
       plugins: [
         reactQueryPlugin({
           customFetcher: '@services/fetcher',
-          allowedOperationIds: ['ChangePassword', 'Login', 'SignUp', 'CreateIncident', 'ListIncidents'],
+          allowedOperationIds: ['ChangePassword', 'Login', 'SignUp', 'CreateIncident', 'ListIncidents', 'GetIncident'],
           overrides: {}
         })
       ]

@@ -26,3 +26,19 @@ slackConfigDescription: You're just one step away! Manage your entire organizati
 slackButtonText: Get Started with Slack
 searchForAnIncident: Search for an incident
 resetFilters: Reset Filters
+status: Status
+severity: Severity
+incident: Incident
+abbv:
+  na: N/A
+reportedBy: Reported By
+duration: Duration
+viewChannel: View Channel
+noIncidentsFoundMatchingFilters: No incidents found matching the filters
+noIncidentsFoundMatchingFiltersDescription: Try resetting the filters or searching for an incident
+noIncidentsFound: No incidents found
+noIncidentsFoundDescription: Report an incident to get started
+summary: Summary
+keyMembers: Key Members
+tags: Tags
+incidentTimeline: Incident Timeline

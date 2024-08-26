@@ -1,9 +1,11 @@
 import React, { Dispatch } from 'react';
 import { IncidentsSortType, SortInput } from 'models';
+import { IncidentSeverity, IncidentStatus } from '@services/server';
 
 export enum IncidentsFilterActionKind {
   CHANGE_INCIDENTS_NAME = 'CHANGE_INCIDENTS_NAME',
   CHANGE_INCIDENTS_STATUS = 'CHANGE_INCIDENTS_STATUS',
+  CHANGE_INCIDENTS_SEVERITY = 'CHANGE_INCIDENTS_SEVERITY',
   CHANGE_INCIDENTS_TAGS = 'CHANGE_INCIDENTS_TAGS',
   CHANGE_INCIDENTS_TIMEFRAME = 'CHANGE_INCIDENTS_TIMEFRAME',
   CHANGE_SORT_TYPE = 'CHANGE_SORT_TYPE',
@@ -12,7 +14,8 @@ export enum IncidentsFilterActionKind {
 
 export interface IncidentsFilter {
   incidentName?: string | undefined;
-  incidentStatus?: string | undefined;
+  incidentStatus?: IncidentStatus;
+  incidentSeverity?: IncidentSeverity;
   incidentTags?: string[] | undefined;
   incidentTimeframe?: string | undefined;
   sortType?: SortInput<IncidentsSortType> | undefined;
@@ -42,6 +45,8 @@ function reducer(state: IncidentsFilter, action: IncidentsFilterAction): Reducer
       return { ...state, incidentName: action.payload.incidentName };
     case IncidentsFilterActionKind.CHANGE_INCIDENTS_STATUS:
       return { ...state, incidentStatus: action.payload.incidentStatus };
+    case IncidentsFilterActionKind.CHANGE_INCIDENTS_SEVERITY:
+      return { ...state, incidentSeverity: action.payload.incidentSeverity };
     case IncidentsFilterActionKind.CHANGE_INCIDENTS_TAGS:
       return { ...state, incidentTags: action.payload.incidentTags };
     case IncidentsFilterActionKind.CHANGE_INCIDENTS_TIMEFRAME:

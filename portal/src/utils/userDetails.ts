@@ -13,11 +13,25 @@ export function setUserDetails(
 
   updateAppStore({
     currentUserInfo: { email, name, username },
-    isInitialLogin,
-    scope: { accountIdentifier: 'dummyAccID', orgIdentifier: 'dummyOrgID', projectIdentifier: 'dummyProjectID' }
+    isInitialLogin
   });
 }
 
 export function updateLocalStorage(key: string, value: string): void {
   localStorage.setItem(key, value);
+}
+
+export function setScope(
+  updateAppStore: AppStoreContextProps['updateAppStore'],
+  accountIdentifier: string,
+  orgIdentifier: string,
+  projectIdentifier: string
+): void {
+  updateAppStore({
+    scope: {
+      accountIdentifier,
+      orgIdentifier,
+      projectIdentifier
+    }
+  });
 }

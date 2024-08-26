@@ -12,13 +12,16 @@ import {
   ExpandingSearchInputHandle,
   ExpandingSearchInput,
   Layout,
-  Text
+  Text,
+  SelectOption,
+  DropDown
 } from '@harnessio/uicore';
 import { Color } from '@harnessio/design-system';
 import { Icon } from '@harnessio/icons';
 import { useStrings } from '@strings';
 import { IncidentsFilter, IncidentsFilterAction, IncidentsFilterActionKind } from 'hooks';
 import { IncidentsSortType } from 'models';
+import { IncidentSeverity, IncidentStatus } from '@services/server';
 
 export interface FilterProps {
   state: IncidentsFilter;
@@ -68,7 +71,7 @@ export const IncidentsSearchBar = ({ state, dispatch, resetPage }: FilterProps):
   return (
     <ExpandingSearchInput
       ref={ref}
-      width={250}
+      width={300}
       alwaysExpanded
       placeholder={getString('searchForAnIncident')}
       throttle={500}
@@ -84,6 +87,98 @@ export const IncidentsSearchBar = ({ state, dispatch, resetPage }: FilterProps):
           });
         }
       }}
+    />
+  );
+};
+
+export const IncidentsStatusFilter = ({ state, dispatch, resetPage }: FilterProps): React.ReactElement => {
+  const { getString } = useStrings();
+  const dropdownItems: SelectOption[] = [
+    {
+      label: 'Acknowledged',
+      value: 'Acknowledged'
+    },
+    {
+      label: 'Identified',
+      value: 'Identified'
+    },
+    {
+      label: 'Investigating',
+      value: 'Investigating'
+    },
+    {
+      label: 'Mitigated',
+      value: 'Mitigated'
+    },
+    {
+      label: 'Resolved',
+      value: 'Resolved'
+    },
+    {
+      label: 'Started',
+      value: 'Started'
+    }
+  ];
+
+  const handleChange = (incidentStatus: IncidentStatus): void => {
+    resetPage();
+    dispatch({
+      type: IncidentsFilterActionKind.CHANGE_INCIDENTS_STATUS,
+      payload: {
+        incidentStatus
+      }
+    });
+  };
+
+  return (
+    <DropDown
+      addClearBtn
+      filterable={false}
+      items={dropdownItems}
+      onChange={value => handleChange(String(value.value) as IncidentStatus)}
+      value={state.incidentStatus}
+      placeholder={getString('status')}
+      width={250}
+    />
+  );
+};
+
+export const IncidentsSeverityFilter = ({ state, dispatch, resetPage }: FilterProps): React.ReactElement => {
+  const { getString } = useStrings();
+  const dropdownItems: SelectOption[] = [
+    {
+      label: 'SEV0 - Critical, High Impact',
+      value: 'SEV0 - Critical, High Impact'
+    },
+    {
+      label: 'SEV1 - Major, Significant Impact',
+      value: 'SEV1 - Major, Significant Impact'
+    },
+    {
+      label: 'SEV2 - Minor, Low Impact',
+      value: 'SEV2 - Minor, Low Impact'
+    }
+  ];
+
+  const handleChange = (incidentSeverity: IncidentSeverity): void => {
+    resetPage();
+    dispatch({
+      type: IncidentsFilterActionKind.CHANGE_INCIDENTS_SEVERITY,
+      payload: {
+        incidentSeverity
+      }
+    });
+  };
+
+  return (
+    <DropDown
+      addClearBtn
+      filterable={false}
+      items={dropdownItems}
+      onChange={value => handleChange(String(value.value) as IncidentSeverity)}
+      value={state.incidentSeverity}
+      placeholder={getString('severity')}
+      width={250}
     />
   );
 };

@@ -32,6 +32,7 @@
   grid-area: content;
   overflow: auto;
   position: relative;
+  background: var(--primary-bg);
 }
 
 .contentLoading {
@@ -47,6 +48,7 @@
 .footer {
   grid-area: footer;
   padding: 0 var(--spacing-xlarge);
+  background: var(--primary-bg);
 }
 
 .noFooterPadding {

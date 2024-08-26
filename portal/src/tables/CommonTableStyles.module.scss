@@ -1,0 +1,47 @@
+.minimalRow {
+  border-bottom: none !important; // tableV2 needs to be override by css
+}
+
+.incidentsTable {
+  :global {
+    .TableV2--header {
+      padding-left: 0;
+      padding-right: 0;
+      gap: 1rem;
+    }
+    .TableV2--row {
+      padding: 0;
+      border: 0;
+      height: 80px;
+      border-radius: 8px;
+      margin-bottom: var(--spacing-medium);
+    }
+    .TableV2--cells {
+      height: 100%;
+      gap: 1rem;
+      .TableV2--cell {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+.incidentsNameContainer {
+  max-width: calc(100% - 62px) !important;
+  gap: 0.25rem;
+}
+
+.paginationFix {
+  position: relative;
+}
+
+.text-link {
+  color: inherit;
+  text-decoration: inherit;
+  &:hover {
+    text-decoration: inherit;
+  }
+}
