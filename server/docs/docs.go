@@ -341,76 +341,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/incident/get": {
-            "get": {
-                "description": "Get incident",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Incident Management"
-                ],
-                "summary": "Get incident",
-                "operationId": "GetIncident",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "incident identifier",
-                        "name": "incidentIdentifier",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "accountIdentifier",
-                        "name": "accountIdentifier",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "orgIdentifier",
-                        "name": "orgIdentifier",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "projectIdentifier",
-                        "name": "projectIdentifier",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/incident.GetResponseDTO"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.DefaultResponseDTO"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.DefaultResponseDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.DefaultResponseDTO"
-                        }
-                    }
-                }
-            }
-        },
         "/incident/list": {
             "get": {
                 "description": "List incidents",
@@ -533,6 +463,76 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/incident.ListResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.DefaultResponseDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/incident/{incidentIdentifier}": {
+            "get": {
+                "description": "Get incident",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Incident Management"
+                ],
+                "summary": "Get incident",
+                "operationId": "GetIncident",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "incident identifier",
+                        "name": "incidentIdentifier",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "accountIdentifier",
+                        "name": "accountIdentifier",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "orgIdentifier",
+                        "name": "orgIdentifier",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "projectIdentifier",
+                        "name": "projectIdentifier",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/incident.GetResponseDTO"
                         }
                     },
                     "400": {
@@ -1457,19 +1457,19 @@ const docTemplate = `{
         "user.Identifiers": {
             "type": "object",
             "properties": {
-                "accountId": {
+                "accountIdentifier": {
                     "type": "string"
                 },
                 "accountName": {
                     "type": "string"
                 },
-                "orgId": {
+                "orgIdentifier": {
                     "type": "string"
                 },
                 "orgName": {
                     "type": "string"
                 },
-                "projectId": {
+                "projectIdentifier": {
                     "type": "string"
                 },
                 "projectName": {

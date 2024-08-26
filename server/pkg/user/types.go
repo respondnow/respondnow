@@ -79,10 +79,10 @@ type UserMapping struct {
 }
 
 type Identifiers struct {
-	AccountID   string `json:"accountId"`
+	AccountID   string `json:"accountIdentifier"`
 	AccountName string `json:"accountName"`
-	OrgID       string `json:"orgId,omitempty"`
+	OrgID       string `json:"orgIdentifier,omitempty"`
 	OrgName     string `json:"orgName"`
-	ProjectID   string `json:"projectId,omitempty"`
+	ProjectID   string `json:"projectIdentifier,omitempty"`
 	ProjectName string `json:"projectName"`
 }

@@ -14,34 +14,34 @@ const (
 )
 
 const (
-	AccountIDField   = "accountId"
+	AccountIDField   = "accountIdentifier"
 	AccountNameField = "name"
 )
 
 const (
-	OrganizationIDField        = "orgId"
+	OrganizationIDField        = "orgIdentifier"
 	OrganizationNameField      = "name"
-	OrganizationAccountIDField = "accountId"
+	OrganizationAccountIDField = "accountIdentifier"
 )
 
 const (
-	ProjectIDField        = "projectId"
+	ProjectIDField        = "projectIdentifier"
 	ProjectNameField      = "name"
-	ProjectOrgIDField     = "orgId"
-	ProjectAccountIDField = "accountId"
+	ProjectOrgIDField     = "orgIdentifier"
+	ProjectAccountIDField = "accountIdentifier"
 )
 
 const (
 	UserMappingUserIDField    = "userId"
-	UserMappingAccountIDField = "accountId"
-	UserMappingOrgIDField     = "orgId"
-	UserMappingProjectIDField = "projectId"
+	UserMappingAccountIDField = "accountIdentifier"
+	UserMappingOrgIDField     = "orgIdentifier"
+	UserMappingProjectIDField = "projectIdentifier"
 	UserMappingIsDefaultField = "isDefault"
 )
 
 type Account struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	AccountID string             `bson:"accountId" json:"accountId"`
+	AccountID string             `bson:"accountIdentifier" json:"accountIdentifier"`
 	Name      string             `bson:"name" json:"name"`
 	CreatedAt int64              `bson:"createdAt" json:"createdAt"`
 	UpdatedAt *int64             `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
@@ -52,9 +52,9 @@ type Account struct {
 
 type Organization struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	OrgID     string             `bson:"orgId" json:"orgId"`
+	OrgID     string             `bson:"orgIdentifier" json:"orgIdentifier"`
 	Name      string             `bson:"name" json:"name"`
-	AccountID string             `bson:"accountId" json:"accountId"` // Link to Account
+	AccountID string             `bson:"accountIdentifier" json:"accountIdentifier"` // Link to Account
 	CreatedAt int64              `bson:"createdAt" json:"createdAt"`
 	UpdatedAt *int64             `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
 	CreatedBy string             `bson:"createdBy" json:"createdBy"`
@@ -64,10 +64,10 @@ type Organization struct {
 
 type Project struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	ProjectID string             `bson:"projectId" json:"projectId"`
+	ProjectID string             `bson:"projectIdentifier" json:"projectIdentifier"`
 	Name      string             `bson:"name" json:"name"`
-	OrgID     string             `bson:"orgId" json:"orgId"`         // Link to Organization
-	AccountID string             `bson:"accountId" json:"accountId"` // Link to Account
+	OrgID     string             `bson:"orgIdentifier" json:"orgIdentifier"`         // Link to Organization
+	AccountID string             `bson:"accountIdentifier" json:"accountIdentifier"` // Link to Account
 	CreatedAt int64              `bson:"createdAt" json:"createdAt"`
 	UpdatedAt *int64             `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
 	CreatedBy string             `bson:"createdBy" json:"createdBy"`
@@ -78,9 +78,9 @@ type Project struct {
 type UserMapping struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	UserID    string             `bson:"userId" json:"userId"`
-	AccountID string             `bson:"accountId" json:"accountId"`
-	OrgID     string             `bson:"orgId,omitempty" json:"orgId,omitempty"`
-	ProjectID string             `bson:"projectId,omitempty" json:"projectId,omitempty"`
+	AccountID string             `bson:"accountIdentifier" json:"accountIdentifier"`
+	OrgID     string             `bson:"orgIdentifier,omitempty" json:"orgIdentifier,omitempty"`
+	ProjectID string             `bson:"projectIdentifier,omitempty" json:"projectIdentifier,omitempty"`
 	CreatedAt int64              `bson:"createdAt" json:"createdAt"`
 	UpdatedAt *int64             `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
 	Removed   bool               `bson:"removed" json:"removed"`

@@ -180,7 +180,7 @@ func ListIncidents() gin.HandlerFunc {
 //	@Failure		400					{object}	utils.DefaultResponseDTO
 //	@Failure		404					{object}	utils.DefaultResponseDTO
 //	@Failure		500					{object}	utils.DefaultResponseDTO
-//	@Router			/incident/get [get]
+//	@Router			/incident/{incidentIdentifier} [get]
 func GetIncident() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var response = incident.GetResponseDTO{
@@ -188,7 +188,7 @@ func GetIncident() gin.HandlerFunc {
 				CorrelationId: utils.NewUtils().GetCorrelationID(c),
 			},
 		}
-		incidentIdentifier := c.Query(constant.IncidentIdentifier)
+		incidentIdentifier := c.Param(constant.IncidentIdentifier)
 		aID := c.Query(constant.AccountIdentifier)
 		oID := c.Query(constant.OrgIdentifier)
 		pID := c.Query(constant.ProjectIdentifier)
