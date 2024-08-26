@@ -8,5 +8,5 @@ import (
 func IncidentRouter(router *gin.RouterGroup) {
 	router.POST("/create", handlers.CreateIncident())
 	router.GET("/list", handlers.ListIncidents())
-	router.GET("/get", handlers.GetIncident())
+	router.GET("/:incidentIdentifier", handlers.GetIncident())
 }
