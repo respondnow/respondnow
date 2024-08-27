@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import LoginView from '@views/Login';
 import { useLoginMutation } from '@services/server';
-import { setUserDetails, updateLocalStorage } from '@utils';
+import { updateLocalStorage, updateUserAndScopeFromAPI } from '@utils';
 import { paths } from '@routes/RouteDefinitions';
 import { useAppStore } from '@hooks';
 
@@ -13,12 +13,17 @@ const LoginController: React.FC = () => {
   const { mutate: loginMutation, isLoading: loginMutationLoading } = useLoginMutation(
     {},
     {
-      onSuccess: data => {
-        const accessToken = data.data?.token?.split(' ')[1] || '';
+      onSuccess: async loginData => {
+        const accessToken = loginData.data?.token?.split(' ')[1] || '';
+        const changePassword = loginData.data?.changeUserPassword;
+        const isInitialLogin = !loginData.data?.lastLoginAt;
+
         updateLocalStorage('accessToken', accessToken);
-        updateLocalStorage('isInitialLogin', data.data?.changeUserPassword ? 'true' : 'false');
-        setUserDetails(updateAppStore, accessToken, data.data?.changeUserPassword);
-        if (data.data?.changeUserPassword) {
+        updateLocalStorage('isInitialLogin', String(isInitialLogin));
+
+        await updateUserAndScopeFromAPI(updateAppStore, accessToken, isInitialLogin);
+
+        if (changePassword) {
           history.push(paths.toPasswordReset());
         } else {
           history.push(paths.toGetStarted());

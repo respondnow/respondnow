@@ -1,12 +1,7 @@
+import { Scope } from '@context';
 import { useAppStore } from '@hooks';
 
-export interface Scope {
-  accountIdentifier: string;
-  orgIdentifier: string;
-  projectIdentifier: string;
-}
-
-export function getScope(): Scope {
+export function getScope(): Required<Scope> {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { scope } = useAppStore();
   return {
@@ -14,4 +9,10 @@ export function getScope(): Scope {
     orgIdentifier: scope.orgIdentifier || '',
     projectIdentifier: scope.projectIdentifier || ''
   };
+}
+
+export function scopeExists(): boolean {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { scope } = useAppStore();
+  return !!scope.accountIdentifier || !!scope.orgIdentifier || !!scope.projectIdentifier;
 }
