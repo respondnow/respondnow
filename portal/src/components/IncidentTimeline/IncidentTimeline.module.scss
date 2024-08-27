@@ -1,0 +1,11 @@
+.timelineRowContainer {
+  display: grid;
+  grid-template-columns: 200px 30px 1fr;
+  gap: 1rem;
+
+  .dividerContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}

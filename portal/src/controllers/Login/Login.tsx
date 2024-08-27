@@ -26,7 +26,7 @@ const LoginController: React.FC = () => {
         if (changePassword) {
           history.push(paths.toPasswordReset());
         } else {
-          history.push(paths.toGetStarted());
+          history.push(paths.toIncidentDashboard());
         }
       }
     }

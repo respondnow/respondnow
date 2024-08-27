@@ -11,7 +11,7 @@ function AuthenticatedRoute(props: RouteProps): React.ReactElement {
   const { token, isInitialLogin } = getTokenFromLocalStorage();
 
   React.useEffect(() => {
-    if (appStore.currentUserInfo === initialAppContext.currentUserInfo) {
+    if (appStore.currentUserInfo === initialAppContext.currentUserInfo && token) {
       updateUserAndScopeFromAPI(appStore.updateAppStore, token, isInitialLogin);
     }
   }, [appStore, token, isInitialLogin]);

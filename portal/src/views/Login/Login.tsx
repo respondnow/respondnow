@@ -8,7 +8,7 @@ import { withErrorBoundary } from 'react-error-boundary';
 import mainLogo from '@images/respondNow.svg';
 import { useStrings } from '@strings';
 import PasswordInput from '@components/PasswordInput';
-import { UtilsDefaultResponseDto, LoginMutationProps, UserLoginResponseDto } from '@services/server';
+import { UserLoginResponseDto, UtilsDefaultResponseDto, LoginMutationProps } from '@services/server';
 import { Fallback } from '@errors';
 import css from './Login.module.scss';
 

@@ -2,7 +2,6 @@ import React from 'react';
 import { FontVariation, Color, PaddingProps, Spacing } from '@harnessio/design-system';
 import { Container, HarnessDocTooltip, Heading, Layout, Page, PageSpinner } from '@harnessio/uicore';
 import cx from 'classnames';
-import InfoBanner, { InfoBannerProps } from '@components/InfoBanner';
 import NoData, { NoDataProps } from '@components/NoData';
 import { ErrorWrapper } from '@errors';
 import SideNav from '@components/SideNav';
@@ -19,7 +18,6 @@ interface DefaultLayoutProps {
   padding?: Spacing | PaddingProps;
   noData?: boolean;
   noDataProps?: NoDataProps;
-  infoBannerProps?: InfoBannerProps;
   popovers?: React.ReactNode;
   scale?: 'full-screen' | 'full-parent';
   showSideNav?: boolean;
@@ -33,7 +31,7 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({
   toolbar,
   subHeader,
   footer,
-  infoBannerProps,
+  // infoBannerProps,
   noData,
   noDataProps,
   popovers,
@@ -77,7 +75,6 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({
           </ErrorWrapper>
         )}
         {subHeader && <Page.SubHeader className={css.subHeader}>{subHeader}</Page.SubHeader>}
-        {infoBannerProps && <InfoBanner {...infoBannerProps} />}
         <div className={cx(css.content, { [css.contentLoading]: loading, [css.contentNoData]: noData })}>
           {loading && <PageSpinner />}
           {!noData ? (

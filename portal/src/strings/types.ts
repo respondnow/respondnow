@@ -7,6 +7,7 @@ export type PrimitiveObject<T extends string> = Partial<Record<T, string | numbe
 export interface StringsMap {
   '404Error': unknown;
   'abbv.na': unknown;
+  confirm: unknown;
   continue: unknown;
   documentation: unknown;
   duration: unknown;
@@ -14,6 +15,10 @@ export interface StringsMap {
   emailInvalid: unknown;
   emailRequired: unknown;
   enter: unknown;
+  enterNewPassword: unknown;
+  enterOldPassword: unknown;
+  fieldMaxLength: PrimitiveObject<'length'>;
+  fieldMinLength: PrimitiveObject<'length'>;
   getStarted: unknown;
   getStartedHeading: unknown;
   gettingStarted: unknown;
@@ -28,12 +33,16 @@ export interface StringsMap {
   loginFooterText: unknown;
   loginSubHeading: unknown;
   logout: unknown;
+  newPassword: unknown;
   noIncidentsFound: unknown;
   noIncidentsFoundDescription: unknown;
   noIncidentsFoundMatchingFilters: unknown;
   noIncidentsFoundMatchingFiltersDescription: unknown;
+  oldPassword: unknown;
   password: unknown;
   passwordRequired: unknown;
+  passwordsDoNotMatch: unknown;
+  reEnterNewPassword: unknown;
   reportedBy: unknown;
   resetFilters: unknown;
   respondNow: unknown;
@@ -47,6 +56,7 @@ export interface StringsMap {
   summary: unknown;
   tags: unknown;
   termsAndConditions: unknown;
+  updatePassword: unknown;
   viaSlack: unknown;
   viewChannel: unknown;
   welcomeText: PrimitiveObject<'name'>;
