@@ -25,6 +25,13 @@ export type {
 } from './hooks/useGetIncidentQuery';
 export { getIncident, useGetIncidentQuery } from './hooks/useGetIncidentQuery';
 export type {
+  GetUserMappingErrorResponse,
+  GetUserMappingOkResponse,
+  GetUserMappingProps,
+  GetUserMappingQueryQueryParams
+} from './hooks/useGetUserMappingQuery';
+export { getUserMapping, useGetUserMappingQuery } from './hooks/useGetUserMappingQuery';
+export type {
   ListIncidentsErrorResponse,
   ListIncidentsOkResponse,
   ListIncidentsProps,
@@ -50,14 +57,6 @@ export type {
 } from './hooks/useSignUpMutation';
 export { signUp, useSignUpMutation } from './hooks/useSignUpMutation';
 export type { ApiPagination } from './schemas/ApiPagination';
-export type { AuthAddUserInput } from './schemas/AuthAddUserInput';
-export type { AuthChangePasswordResponse } from './schemas/AuthChangePasswordResponse';
-export type { AuthChangePasswordResponseDto } from './schemas/AuthChangePasswordResponseDto';
-export type { AuthChangeUserPasswordInput } from './schemas/AuthChangeUserPasswordInput';
-export type { AuthLoginResponse } from './schemas/AuthLoginResponse';
-export type { AuthLoginResponseDto } from './schemas/AuthLoginResponseDto';
-export type { AuthLoginUserInput } from './schemas/AuthLoginUserInput';
-export type { AuthSignupResponseDto } from './schemas/AuthSignupResponseDto';
 export type { IncidentAddConference } from './schemas/IncidentAddConference';
 export type { IncidentAttachment } from './schemas/IncidentAttachment';
 export type { IncidentAttachmentType } from './schemas/IncidentAttachmentType';
@@ -87,6 +86,17 @@ export type { IncidentStage } from './schemas/IncidentStage';
 export type { IncidentStatus } from './schemas/IncidentStatus';
 export type { IncidentTimeline } from './schemas/IncidentTimeline';
 export type { IncidentType } from './schemas/IncidentType';
+export type { UserAddUserInput } from './schemas/UserAddUserInput';
+export type { UserChangePasswordResponse } from './schemas/UserChangePasswordResponse';
+export type { UserChangePasswordResponseDto } from './schemas/UserChangePasswordResponseDto';
+export type { UserChangeUserPasswordInput } from './schemas/UserChangeUserPasswordInput';
+export type { UserGetUserMappingResponseDto } from './schemas/UserGetUserMappingResponseDto';
+export type { UserIdentifiers } from './schemas/UserIdentifiers';
+export type { UserLoginResponse } from './schemas/UserLoginResponse';
+export type { UserLoginResponseDto } from './schemas/UserLoginResponseDto';
+export type { UserLoginUserInput } from './schemas/UserLoginUserInput';
+export type { UserSignupResponseDto } from './schemas/UserSignupResponseDto';
+export type { UserUserMapping } from './schemas/UserUserMapping';
 export type { UtilsDefaultResponseDto } from './schemas/UtilsDefaultResponseDto';
 export type { UtilsSource } from './schemas/UtilsSource';
 export type { UtilsUserDetails } from './schemas/UtilsUserDetails';

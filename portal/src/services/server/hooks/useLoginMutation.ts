@@ -3,18 +3,18 @@
 // Please do not modify this code directly.
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
-import type { AuthLoginResponseDto } from '../schemas/AuthLoginResponseDto';
+import type { UserLoginResponseDto } from '../schemas/UserLoginResponseDto';
 import type { UtilsDefaultResponseDto } from '../schemas/UtilsDefaultResponseDto';
-import type { AuthLoginUserInput } from '../schemas/AuthLoginUserInput';
+import type { UserLoginUserInput } from '../schemas/UserLoginUserInput';
 import { fetcher, FetcherOptions } from '@services/fetcher';
 
 export interface LoginMutationQueryParams {
   correlationId?: string;
 }
 
-export type LoginRequestBody = AuthLoginUserInput;
+export type LoginRequestBody = UserLoginUserInput;
 
-export type LoginOkResponse = AuthLoginResponseDto;
+export type LoginOkResponse = UserLoginResponseDto;
 
 export type LoginErrorResponse = UtilsDefaultResponseDto;
 
@@ -25,7 +25,7 @@ export interface LoginProps extends Omit<FetcherOptions<LoginMutationQueryParams
 
 export function login(props: LoginProps): Promise<LoginOkResponse> {
   return fetcher<LoginOkResponse, LoginMutationQueryParams, LoginRequestBody>({
-    url: `/auth/auth/login`,
+    url: `/api/auth/login`,
     method: 'POST',
     ...props
   });

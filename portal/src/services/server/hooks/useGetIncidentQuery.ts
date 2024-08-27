@@ -29,7 +29,7 @@ export interface GetIncidentProps
 
 export function getIncident(props: GetIncidentProps): Promise<GetIncidentOkResponse> {
   return fetcher<GetIncidentOkResponse, GetIncidentQueryQueryParams, unknown>({
-    url: `/auth/incident/${props.incidentIdentifier}`,
+    url: `/api/incident/${props.incidentIdentifier}`,
     method: 'GET',
     ...props
   });

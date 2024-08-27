@@ -3,18 +3,18 @@
 // Please do not modify this code directly.
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
-import type { AuthSignupResponseDto } from '../schemas/AuthSignupResponseDto';
+import type { UserSignupResponseDto } from '../schemas/UserSignupResponseDto';
 import type { UtilsDefaultResponseDto } from '../schemas/UtilsDefaultResponseDto';
-import type { AuthAddUserInput } from '../schemas/AuthAddUserInput';
+import type { UserAddUserInput } from '../schemas/UserAddUserInput';
 import { fetcher, FetcherOptions } from '@services/fetcher';
 
 export interface SignUpMutationQueryParams {
   correlationId?: string;
 }
 
-export type SignUpRequestBody = AuthAddUserInput;
+export type SignUpRequestBody = UserAddUserInput;
 
-export type SignUpOkResponse = AuthSignupResponseDto;
+export type SignUpOkResponse = UserSignupResponseDto;
 
 export type SignUpErrorResponse = UtilsDefaultResponseDto;
 
@@ -25,7 +25,7 @@ export interface SignUpProps extends Omit<FetcherOptions<SignUpMutationQueryPara
 
 export function signUp(props: SignUpProps): Promise<SignUpOkResponse> {
   return fetcher<SignUpOkResponse, SignUpMutationQueryParams, SignUpRequestBody>({
-    url: `/auth/auth/signup`,
+    url: `/api/auth/signup`,
     method: 'POST',
     ...props
   });

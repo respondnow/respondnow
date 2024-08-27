@@ -3,18 +3,18 @@
 // Please do not modify this code directly.
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
-import type { AuthChangePasswordResponseDto } from '../schemas/AuthChangePasswordResponseDto';
+import type { UserChangePasswordResponseDto } from '../schemas/UserChangePasswordResponseDto';
 import type { UtilsDefaultResponseDto } from '../schemas/UtilsDefaultResponseDto';
-import type { AuthChangeUserPasswordInput } from '../schemas/AuthChangeUserPasswordInput';
+import type { UserChangeUserPasswordInput } from '../schemas/UserChangeUserPasswordInput';
 import { fetcher, FetcherOptions } from '@services/fetcher';
 
 export interface ChangePasswordMutationQueryParams {
   correlationId?: string;
 }
 
-export type ChangePasswordRequestBody = AuthChangeUserPasswordInput;
+export type ChangePasswordRequestBody = UserChangeUserPasswordInput;
 
-export type ChangePasswordOkResponse = AuthChangePasswordResponseDto;
+export type ChangePasswordOkResponse = UserChangePasswordResponseDto;
 
 export type ChangePasswordErrorResponse = UtilsDefaultResponseDto;
 
@@ -26,7 +26,7 @@ export interface ChangePasswordProps
 
 export function changePassword(props: ChangePasswordProps): Promise<ChangePasswordOkResponse> {
   return fetcher<ChangePasswordOkResponse, ChangePasswordMutationQueryParams, ChangePasswordRequestBody>({
-    url: `/auth/auth/changePassword`,
+    url: `/api/auth/changePassword`,
     method: 'POST',
     ...props
   });
