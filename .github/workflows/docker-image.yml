@@ -25,9 +25,8 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          docker build --build-arg TARGETOS=linux --build-arg TARGETARCH=amd64 \
-          -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest \
-          -f server/package/Dockerfile server/package
+          cd portal
+          docker build -t ghcr.io/${{ github.repository }}/respond-portal:latest -f package/Dockerfile .
           
       - name: Tag the Docker image
         run: |
