@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.image {
+  text-align: center;
+  height: 100%;
+}
+.image img {
+  height: 100%;
+  object-fit: contain;
+  vertical-align: middle;
+}
+.content {
+  text-align: center;
+  margin: 0;
+  padding: 10px 0;
+  max-width: 640px;
+}

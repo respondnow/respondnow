@@ -13,9 +13,8 @@ const commonConfig = require('./webpack.common');
 
 const createCertificateAsync = util.promisify(createCertificate);
 
-const baseUrl = process.env.BASE_URL || 'https://api.respondnow.io';
-const targetLocalHost = (process.env.TARGET_LOCALHOST && JSON.parse(process.env.TARGET_LOCALHOST)) || false;
-const enableWriteToDisk = (process.env.ENABLE_WRITE_TO_DISK && JSON.parse(process.env.ENABLE_WRITE_TO_DISK)) || false;
+const baseUrl = process.env.BASE_URL;
+const targetLocalHost = (process.env.TARGET_LOCALHOST && JSON.parse(process.env.TARGET_LOCALHOST)) || true;
 
 const devConfig = {
   mode: 'development',
@@ -27,15 +26,12 @@ const devConfig = {
     chunkFilename: '[name].[id].js'
   },
   devServer: {
-    devMiddleware: {
-      writeToDisk: enableWriteToDisk
-    },
     historyApiFallback: true,
     port: 8191,
     proxy: {
-      '/auth': {
-        pathRewrite: targetLocalHost ? { '^/auth': '' } : {},
-        target: targetLocalHost ? process.env.AUTH_SERVER_URI || 'http://localhost:8080' : baseUrl,
+      '/api': {
+        pathRewrite: targetLocalHost ? { '^/api': '' } : {},
+        target: targetLocalHost ? process.env.API_SERVER_URI || 'http://localhost:8080' : baseUrl,
         changeOrigin: true
       }
     }

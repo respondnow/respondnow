@@ -1,3 +1,44 @@
 respondNow: Respond Now
 login: Login
-home: Home
+continue: Continue
+loginSubHeading: Sign in to start managing incidents
+email: Email
+password: Password
+enter: Enter
+loginFooterText: By signing in, you are agreeing to our
+termsAndConditions: terms of service
+emailRequired: Email is required
+emailInvalid: Email is invalid
+passwordRequired: Password is required
+incidents: Incidents
+documentation: Documentation
+logout: Logout
+404Error: Oops, we could not find this page.
+goToHome: Go to Home
+goBack: Go Back
+gettingStarted: Getting Started
+setUpSlackApp: Set up Slack App
+getStarted: Get Started
+welcomeText: Welcome {{name}}
+getStartedHeading: Let's install the RespondNow Slack app!
+slackConfigHeader: Next, configure the slack app.
+slackConfigDescription: You're just one step away! Manage your entire organization's incident flow - from report to resolution - all through your Slack workspace.
+slackButtonText: Get Started with Slack
+searchForAnIncident: Search for an incident
+resetFilters: Reset Filters
+status: Status
+severity: Severity
+incident: Incident
+abbv:
+  na: N/A
+reportedBy: Reported By
+duration: Duration
+viewChannel: View Channel
+noIncidentsFoundMatchingFilters: No incidents found matching the filters
+noIncidentsFoundMatchingFiltersDescription: Try resetting the filters or searching for an incident
+noIncidentsFound: No incidents found
+noIncidentsFoundDescription: Report an incident to get started
+summary: Summary
+keyMembers: Key Members
+tags: Tags
+incidentTimeline: Incident Timeline

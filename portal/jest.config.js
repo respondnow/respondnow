@@ -54,7 +54,6 @@ module.exports = {
     '!<rootDir>/src/**/*.{d.ts,module.scss.d.ts}',
     '!<rootDir>/src/**/index.ts',
     '!<rootDir>/src/App/App.tsx',
-    '!<rootDir>/src/bootstrap.tsx',
     '!<rootDir>/src/context/**',
     '!<rootDir>/src/controllers/**',
     '!<rootDir>/src/interfaces/**',

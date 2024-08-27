@@ -1,0 +1,56 @@
+.layout {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  height: 100%;
+  flex-grow: 1;
+  grid-template-areas:
+    'header'
+    'subheader'
+    'content'
+    'footer';
+}
+
+.fullScreenHeight {
+  height: 100vh;
+  min-height: var(--page-min-height);
+}
+
+.fullParentHeight {
+  height: 100%;
+}
+
+.header {
+  grid-area: header;
+}
+
+.subHeader {
+  grid-area: subheader;
+  height: 58px;
+}
+
+.content {
+  grid-area: content;
+  overflow: auto;
+  position: relative;
+  background: var(--primary-bg);
+}
+
+.contentLoading {
+  overflow: hidden;
+}
+
+.contentNoData {
+  place-self: center;
+  height: 100%;
+  width: 100%;
+}
+
+.footer {
+  grid-area: footer;
+  padding: 0 var(--spacing-xlarge);
+  background: var(--primary-bg);
+}
+
+.noFooterPadding {
+  padding: 0 !important;
+}

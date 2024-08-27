@@ -15,7 +15,8 @@
       "@strings": ["strings"],
       "@tables": ["tables"],
       "@utils": ["utils"],
-      "@views/*": ["views/*"]
+      "@views/*": ["views/*"],
+      "@tables/*": ["tables/*"]
     },
     "target": "ES6",
     "module": "ESNext",

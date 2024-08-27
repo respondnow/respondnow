@@ -1,16 +1,25 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
-import { useRouteDefinitionsMatch } from '@hooks';
-import DummyPage from '@views/DummyPage';
-import DummyLogin from '@views/DummyLogin';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import LoginController from '@controllers/Login';
+import { GenericErrorHandler } from '@errors';
+import GettingStartedController from '@controllers/GettingStarted';
+import IncidentsController from '@controllers/Incidents';
+import IncidentDetailsController from '@controllers/IncidentDetails';
+import { paths } from './RouteDefinitions';
+import AuthenticatedRoute from './AuthenticatedRoute';
+import UnauthenticatedRoute from './UnauthenticatedRoute';
 
 export function Routes(): React.ReactElement {
-  const matchPath = useRouteDefinitionsMatch();
+  const incidentId = ':incidentId';
 
   return (
     <Switch>
-      <Route exact path={matchPath.toRoot()} component={DummyPage} />
-      <Route exact path={matchPath.toLogin()} component={DummyLogin} />
+      <Redirect exact from={paths.toRoot()} to={paths.toLogin()} />
+      <AuthenticatedRoute exact path={paths.toGetStarted()} component={GettingStartedController} />
+      <AuthenticatedRoute exact path={paths.toIncidentDashboard()} component={IncidentsController} />
+      <AuthenticatedRoute exact path={paths.toIncidentDetails({ incidentId })} component={IncidentDetailsController} />
+      <UnauthenticatedRoute exact path={paths.toLogin()} component={LoginController} />
+      <Route path="*" component={GenericErrorHandler} />
     </Switch>
   );
 }
