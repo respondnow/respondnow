@@ -27,7 +27,7 @@ jobs:
         run: |
           cd server
           ls
-          docker build -t ghcr.io/${{ github.repository }}/respond-portal:latest -f package/Dockerfile .
+          docker build -t ghcr.io/${{ github.repository }}/respond-server:latest -f package/Dockerfile .
           
       - name: Tag the Docker image
         run: |
