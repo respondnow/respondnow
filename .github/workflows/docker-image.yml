@@ -26,7 +26,8 @@ jobs:
       - name: Build the Docker image
         run: |
           cd portal
-          docker build -t ghcr.io/${{ github.repository }}/respond-portal:latest -f package/Dockerfile .
+          ls
+          docker build -t ghcr.io/${{ github.repository }}/respond-portal:latest -f Dockerfile .
           
       - name: Tag the Docker image
         run: |
