@@ -153,20 +153,21 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		if user.ChangePasswordRequired {
-			response.DefaultResponseDTO.Message = "Change Password is required"
-			response.Data.ChangeUserPassword = user.ChangePasswordRequired
-			response.Data.LastLoginAt = user.LastLoginAt
-			response.Status = string(utils.SUCCESS)
-			c.JSON(http.StatusOK, response)
-			return
-		}
-
 		token, err := authService.CreateJWTToken(user.Email, user.UserID, user.Name)
 		if err != nil {
 			response.Status = string(utils.ERROR)
 			response.DefaultResponseDTO.Message = "failed to generate token: " + err.Error()
 			c.JSON(http.StatusInternalServerError, response)
+			return
+		}
+
+		if user.ChangePasswordRequired {
+			response.DefaultResponseDTO.Message = "Change Password is required"
+			response.Data.ChangeUserPassword = user.ChangePasswordRequired
+			response.Data.LastLoginAt = user.LastLoginAt
+			response.Data.Token = token
+			response.Status = string(utils.SUCCESS)
+			c.JSON(http.StatusOK, response)
 			return
 		}
 
