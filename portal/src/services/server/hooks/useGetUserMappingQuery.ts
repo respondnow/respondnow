@@ -21,12 +21,12 @@ export type GetUserMappingOkResponse = UserGetUserMappingResponseDto;
 export type GetUserMappingErrorResponse = UtilsDefaultResponseDto;
 
 export interface GetUserMappingProps
-  extends Omit<FetcherOptions<GetUserMappingQueryQueryParams, unknown, GetUserMappingQueryHeaderParams>, 'url'> {
+  extends Omit<FetcherOptions<GetUserMappingQueryQueryParams, GetUserMappingQueryHeaderParams>, 'url'> {
   queryParams: GetUserMappingQueryQueryParams;
 }
 
 export function getUserMapping(props: GetUserMappingProps): Promise<GetUserMappingOkResponse> {
-  return fetcher<GetUserMappingOkResponse, GetUserMappingQueryQueryParams, unknown, GetUserMappingQueryHeaderParams>({
+  return fetcher<GetUserMappingOkResponse, GetUserMappingQueryQueryParams, GetUserMappingQueryHeaderParams>({
     url: `/api/auth/userMapping`,
     method: 'GET',
     ...props

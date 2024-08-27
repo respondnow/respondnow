@@ -23,6 +23,7 @@ export interface StringsMap {
   incidentTimeline: unknown;
   incidents: unknown;
   keyMembers: unknown;
+  links: unknown;
   login: unknown;
   loginFooterText: unknown;
   loginSubHeading: unknown;
@@ -46,6 +47,7 @@ export interface StringsMap {
   summary: unknown;
   tags: unknown;
   termsAndConditions: unknown;
+  viaSlack: unknown;
   viewChannel: unknown;
   welcomeText: PrimitiveObject<'name'>;
 }

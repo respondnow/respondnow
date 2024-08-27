@@ -49,9 +49,7 @@ const IncidentListTable: React.FC<IncidentsTableProps> = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <TableV2<IncidentIncident> columns={columns} data={content} className={cx(css.paginationFix, css.incidentsTable)} />
-  );
+  return <TableV2<IncidentIncident> columns={columns} data={content} className={cx(css.paginationFix)} />;
 };
 
 const MemoisedIncidentListTable = React.memo(IncidentListTable, (prev, current) => {

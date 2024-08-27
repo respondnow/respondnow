@@ -42,3 +42,5 @@ summary: Summary
 keyMembers: Key Members
 tags: Tags
 incidentTimeline: Incident Timeline
+links: Links
+viaSlack: ', via Slack'
