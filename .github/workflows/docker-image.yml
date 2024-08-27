@@ -30,20 +30,20 @@ jobs:
           docker build -t ghcr.io/${{ github.repository }}/respond-server:latest -f package/Dockerfile .
           
       - name: Tag the Docker image
-        run: |
-          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            docker tag ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:stable
-          elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
-            release_version=$(echo "${{ github.ref }}" | sed 's|refs/heads/release/||')
-            docker tag ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${release_version}
-          fi
+        run: docker tag ghcr.io/${{ github.repository_owner }}/respond-server:latest ghcr.io/${{ github.repository_owner }}/respond-server:main-latest
+          # if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          #   docker tag ghcr.io/${{ github.repository_owner }}/respond-server:latest ghcr.io/${{ github.repository_owner }}/respond-server:stable
+          # elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
+          #   release_version=$(echo "${{ github.ref }}" | sed 's|refs/heads/release/||')
+          #   docker tag ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${release_version}
+          # fi
 
       - name: Push Docker image
-        run: |
-          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
-          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:stable
-          elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
-            release_version=$(echo "${{ github.ref }}" | sed 's|refs/heads/release/||')
-            docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${release_version}
-          fi
+        run: docker push ghcr.io/${{ github.repository_owner }}/respond-server:main-latest
+          # docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
+          # if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          #   docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:stable
+          # elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
+          #   release_version=$(echo "${{ github.ref }}" | sed 's|refs/heads/release/||')
+          #   docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${release_version}
+          # fi
