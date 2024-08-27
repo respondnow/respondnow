@@ -7,6 +7,10 @@ on:
       - pipeline-test
       - release/*
 
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: respondnow-server
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -20,30 +24,33 @@ jobs:
         with:
           go-version: '1.22.5' # Adjust the Go version as necessary
 
-      - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: imrajdas
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
       - name: Build the Docker image
         run: |
           cd server
           ls
-          docker build -t ghcr.io/${{ github.repository_owner }}/respond-server:latest -f package/Dockerfile .
+          docker build -t ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:latest -f package/Dockerfile .
           
       - name: Tag the Docker image
-        run: docker tag ghcr.io/${{ github.repository_owner }}/respond-server:latest ghcr.io/${{ github.repository_owner }}/respond-server:main-latest
+        run: docker tag ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/rajchaosnative/${{ env.IMAGE_NAME }}:main-latest
           # if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-          #   docker tag ghcr.io/${{ github.repository_owner }}/respond-server:latest ghcr.io/${{ github.repository_owner }}/respond-server:stable
+          #   docker tag ${{ env.REGISTRY }}/rajchaosnative/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/rajchaosnative/${{ env.IMAGE_NAME }}:stable
           # elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
           #   release_version=$(echo "${{ github.ref }}" | sed 's|refs/heads/release/||')
-          #   docker tag ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${release_version}
+          #   docker tag ${{ env.REGISTRY }}/rajchaosnative/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/rajchaosnative/${{ env.IMAGE_NAME }}:${release_version}
           # fi
 
       - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository_owner }}/respond-server:main-latest
-          # docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
+        run: docker push ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:main-latest
+          # docker push ${{ env.REGISTRY }}/rajchaosnative/${{ env.IMAGE_NAME }}:latest
           # if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-          #   docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:stable
+          #   docker push ${{ env.REGISTRY }}/rajchaosnative/${{ env.IMAGE_NAME }}:stable
           # elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
           #   release_version=$(echo "${{ github.ref }}" | sed 's|refs/heads/release/||')
-          #   docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${release_version}
+          #   docker push ${{ env.REGISTRY }}/rajchaosnative/${{ env.IMAGE_NAME }}:${release_version}
           # fi
