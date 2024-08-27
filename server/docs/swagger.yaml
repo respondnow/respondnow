@@ -651,8 +651,6 @@ definitions:
       name:
         type: string
       source:
-        type: string
-      source:
         $ref: '#/definitions/utils.Source'
       userId:
         type: string
@@ -969,53 +967,6 @@ paths:
       summary: Create an incident
       tags:
       - Incident
-  /incident/get:
-    get:
-      consumes:
-      - application/json
-      description: Get incident
-      operationId: GetIncident
-      parameters:
-      - description: incident identifier
-        in: path
-        name: incidentIdentifier
-        required: true
-        type: string
-      - description: accountIdentifier
-        in: query
-        name: accountIdentifier
-        required: true
-        type: string
-      - description: orgIdentifier
-        in: query
-        name: orgIdentifier
-        type: string
-      - description: projectIdentifier
-        in: query
-        name: projectIdentifier
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/incident.GetResponseDTO'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/utils.DefaultResponseDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/utils.DefaultResponseDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.DefaultResponseDTO'
-      summary: Get incident
-      tags:
-      - Incident Management
   /incident/list:
     get:
       consumes:
