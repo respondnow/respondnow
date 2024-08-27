@@ -739,7 +739,7 @@
                     }
                 },
                 "severity": {
-                    "type": "string"
+                    "$ref": "#/definitions/incident.Severity"
                 },
                 "status": {
                     "$ref": "#/definitions/incident.Status"
@@ -754,7 +754,7 @@
                     }
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/incident.Type"
                 }
             }
         },
@@ -855,7 +855,7 @@
                     }
                 },
                 "severity": {
-                    "type": "string"
+                    "$ref": "#/definitions/incident.Severity"
                 },
                 "stages": {
                     "type": "array",
@@ -882,7 +882,7 @@
                     }
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/incident.Type"
                 },
                 "updatedAt": {
                     "type": "integer"
@@ -1042,7 +1042,7 @@
                     }
                 },
                 "severity": {
-                    "type": "string"
+                    "$ref": "#/definitions/incident.Severity"
                 },
                 "stages": {
                     "type": "array",
@@ -1069,7 +1069,7 @@
                     }
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/incident.Type"
                 },
                 "updatedAt": {
                     "type": "integer"
@@ -1148,9 +1148,11 @@
             "type": "string",
             "enum": [
                 "Incident Commander",
+                "Incident Commander",
                 "Communications Lead"
             ],
             "x-enum-varnames": [
+                "DefaultRoleTypeForCreator",
                 "IncidentCommander",
                 "CommunicationsLead"
             ]
@@ -1165,6 +1167,19 @@
                     "type": "string"
                 }
             }
+        },
+        "incident.Severity": {
+            "type": "string",
+            "enum": [
+                "SEV0 - Critical, High Impact",
+                "SEV1 - Major, Significant Impact",
+                "SEV2 - Minor, Low Impact"
+            ],
+            "x-enum-varnames": [
+                "Severity0",
+                "Severity1",
+                "Severity2"
+            ]
         },
         "incident.Slack": {
             "type": "object",
@@ -1221,10 +1236,22 @@
         "incident.Status": {
             "type": "string",
             "enum": [
-                "Started"
+                "Started",
+                "Started",
+                "Acknowledged",
+                "Investigating",
+                "Identified",
+                "Mitigated",
+                "Resolved"
             ],
             "x-enum-varnames": [
-                "DefaultStartStatus"
+                "DefaultStartStatus",
+                "Started",
+                "Acknowledged",
+                "Investigating",
+                "Identified",
+                "Mitigated",
+                "Resolved"
             ]
         },
         "incident.Timeline": {

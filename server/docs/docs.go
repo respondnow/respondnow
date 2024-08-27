@@ -745,7 +745,7 @@ const docTemplate = `{
                     }
                 },
                 "severity": {
-                    "type": "string"
+                    "$ref": "#/definitions/incident.Severity"
                 },
                 "status": {
                     "$ref": "#/definitions/incident.Status"
@@ -760,7 +760,7 @@ const docTemplate = `{
                     }
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/incident.Type"
                 }
             }
         },
@@ -861,7 +861,7 @@ const docTemplate = `{
                     }
                 },
                 "severity": {
-                    "type": "string"
+                    "$ref": "#/definitions/incident.Severity"
                 },
                 "stages": {
                     "type": "array",
@@ -888,7 +888,7 @@ const docTemplate = `{
                     }
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/incident.Type"
                 },
                 "updatedAt": {
                     "type": "integer"
@@ -1048,7 +1048,7 @@ const docTemplate = `{
                     }
                 },
                 "severity": {
-                    "type": "string"
+                    "$ref": "#/definitions/incident.Severity"
                 },
                 "stages": {
                     "type": "array",
@@ -1075,7 +1075,7 @@ const docTemplate = `{
                     }
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/incident.Type"
                 },
                 "updatedAt": {
                     "type": "integer"
@@ -1154,9 +1154,11 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "Incident Commander",
+                "Incident Commander",
                 "Communications Lead"
             ],
             "x-enum-varnames": [
+                "DefaultRoleTypeForCreator",
                 "IncidentCommander",
                 "CommunicationsLead"
             ]
@@ -1171,6 +1173,19 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "incident.Severity": {
+            "type": "string",
+            "enum": [
+                "SEV0 - Critical, High Impact",
+                "SEV1 - Major, Significant Impact",
+                "SEV2 - Minor, Low Impact"
+            ],
+            "x-enum-varnames": [
+                "Severity0",
+                "Severity1",
+                "Severity2"
+            ]
         },
         "incident.Slack": {
             "type": "object",
@@ -1227,10 +1242,22 @@ const docTemplate = `{
         "incident.Status": {
             "type": "string",
             "enum": [
-                "Started"
+                "Started",
+                "Started",
+                "Acknowledged",
+                "Investigating",
+                "Identified",
+                "Mitigated",
+                "Resolved"
             ],
             "x-enum-varnames": [
-                "DefaultStartStatus"
+                "DefaultStartStatus",
+                "Started",
+                "Acknowledged",
+                "Investigating",
+                "Identified",
+                "Mitigated",
+                "Resolved"
             ]
         },
         "incident.Timeline": {

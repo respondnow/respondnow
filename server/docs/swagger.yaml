@@ -125,7 +125,7 @@ definitions:
           $ref: '#/definitions/incident.Service'
         type: array
       severity:
-        type: string
+        $ref: '#/definitions/incident.Severity'
       status:
         $ref: '#/definitions/incident.Status'
       summary:
@@ -135,7 +135,7 @@ definitions:
           type: string
         type: array
       type:
-        type: string
+        $ref: '#/definitions/incident.Type'
     required:
     - identifier
     - incidentChannel
@@ -203,7 +203,7 @@ definitions:
           $ref: '#/definitions/incident.Service'
         type: array
       severity:
-        type: string
+        $ref: '#/definitions/incident.Severity'
       stages:
         items:
           $ref: '#/definitions/incident.Stage'
@@ -221,7 +221,7 @@ definitions:
           $ref: '#/definitions/incident.Timeline'
         type: array
       type:
-        type: string
+        $ref: '#/definitions/incident.Type'
       updatedAt:
         type: integer
       updatedBy:
@@ -328,7 +328,7 @@ definitions:
           $ref: '#/definitions/incident.Service'
         type: array
       severity:
-        type: string
+        $ref: '#/definitions/incident.Severity'
       stages:
         items:
           $ref: '#/definitions/incident.Stage'
@@ -346,7 +346,7 @@ definitions:
           $ref: '#/definitions/incident.Timeline'
         type: array
       type:
-        type: string
+        $ref: '#/definitions/incident.Type'
       updatedAt:
         type: integer
       updatedBy:
@@ -405,9 +405,11 @@ definitions:
   incident.RoleType:
     enum:
     - Incident Commander
+    - Incident Commander
     - Communications Lead
     type: string
     x-enum-varnames:
+    - DefaultRoleTypeForCreator
     - IncidentCommander
     - CommunicationsLead
   incident.Service:
@@ -417,6 +419,16 @@ definitions:
       serviceName:
         type: string
     type: object
+  incident.Severity:
+    enum:
+    - SEV0 - Critical, High Impact
+    - SEV1 - Major, Significant Impact
+    - SEV2 - Minor, Low Impact
+    type: string
+    x-enum-varnames:
+    - Severity0
+    - Severity1
+    - Severity2
   incident.Slack:
     properties:
       channelDescription:
@@ -454,9 +466,21 @@ definitions:
   incident.Status:
     enum:
     - Started
+    - Started
+    - Acknowledged
+    - Investigating
+    - Identified
+    - Mitigated
+    - Resolved
     type: string
     x-enum-varnames:
     - DefaultStartStatus
+    - Started
+    - Acknowledged
+    - Investigating
+    - Identified
+    - Mitigated
+    - Resolved
   incident.Timeline:
     properties:
       change: {}
@@ -1012,9 +1036,32 @@ paths:
         in: query
         name: projectIdentifier
         type: string
+      - description: type
+        enum:
+        - Availability
+        - Latency
+        - Security
+        - Other
+        in: query
+        name: type
+        type: string
+      - description: severity
+        enum:
+        - SEV0 - Critical, High Impact
+        - SEV1 - Major, Significant Impact
+        - SEV2 - Minor, Low Impact
+        in: query
+        name: severity
+        type: string
       - description: status
         enum:
         - Started
+        - Started
+        - Acknowledged
+        - Investigating
+        - Identified
+        - Mitigated
+        - Resolved
         in: query
         name: status
         type: string

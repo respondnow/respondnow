@@ -104,7 +104,7 @@ func getChannelSelectBlock() *slack.InputBlock {
 
 func getRoleBlock() *slack.InputBlock {
 	supportedRoles := incidentdb.NewIncidentOperator(mongodb.Operator).GetIncidentRoles()
-	initialOptionForIncidentRole := string(supportedRoles[0])
+	initialOptionForIncidentRole := string(incidentdb.DefaultRoleTypeForCreator)
 	incidentRoleOptions := []*slack.OptionBlockObject{}
 	for _, role := range supportedRoles {
 		incidentRoleOptions = append(incidentRoleOptions, slack.NewOptionBlockObject(

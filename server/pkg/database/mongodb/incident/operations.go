@@ -274,8 +274,18 @@ func (i *incidentOperator) Validate(in *Incident) error {
 
 func (i *incidentOperator) GetIncidentTypes() []Type {
 	resp := make([]Type, 0)
-	for _, incidentType := range config.ServerConfig.IncidentTypes {
-		resp = append(resp, Type(incidentType))
+	if len(config.ServerConfig.IncidentTypes) > 0 {
+		for _, incidentType := range config.ServerConfig.IncidentTypes {
+			resp = append(resp, Type(incidentType))
+		}
+	} else {
+		defaultSupportedTypes := []Type{
+			Availability,
+			Latency,
+			Security,
+			Other,
+		}
+		resp = append(resp, defaultSupportedTypes...)
 	}
 
 	return resp
@@ -283,8 +293,17 @@ func (i *incidentOperator) GetIncidentTypes() []Type {
 
 func (i *incidentOperator) GetIncidentSeverities() []Severity {
 	resp := make([]Severity, 0)
-	for severity := range config.ServerConfig.Severities {
-		resp = append(resp, Severity(severity))
+	if len(config.ServerConfig.Severities) > 0 {
+		for severity := range config.ServerConfig.Severities {
+			resp = append(resp, Severity(severity))
+		}
+	} else {
+		defaultSupportedSeverities := []Severity{
+			Severity0,
+			Severity1,
+			Severity2,
+		}
+		resp = append(resp, defaultSupportedSeverities...)
 	}
 
 	return resp
@@ -298,8 +317,20 @@ func (i *incidentOperator) GetIncidentAttachmentType() []AttachmentType {
 
 func (i *incidentOperator) GetIncidentStageStatuses() []Status {
 	resp := make([]Status, 0)
-	for _, status := range config.ServerConfig.Statuses {
-		resp = append(resp, Status(status))
+	if len(config.ServerConfig.Statuses) > 0 {
+		for _, status := range config.ServerConfig.Statuses {
+			resp = append(resp, Status(status))
+		}
+	} else {
+		defaultSupportedStatuses := []Status{
+			Started,
+			Acknowledged,
+			Investigating,
+			Identified,
+			Mitigated,
+			Resolved,
+		}
+		resp = append(resp, defaultSupportedStatuses...)
 	}
 
 	return resp
@@ -307,8 +338,16 @@ func (i *incidentOperator) GetIncidentStageStatuses() []Status {
 
 func (i *incidentOperator) GetIncidentRoles() []RoleType {
 	resp := make([]RoleType, 0)
-	for role := range config.ServerConfig.Roles {
-		resp = append(resp, RoleType(role))
+	if len(config.ServerConfig.Roles) > 0 {
+		for role := range config.ServerConfig.Roles {
+			resp = append(resp, RoleType(role))
+		}
+	} else {
+		defaultSupportedRoles := []RoleType{
+			IncidentCommander,
+			CommunicationsLead,
+		}
+		resp = append(resp, defaultSupportedRoles...)
 	}
 
 	return resp
