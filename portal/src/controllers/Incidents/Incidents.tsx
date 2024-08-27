@@ -2,7 +2,7 @@ import React from 'react';
 import { useToaster } from '@harnessio/uicore';
 import { isEqual } from 'lodash-es';
 import IncidentsView from '@views/Incidents';
-// import { getScope } from '@utils';
+import { getScope, scopeExists } from '@utils';
 import { useListIncidentsQuery } from '@services/server/hooks/useListIncidentsQuery';
 import { initialIncidenrsFilterState, useIncidentsFilter, usePagination } from '@hooks';
 import { IncidentsTableProps } from '@interfaces';
@@ -15,7 +15,7 @@ import {
 } from './IncidentsFilters';
 
 const IncidentsController: React.FC = () => {
-  // const scope = getScope();
+  const scope = getScope();
   const { showError } = useToaster();
   // Filter props
   const { page, limit, setPage, setLimit, pageSizeOptions } = usePagination([10, 20], { page: 0, limit: 10 }, true);
@@ -33,9 +33,7 @@ const IncidentsController: React.FC = () => {
   const { data: incidentList, isLoading: incidentListLoading } = useListIncidentsQuery(
     {
       queryParams: {
-        accountIdentifier: 'default',
-        projectIdentifier: 'default',
-        orgIdentifier: 'default',
+        ...scope,
         page,
         all: false,
         limit,
@@ -48,7 +46,8 @@ const IncidentsController: React.FC = () => {
       onError: error => {
         showError(error.message);
       },
-      refetchInterval: 20000
+      refetchInterval: 20000,
+      enabled: scopeExists()
     }
   );
 

@@ -29,7 +29,7 @@ export interface CreateIncidentProps
 
 export function createIncident(props: CreateIncidentProps): Promise<CreateIncidentOkResponse> {
   return fetcher<CreateIncidentOkResponse, CreateIncidentMutationQueryParams, CreateIncidentRequestBody>({
-    url: `/auth/incident/create`,
+    url: `/api/incident/create`,
     method: 'POST',
     ...props
   });

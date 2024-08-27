@@ -37,21 +37,19 @@ const IncidentListTable: React.FC<IncidentsTableProps> = props => {
         Header: getString('duration'),
         id: 'duration',
         Cell: CellRenderer.IncidentDuration,
-        width: '20%'
+        width: '15%'
       },
       {
         Header: '',
         id: 'cta',
         Cell: CellRenderer.IncidentCTA,
-        width: '10%'
+        width: '15%'
       }
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <TableV2<IncidentIncident> columns={columns} data={content} className={cx(css.paginationFix, css.incidentsTable)} />
-  );
+  return <TableV2<IncidentIncident> columns={columns} data={content} className={cx(css.paginationFix)} />;
 };
 
 const MemoisedIncidentListTable = React.memo(IncidentListTable, (prev, current) => {

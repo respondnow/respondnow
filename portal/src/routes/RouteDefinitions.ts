@@ -14,7 +14,7 @@ export interface UseRouteDefinitionsProps {
 export const paths: UseRouteDefinitionsProps = {
   toRoot: () => '/',
   toLogin: () => '/login',
-  toPasswordReset: () => '/settings/password-reset',
+  toPasswordReset: () => '/password-reset',
   toGetStarted: () => '/getting-started',
   toIncidentDashboard: () => '/incidents',
   toIncidentDetails: ({ incidentId }) => `/incidents/${incidentId}`

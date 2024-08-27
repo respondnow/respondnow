@@ -4,7 +4,7 @@ import { mapKeys, omit } from 'lodash-es';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const baseUrl = process.env.BASE_URL || 'https://api.respondnow.io';
+const baseUrl = process.env.BASE_URL || 'http://localhost:8080';
 
 function normalizeAPIPath(url: string): string {
   return url.replace(/\/{2,}/g, '/');

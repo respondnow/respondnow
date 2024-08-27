@@ -42,3 +42,15 @@ summary: Summary
 keyMembers: Key Members
 tags: Tags
 incidentTimeline: Incident Timeline
+links: Links
+viaSlack: ', via Slack'
+updatePassword: Update Password
+enterOldPassword: Enter Old Password
+enterNewPassword: Enter New Password
+fieldMinLength: Field must be at least {{length}} characters
+fieldMaxLength: Field must be at most {{length}} characters
+reEnterNewPassword: Re-enter New Password
+passwordsDoNotMatch: Passwords do not match
+oldPassword: Old Password
+newPassword: New Password
+confirm: Confirm

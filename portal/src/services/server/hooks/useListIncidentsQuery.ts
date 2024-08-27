@@ -33,7 +33,7 @@ export interface ListIncidentsProps extends Omit<FetcherOptions<ListIncidentsQue
 
 export function listIncidents(props: ListIncidentsProps): Promise<ListIncidentsOkResponse> {
   return fetcher<ListIncidentsOkResponse, ListIncidentsQueryQueryParams, unknown>({
-    url: `/auth/incident/list`,
+    url: `/api/incident/list`,
     method: 'GET',
     ...props
   });

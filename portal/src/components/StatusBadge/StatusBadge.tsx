@@ -9,54 +9,54 @@ import css from './StatusBadge.module.scss';
 
 const StatusBadge: React.FC<{ status: IncidentStatus | undefined }> = ({ status }) => {
   const getSeverityProps = (): {
-    foreGroundColor: string;
+    foregroundColor: string;
     icon: IconName;
   } => {
     switch (status) {
       case 'Acknowledged':
         return {
-          foreGroundColor: Color.PRIMARY_7,
-          icon: 'steps-spinner'
+          foregroundColor: Color.PRIMARY_7,
+          icon: 'status-running'
         };
       case 'Resolved':
         return {
-          foreGroundColor: Color.GREEN_700,
+          foregroundColor: Color.GREEN_700,
           icon: 'tick'
         };
       case 'Identified':
         return {
-          foreGroundColor: Color.PRIMARY_7,
-          icon: 'steps-spinner'
+          foregroundColor: Color.PRIMARY_7,
+          icon: 'status-running'
         };
       case 'Investigating':
         return {
-          foreGroundColor: Color.PRIMARY_7,
-          icon: 'steps-spinner'
+          foregroundColor: Color.PRIMARY_7,
+          icon: 'status-running'
         };
       case 'Mitigated':
         return {
-          foreGroundColor: Color.PRIMARY_7,
-          icon: 'steps-spinner'
+          foregroundColor: Color.PRIMARY_7,
+          icon: 'status-running'
         };
       case 'Started':
         return {
-          foreGroundColor: Color.PRIMARY_7,
-          icon: 'steps-spinner'
+          foregroundColor: Color.PRIMARY_7,
+          icon: 'status-running'
         };
       default:
         return {
-          foreGroundColor: Color.BLACK,
-          icon: 'steps-spinner'
+          foregroundColor: Color.BLACK,
+          icon: 'status-running'
         };
     }
   };
 
-  const { foreGroundColor, icon } = getSeverityProps();
+  const { foregroundColor, icon } = getSeverityProps();
 
   return (
-    <Layout.Horizontal flex={{ align: 'center-center' }} background={Color.GREY_50} className={css.badgeContainer}>
-      <Icon name={icon} size={14} color={foreGroundColor} />
-      <Text font={{ variation: FontVariation.SMALL }} color={foreGroundColor}>
+    <Layout.Horizontal flex={{ align: 'center-center' }} className={css.badgeContainer}>
+      <Icon name={icon} size={14} color={foregroundColor} />
+      <Text font={{ variation: FontVariation.SMALL }} color={foregroundColor}>
         {status || 'N/A'}
       </Text>
     </Layout.Horizontal>
