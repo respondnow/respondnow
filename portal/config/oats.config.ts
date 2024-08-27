@@ -12,20 +12,28 @@ function normalizeAPIPath(url: string): string {
 
 export default defineConfig({
   services: {
-    auth: {
-      url: normalizeAPIPath(`${baseUrl}/auth/swagger/doc.json`),
+    api: {
+      url: normalizeAPIPath(`${baseUrl}/swagger/doc.json`),
       output: 'src/services/server',
       transformer(spec) {
         return {
           ...spec,
-          paths: mapKeys(spec.paths, (_val, key) => normalizeAPIPath(`/auth/${key}`))
+          paths: mapKeys(spec.paths, (_val, key) => normalizeAPIPath(`/api/${key}`))
         };
       },
       genOnlyUsed: true,
       plugins: [
         reactQueryPlugin({
           customFetcher: '@services/fetcher',
-          allowedOperationIds: ['ChangePassword', 'Login', 'SignUp', 'CreateIncident', 'ListIncidents', 'GetIncident'],
+          allowedOperationIds: [
+            'ChangePassword',
+            'Login',
+            'SignUp',
+            'CreateIncident',
+            'ListIncidents',
+            'GetIncident',
+            'GetUserMapping'
+          ],
           overrides: {}
         })
       ]

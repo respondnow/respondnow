@@ -2,7 +2,7 @@ import React from 'react';
 import { useToaster } from '@harnessio/uicore';
 import { isEqual } from 'lodash-es';
 import IncidentsView from '@views/Incidents';
-import { getScope } from '@utils';
+// import { getScope } from '@utils';
 import { useListIncidentsQuery } from '@services/server/hooks/useListIncidentsQuery';
 import { initialIncidenrsFilterState, useIncidentsFilter, usePagination } from '@hooks';
 import { IncidentsTableProps } from '@interfaces';
@@ -15,7 +15,7 @@ import {
 } from './IncidentsFilters';
 
 const IncidentsController: React.FC = () => {
-  const scope = getScope();
+  // const scope = getScope();
   const { showError } = useToaster();
   // Filter props
   const { page, limit, setPage, setLimit, pageSizeOptions } = usePagination([10, 20], { page: 0, limit: 10 }, true);

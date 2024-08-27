@@ -2,7 +2,7 @@ import prompts from 'prompts';
 import { $ } from 'zx';
 
 (async () => {
-  const services = ['auth'];
+  const services = ['api'];
 
   services.sort();
 

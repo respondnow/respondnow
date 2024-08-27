@@ -5,7 +5,7 @@ const { DefinePlugin } = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const { RetryChunkLoadPlugin } = require('webpack-retry-chunk-load-plugin');
-
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { GenerateStringTypesPlugin } = require('@harnessio/uicore/tools/GenerateStringTypesPlugin');
 
 const CONTEXT = process.cwd();
@@ -100,6 +100,11 @@ module.exports = {
         ]
       },
       {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+        include: /node_modules/
+      },
+      {
         test: /\.ya?ml$/,
         type: 'json',
         use: [
@@ -125,6 +130,9 @@ module.exports = {
     new RetryChunkLoadPlugin({
       retryDelay: 1000,
       maxRetries: 5
+    }),
+    new CopyWebpackPlugin({
+      patterns: [{ from: 'src/static' }]
     }),
     new GenerateStringTypesPlugin({
       input: 'src/strings/strings.en.yaml',
