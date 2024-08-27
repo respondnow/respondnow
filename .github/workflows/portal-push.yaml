@@ -65,7 +65,7 @@ jobs:
           docker build -t ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -f Dockerfile .
 
       - name: Push Docker image to Docker Hub
-        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release-') }}
+        if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/final-test' || startsWith(github.ref, 'refs/heads/release-') }}
         run: |
           docker push ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
