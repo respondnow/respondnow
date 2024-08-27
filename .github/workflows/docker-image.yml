@@ -37,7 +37,7 @@ jobs:
           docker build -t ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:latest -f package/Dockerfile .
           
       - name: Tag the Docker image
-        run: docker tag ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/rajchaosnative/${{ env.IMAGE_NAME }}:main-latest
+        run: docker tag ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:main-latest
           # if [ "${{ github.ref }}" == "refs/heads/main" ]; then
           #   docker tag ${{ env.REGISTRY }}/rajchaosnative/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/rajchaosnative/${{ env.IMAGE_NAME }}:stable
           # elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
