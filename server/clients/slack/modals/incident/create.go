@@ -457,6 +457,37 @@ func (is incidentService) sendCreateIncidentResponseMsg(teamID, channelID, joinC
 	}
 
 	blocks = append(blocks,
+		slack.NewDividerBlock(),
+
+		slack.NewActionBlock("incident_action_buttons",
+			slack.ButtonBlockElement{
+				Type:     slack.METButton,
+				Text:     &slack.TextBlockObject{Type: slack.PlainTextType, Text: "Update Summary"},
+				ActionID: "update_incident_summary_button",
+				Value:    newIncident.Identifier,
+			},
+			slack.ButtonBlockElement{
+				Type:     slack.METButton,
+				Text:     &slack.TextBlockObject{Type: slack.PlainTextType, Text: "Assign Roles"},
+				ActionID: "update_incident_assign_roles_button",
+				Value:    newIncident.Identifier,
+			},
+			slack.ButtonBlockElement{
+				Type:     slack.METButton,
+				Text:     &slack.TextBlockObject{Type: slack.PlainTextType, Text: "Update Status"},
+				ActionID: "update_incident_status_button",
+				Value:    newIncident.Identifier,
+			},
+			slack.ButtonBlockElement{
+				Type:     slack.METButton,
+				Text:     &slack.TextBlockObject{Type: slack.PlainTextType, Text: "Update Severity"},
+				ActionID: "update_incident_severity_button",
+				Value:    newIncident.Identifier,
+			},
+		),
+	)
+
+	blocks = append(blocks,
 		slack.NewContextBlock("create_incident_channel_resp_createdAt",
 			slack.NewTextBlockObject(
 				slack.PlainTextType, fmt.Sprintf(":clock1: Started At: %v",

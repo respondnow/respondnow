@@ -12,6 +12,7 @@ type IncidentService interface {
 	HandleJoinChannelAction(evt *socketmode.Event, blockAction *slack.BlockAction)
 	ListIncidents(evt *socketmode.Event, slackIncidentType incident.SlackIncidentType)
 	ShowIncident(evt *socketmode.Event, incidentID string)
+	UpdateIncidentSummary(evt *socketmode.Event)
 }
 
 type incidentService struct {

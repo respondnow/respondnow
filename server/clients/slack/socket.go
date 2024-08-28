@@ -8,7 +8,9 @@ import (
 	"strings"
 
 	slackincident "github.com/respondnow/respond/server/clients/slack/modals/incident"
+	"github.com/respondnow/respond/server/pkg/database/mongodb"
 	"github.com/respondnow/respond/server/pkg/database/mongodb/incident"
+	incidentdb "github.com/respondnow/respond/server/pkg/database/mongodb/incident"
 	"github.com/sirupsen/logrus"
 	"github.com/slack-go/slack/slackevents"
 	"github.com/slack-go/slack/socketmode"
@@ -148,11 +150,27 @@ func middlewareInteractionTypeViewSubmission(evt *socketmode.Event, client *sock
 	}
 	client.Debugf("ViewSubmission received: %+v", viewSubmission)
 
+	incidentIdentifier := viewSubmission.View.PrivateMetadata // Retrieve the incident identifier
+
 	switch viewSubmission.View.CallbackID {
 	case "create_incident_modal":
 		slackincident.NewIncidentService(client).CreateIncident(evt)
+	case "incident_summary_modal":
+		logrus.Infof("update summary : %+v\n", viewSubmission.View.State.Values)
+		summary := viewSubmission.View.State.Values["create_incident_modal_summary"]["create_incident_modal_set_summary"].Value
+		logrus.Infof("Incident Identifier: %s, Updated Summary: %s", incidentIdentifier, summary)
+		slackincident.NewIncidentService(client).UpdateIncidentSummary(evt)
+	case "incident_roles_modal":
+		rolesData := viewSubmission.View.State.Values
+		logrus.Infof("Incident Identifier: %s, Updated Roles Data: %+v", incidentIdentifier, rolesData)
+	case "incident_status_modal":
+		status := viewSubmission.View.State.Values["incident_status"]["create_incident_modal_set_incident_status"].SelectedOption.Value
+		logrus.Infof("Incident Identifier: %s, Updated Status: %s", incidentIdentifier, status)
+	case "incident_severity_modal":
+		severity := viewSubmission.View.State.Values["incident_severity"]["create_incident_modal_set_incident_severity"].SelectedOption.Value
+		logrus.Infof("Incident Identifier: %s, Updated Severity: %s", incidentIdentifier, severity)
 	default:
-		logrus.Infof("unsupported viewSubmission callback received: %s", viewSubmission.CallbackID)
+		logrus.Infof("unsupported viewSubmission callback received: %s", viewSubmission.View.CallbackID)
 	}
 }
 
@@ -177,6 +195,114 @@ func middlewareInteractionTypeShortcut(evt *socketmode.Event, client *socketmode
 	}
 }
 
+func getSeverityBlock() *slack.InputBlock {
+	supportedIncidentSeverities := incidentdb.NewIncidentOperator(mongodb.Operator).GetIncidentSeverities()
+	initialOptionForIncidentSeverity := string(supportedIncidentSeverities[len(supportedIncidentSeverities)-1])
+	incidentSevOptions := []*slack.OptionBlockObject{}
+	for _, incidentSev := range supportedIncidentSeverities {
+		incidentSevOptions = append(incidentSevOptions, slack.NewOptionBlockObject(
+			string(incidentSev),
+			slack.NewTextBlockObject(slack.PlainTextType,
+				string(incidentSev), true, false),
+			slack.NewTextBlockObject(slack.PlainTextType,
+				string(incidentSev), true, false),
+		))
+	}
+
+	return slack.NewInputBlock(
+		"incident_severity",
+		&slack.TextBlockObject{
+			Type:  slack.PlainTextType,
+			Text:  ":vertical_traffic_light: Severity",
+			Emoji: false,
+		},
+		nil,
+		&slack.SelectBlockElement{
+			Type:     slack.OptTypeStatic,
+			ActionID: "create_incident_modal_set_incident_severity",
+			Placeholder: slack.NewTextBlockObject(slack.PlainTextType,
+				"Select severity of the incident...", false, false),
+			InitialOption: slack.NewOptionBlockObject(
+				initialOptionForIncidentSeverity,
+				slack.NewTextBlockObject(slack.PlainTextType,
+					initialOptionForIncidentSeverity, false, false),
+				slack.NewTextBlockObject(slack.PlainTextType,
+					initialOptionForIncidentSeverity, false, false),
+			),
+			Options: incidentSevOptions,
+		},
+	)
+}
+
+func getStatusBlock() *slack.InputBlock {
+	// Fetch the list of statuses from the database or other source
+	supportedIncidentStatuses := incidentdb.NewIncidentOperator(mongodb.Operator).GetIncidentStageStatuses()
+	initialOptionForIncidentStatus := string(supportedIncidentStatuses[len(supportedIncidentStatuses)-1])
+	incidentStatusOptions := []*slack.OptionBlockObject{}
+
+	for _, incidentStatus := range supportedIncidentStatuses {
+		incidentStatusOptions = append(incidentStatusOptions, slack.NewOptionBlockObject(
+			string(incidentStatus),
+			slack.NewTextBlockObject(slack.PlainTextType,
+				string(incidentStatus), true, false),
+			slack.NewTextBlockObject(slack.PlainTextType,
+				string(incidentStatus), true, false),
+		))
+	}
+
+	return slack.NewInputBlock(
+		"incident_status",
+		&slack.TextBlockObject{
+			Type:  slack.PlainTextType,
+			Text:  ":arrows_counterclockwise: Status",
+			Emoji: false,
+		},
+		nil,
+		&slack.SelectBlockElement{
+			Type:     slack.OptTypeStatic,
+			ActionID: "create_incident_modal_set_incident_status",
+			Placeholder: slack.NewTextBlockObject(slack.PlainTextType,
+				"Select status of the incident...", false, false),
+			InitialOption: slack.NewOptionBlockObject(
+				initialOptionForIncidentStatus,
+				slack.NewTextBlockObject(slack.PlainTextType,
+					initialOptionForIncidentStatus, false, false),
+				slack.NewTextBlockObject(slack.PlainTextType,
+					initialOptionForIncidentStatus, false, false),
+			),
+			Options: incidentStatusOptions,
+		},
+	)
+}
+
+func getSummaryBlock() *slack.InputBlock {
+	return slack.NewInputBlock("create_incident_modal_summary", slack.NewTextBlockObject(
+		slack.PlainTextType, ":memo: Summary", false, false,
+	), nil, slack.PlainTextInputBlockElement{
+		Type:      slack.METPlainTextInput,
+		Multiline: true,
+		ActionID:  "create_incident_modal_set_summary",
+		Placeholder: slack.NewTextBlockObject(slack.PlainTextType, "A brief description of the problem.",
+			false, false),
+	})
+}
+
+func getRolesBlock() []slack.Block {
+	supportedIncidentRoles := incidentdb.NewIncidentOperator(mongodb.Operator).GetIncidentRoles()
+	var blocks []slack.Block
+	for _, role := range supportedIncidentRoles {
+		roleText := slack.NewTextBlockObject(slack.PlainTextType, string(role), false, false)
+		userSelect := slack.NewOptionsSelectBlockElement(
+			slack.OptTypeUser,
+			slack.NewTextBlockObject(slack.PlainTextType, "Select a user", false, false),
+			"create_incident_modal_set_"+string(role),
+		)
+		section := slack.NewSectionBlock(roleText, nil, slack.NewAccessory(userSelect))
+		blocks = append(blocks, section)
+	}
+	return blocks
+}
+
 func middlewareInteractionTypeBlockActions(evt *socketmode.Event, client *socketmode.Client) {
 	blockActions, ok := evt.Data.(slack.InteractionCallback)
 	if !ok {
@@ -189,6 +315,84 @@ func middlewareInteractionTypeBlockActions(evt *socketmode.Event, client *socket
 		switch blockAction.ActionID {
 		case "create_incident_channel_join_channel_button":
 			slackincident.NewIncidentService(client).HandleJoinChannelAction(evt, blockAction)
+		case "update_incident_summary_button":
+			client.Debugf("Displaying modal for incident severity selection")
+			modalRequest := slack.ModalViewRequest{
+				Type:            slack.VTModal,
+				PrivateMetadata: blockAction.Value,
+				CallbackID:      "incident_summary_modal",
+				Title: slack.NewTextBlockObject("plain_text",
+					"Update Incident Severity", false, false),
+				Blocks: slack.Blocks{
+					BlockSet: []slack.Block{
+						getSummaryBlock(),
+					},
+				},
+				Submit: slack.NewTextBlockObject("plain_text", "Submit", false, false),
+			}
+
+			_, err := client.OpenView(blockActions.TriggerID, modalRequest)
+			if err != nil {
+				logrus.Errorf("Error opening modal: %v", err)
+			}
+		case "update_incident_assign_roles_button":
+			client.Debugf("Displaying modal for assigning roles")
+			modalRequest := slack.ModalViewRequest{
+				Type:            slack.VTModal,
+				PrivateMetadata: blockAction.Value,
+				CallbackID:      "incident_roles_modal",
+				Title: slack.NewTextBlockObject("plain_text",
+					"Assign Incident Roles", false, false),
+				Blocks: slack.Blocks{
+					BlockSet: getRolesBlock(),
+				},
+				Submit: slack.NewTextBlockObject("plain_text", "Submit", false, false),
+			}
+
+			_, err := client.OpenView(blockActions.TriggerID, modalRequest)
+			if err != nil {
+				logrus.Errorf("Error opening modal: %v", err)
+			}
+		case "update_incident_status_button":
+			client.Debugf("Displaying modal for incident severity selection")
+			modalRequest := slack.ModalViewRequest{
+				Type:            slack.VTModal,
+				CallbackID:      "incident_status_modal",
+				PrivateMetadata: blockAction.Value,
+				Title: slack.NewTextBlockObject("plain_text",
+					"Update Incident Status", false, false),
+				Blocks: slack.Blocks{
+					BlockSet: []slack.Block{
+						getStatusBlock(),
+					},
+				},
+				Submit: slack.NewTextBlockObject("plain_text", "Submit", false, false),
+			}
+
+			_, err := client.OpenView(blockActions.TriggerID, modalRequest)
+			if err != nil {
+				logrus.Errorf("Error opening modal: %v", err)
+			}
+		case "update_incident_severity_button":
+			client.Debugf("Displaying modal for incident severity selection")
+			modalRequest := slack.ModalViewRequest{
+				Type:            slack.VTModal,
+				CallbackID:      "incident_severity_modal",
+				PrivateMetadata: blockAction.Value,
+				Title: slack.NewTextBlockObject("plain_text",
+					"Update Incident Severity", false, false),
+				Blocks: slack.Blocks{
+					BlockSet: []slack.Block{
+						getSeverityBlock(),
+					},
+				},
+				Submit: slack.NewTextBlockObject("plain_text", "Submit", false, false),
+			}
+
+			_, err := client.OpenView(blockActions.TriggerID, modalRequest)
+			if err != nil {
+				logrus.Errorf("Error opening modal: %v", err)
+			}
 		default:
 			incidentID := blockAction.ActionID
 			if strings.HasPrefix(incidentID, "view_incident_") {

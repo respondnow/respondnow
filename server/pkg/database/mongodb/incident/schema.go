@@ -66,6 +66,8 @@ const (
 	ChangeTypeSeverity            ChangeType = "severity"
 	ChangeTypeStatus              ChangeType = "status"
 	ChangeTypeComment             ChangeType = "comment"
+	ChangeTypeSummary             ChangeType = "summary"
+	ChangeTypeRoles               ChangeType = "roles"
 	ChangeTypeSlackChannelCreated ChangeType = "slackChannelCreated"
 	ChangeTypeIncidentCreated     ChangeType = "incidentCreated"
 )

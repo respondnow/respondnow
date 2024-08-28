@@ -13,6 +13,7 @@ import (
 	"github.com/respondnow/respond/server/pkg/database/mongodb"
 	"github.com/respondnow/respond/server/pkg/database/mongodb/incident"
 	"github.com/respondnow/respond/server/utils"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -22,6 +23,7 @@ type IncidentService interface {
 		limit, page int64, all bool) (ListResponse, error)
 	Create(ctx context.Context, request CreateRequest,
 		currentUser utils.UserDetails, correlationID string) (CreateResponse, error)
+	UpdateSummary(ctx context.Context, incidentID, newSummary string, currentUser utils.UserDetails) (incident.Incident, error)
 	AddConferenceDetailsForIncident(conferenceType incident.ConferenceType) (incident.Conference, error)
 	ListIncidentsForSlackView(ctx context.Context, slackIncidentType incident.SlackIncidentType) ([]incident.Incident, error)
 	GetIncidentForSlackView(ctx context.Context, incidentId string) (incident.Incident, error)
@@ -47,8 +49,38 @@ func NewIncidentService(
 }
 
 func (is incidentService) GenerateIncidentIdentifier(createdAt int64) string {
-
 	return strconv.Itoa(int(createdAt)) + "-" + uuid.New().String()
+}
+
+func (is incidentService) UpdateSummary(ctx context.Context, incidentID, newSummary string,
+	currentUser utils.UserDetails) (incident.Incident, error) {
+	existingIncident, err := is.Get(ctx, incidentID)
+	if err != nil {
+		return incident.Incident{}, err
+	}
+
+	logrus.Infof("new summary of the incident is: %v\n", newSummary)
+
+	existingIncident.Summary = newSummary
+
+	ts := time.Now().Unix()
+	existingIncident.AuditDetails.UpdatedBy = currentUser
+	existingIncident.AuditDetails.UpdatedAt = &ts
+
+	existingIncident.Timelines = append(existingIncident.Timelines, incident.Timeline{
+		ID:        strconv.Itoa(int(ts)),
+		Type:      incident.ChangeTypeSummary,
+		CreatedAt: ts,
+		UpdatedAt: &ts,
+		User:      currentUser,
+	})
+
+	updatedIncident, err := is.incidentOperator.UpdateByID(ctx, existingIncident)
+	if err != nil {
+		return incident.Incident{}, err
+	}
+
+	return updatedIncident, nil
 }
 
 func (is incidentService) Create(ctx context.Context, request CreateRequest,
