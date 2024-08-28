@@ -29,17 +29,16 @@ export function getTimelinePropsBasedOnIncidentData(
     return undefined;
   }
 
+  const SlackIconRenderer = (
+    <div className={css.slackIcon}>
+      <img src={SlackIcon} height={14} width={14} alt="Slack" />
+    </div>
+  );
+
   switch (timeline.type) {
     case 'incidentCreated':
       return {
-        icon: (
-          <Icon
-            name="chaos-litmuschaos"
-            size={12}
-            background={Color.GREY_100}
-            style={{ borderRadius: '10rem', padding: '7px' }}
-          />
-        ),
+        icon: SlackIconRenderer,
         headerContent: (
           <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
@@ -85,14 +84,7 @@ export function getTimelinePropsBasedOnIncidentData(
       };
     case 'slackChannelCreated':
       return {
-        icon: (
-          <Icon
-            name="chaos-litmuschaos"
-            size={12}
-            background={Color.GREY_100}
-            style={{ borderRadius: '10rem', padding: '7px' }}
-          />
-        ),
+        icon: SlackIconRenderer,
         headerContent: (
           <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.GREY_800}>
             {getString('incidentChannelCreated')}
@@ -139,14 +131,7 @@ export function getTimelinePropsBasedOnIncidentData(
       };
     case 'comment':
       return {
-        icon: (
-          <Icon
-            name="chaos-litmuschaos"
-            size={12}
-            background={Color.GREY_100}
-            style={{ borderRadius: '10rem', padding: '7px' }}
-          />
-        ),
+        icon: SlackIconRenderer,
         headerContent: (
           <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
@@ -168,14 +153,7 @@ export function getTimelinePropsBasedOnIncidentData(
       };
     case 'severity':
       return {
-        icon: (
-          <Icon
-            name="chaos-litmuschaos"
-            size={12}
-            background={Color.GREY_100}
-            style={{ borderRadius: '10rem', padding: '7px' }}
-          />
-        ),
+        icon: SlackIconRenderer,
         headerContent: (
           <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
@@ -199,14 +177,7 @@ export function getTimelinePropsBasedOnIncidentData(
       };
     case 'status':
       return {
-        icon: (
-          <Icon
-            name="chaos-litmuschaos"
-            size={12}
-            background={Color.GREY_100}
-            style={{ borderRadius: '10rem', padding: '7px' }}
-          />
-        ),
+        icon: SlackIconRenderer,
         headerContent: (
           <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
