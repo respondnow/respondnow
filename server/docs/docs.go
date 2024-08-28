@@ -262,7 +262,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Create an incident",
@@ -343,6 +343,11 @@ const docTemplate = `{
         },
         "/incident/list": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "List incidents",
                 "consumes": [
                     "application/json"
@@ -400,7 +405,6 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            "Started",
                             "Started",
                             "Acknowledged",
                             "Investigating",
@@ -489,6 +493,11 @@ const docTemplate = `{
         },
         "/incident/{incidentIdentifier}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get incident",
                 "consumes": [
                     "application/json"
@@ -1237,11 +1246,9 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "Incident Commander",
-                "Incident Commander",
                 "Communications Lead"
             ],
             "x-enum-varnames": [
-                "DefaultRoleTypeForCreator",
                 "IncidentCommander",
                 "CommunicationsLead"
             ]
@@ -1326,7 +1333,6 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "Started",
-                "Started",
                 "Acknowledged",
                 "Investigating",
                 "Identified",
@@ -1334,7 +1340,6 @@ const docTemplate = `{
                 "Resolved"
             ],
             "x-enum-varnames": [
-                "DefaultStartStatus",
                 "Started",
                 "Acknowledged",
                 "Investigating",

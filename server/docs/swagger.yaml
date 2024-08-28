@@ -411,11 +411,9 @@ definitions:
   incident.RoleType:
     enum:
     - Incident Commander
-    - Incident Commander
     - Communications Lead
     type: string
     x-enum-varnames:
-    - DefaultRoleTypeForCreator
     - IncidentCommander
     - CommunicationsLead
   incident.Service:
@@ -472,7 +470,6 @@ definitions:
   incident.Status:
     enum:
     - Started
-    - Started
     - Acknowledged
     - Investigating
     - Identified
@@ -480,7 +477,6 @@ definitions:
     - Resolved
     type: string
     x-enum-varnames:
-    - DefaultStartStatus
     - Started
     - Acknowledged
     - Investigating
@@ -923,6 +919,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.DefaultResponseDTO'
+      security:
+      - BearerAuth: []
       summary: Get incident
       tags:
       - Incident Management
@@ -976,7 +974,7 @@ paths:
           schema:
             $ref: '#/definitions/utils.DefaultResponseDTO'
       security:
-      - ApiKeyAuth: []
+      - BearerAuth: []
       summary: Create an incident
       tags:
       - Incident
@@ -1019,7 +1017,6 @@ paths:
         type: string
       - description: status
         enum:
-        - Started
         - Started
         - Acknowledged
         - Investigating
@@ -1078,6 +1075,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.DefaultResponseDTO'
+      security:
+      - BearerAuth: []
       summary: List incidents
       tags:
       - Incident Management

@@ -256,7 +256,7 @@
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Create an incident",
@@ -337,6 +337,11 @@
         },
         "/incident/list": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "List incidents",
                 "consumes": [
                     "application/json"
@@ -394,7 +399,6 @@
                     },
                     {
                         "enum": [
-                            "Started",
                             "Started",
                             "Acknowledged",
                             "Investigating",
@@ -483,6 +487,11 @@
         },
         "/incident/{incidentIdentifier}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get incident",
                 "consumes": [
                     "application/json"
@@ -1231,11 +1240,9 @@
             "type": "string",
             "enum": [
                 "Incident Commander",
-                "Incident Commander",
                 "Communications Lead"
             ],
             "x-enum-varnames": [
-                "DefaultRoleTypeForCreator",
                 "IncidentCommander",
                 "CommunicationsLead"
             ]
@@ -1320,7 +1327,6 @@
             "type": "string",
             "enum": [
                 "Started",
-                "Started",
                 "Acknowledged",
                 "Investigating",
                 "Identified",
@@ -1328,7 +1334,6 @@
                 "Resolved"
             ],
             "x-enum-varnames": [
-                "DefaultStartStatus",
                 "Started",
                 "Acknowledged",
                 "Investigating",
