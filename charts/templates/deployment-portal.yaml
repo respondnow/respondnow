@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.portal.name }}
+  labels: {{- toYaml .Values.portal.labels | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    {{- toYaml .Values.portal.annotations | nindent 4 }}
+spec:
+  replicas: {{ .Values.portal.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.portal.labels.app }}
+  template:
+    metadata:
+      labels: {{- toYaml .Values.portal.labels | nindent 8 }}
+      annotations:
+        {{- toYaml .Values.portal.annotations | nindent 8 }}
+    spec:
+      initContainers:
+        - name: wait-for-server
+          image: busybox
+          command: [ 'sh', '-c', 'until wget -qO- http://{{ .Values.server.name }}:{{ .Values.server.service.port }}/status; do echo waiting for server; sleep 5; done;' ]
+      containers:
+        - name: {{ .Values.portal.name }}
+          image: "{{ .Values.portal.image.repository }}:{{ .Values.portal.image.tag }}"
+          imagePullPolicy: {{ .Values.portal.image.pullPolicy }}
+          ports:
+            - containerPort: 8191
+          resources: {{- toYaml .Values.portal.resources | nindent 12 }}

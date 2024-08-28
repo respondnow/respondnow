@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.server.name }}
+  labels: {{- toYaml .Values.server.labels | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    {{- toYaml .Values.server.annotations | nindent 4 }}
+spec:
+  replicas: {{ .Values.server.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.server.labels.app }}
+  template:
+    metadata:
+      labels: {{- toYaml .Values.server.labels | nindent 8 }}
+      annotations:
+        {{- toYaml .Values.server.annotations | nindent 8 }}
+    spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: busybox
+          command: [ 'sh', '-c', 'until nc -z {{.Release.Name}}-{{ .Values.mongodb.nameOverride}} {{ .Values.mongodb.service.port }}; do echo waiting for MongoDB; sleep 5; done;' ]
+      containers:
+        - name: {{ .Values.server.name }}
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
+          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+          command:
+            - ./respond
+          args:
+            - '--config-file=/etc/config/config.yaml'
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.server.name }}
+            - secretRef:
+                name: {{ .Values.server.name }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+          resources: {{- toYaml .Values.server.resources | nindent 12 }}
+          livenessProbe: {{- toYaml .Values.server.probes.livenessProbe | nindent 12 }}
+          readinessProbe: {{- toYaml .Values.server.probes.readinessProbe | nindent 12 }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Values.server.name }}

@@ -1,0 +1,119 @@
+server:
+  name: respondnow-server
+  labels:
+    app: respondnow-server
+  annotations: {}
+  replicaCount: 1
+  image:
+    repository: imrajdas/respondnow-server
+    tag: "main"
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8080
+  configMap:
+    data:
+      MONGO_URL: "mongodb://respondnow-mongodb:27017"
+      MONGO_DB_NAME: "respondnow"
+      MONGO_DB_USERNAME: "root"
+      ZOOM_LINK: "http://my-example-zoom-link"
+      ENABLE_SLACK_CLIENT: "false"
+      INCIDENT_CHANNEL_ID: ""
+      CONNECTION_MODE: "SOCKET"
+      DEFAULT_USER_ID: "admin"
+      DEFAULT_USER_EMAIL: "admin@respondnow.io"
+      DEFAULT_USER_NAME: "Admin"
+      DEFAULT_USER_PASSWORD: "respondnow"
+  secret:
+    data:
+      MONGO_DB_PASSWORD: "1234"
+      SLACK_APP_TOKEN: ""
+      SLACK_BOT_TOKEN: ""
+  ingress:
+    enabled: true
+    annotations: {}
+    hosts:
+      - host: server.example.com
+        paths:
+          - /
+    tls: []
+  resources: {}
+  nodeSelector: {}
+  probes:
+    livenessProbe:
+      httpGet:
+        path: /status
+        port: 8080
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    readinessProbe:
+      httpGet:
+        path: /status
+        port: 8080
+      initialDelaySeconds: 15
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 3
+      successThreshold: 1
+
+portal:
+  name: respondnow-portal
+  labels:
+    app: respondnow-portal
+  annotations: {}
+  replicaCount: 1
+  image:
+    repository: imrajdas/respondnow-portal
+    tag: "main"
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8191
+  ingress:
+    enabled: true
+    annotations: {}
+    hosts:
+      - host: server.example.com
+        paths:
+          - /
+    tls: []
+  resources: {}
+  nodeSelector: {}
+  probes:
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 8191
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 8191
+      initialDelaySeconds: 15
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 3
+      successThreshold: 1
+
+mongodb:
+  nameOverride: "mongodb"
+  auth:
+    enabled: true
+    rootPassword: "1234"
+    username: root
+    password: "1234"
+    database: respondnow
+  replicaSet:
+    enabled: false
+  persistence:
+    enabled: true
+    size: 3Gi
+  service:
+    port: 27017

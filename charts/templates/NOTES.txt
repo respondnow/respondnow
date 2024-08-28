@@ -1,0 +1,16 @@
+🎉 Welcome to RespondNow! 🎉
+
+Thank you for installing the RespondNow.
+
+🚀 Port-Forwarding Instructions
+You can port-forward to access the RespondNow Portal.
+
+To port-forward RespondNow Portal:
+
+kubectl port-forward svc/{{ .Values.portal.name }} {{ .Values.portal.service.port }}:{{ .Values.portal.service.port }} -n {{.Release.Name}}
+
+🔐 Default Credentials
+Use the following default credentials to log in to the RespondNow Portal:
+
+Email: {{ .Values.server.configMap.data.DEFAULT_USER_EMAIL }}
+Password: {{ .Values.server.configMap.data.DEFAULT_USER_PASSWORD }}
