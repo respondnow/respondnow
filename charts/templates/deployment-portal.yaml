@@ -20,11 +20,11 @@ spec:
       initContainers:
         - name: wait-for-server
           image: busybox
-          command: ['sh', '-c', 'until nc -z {{ .Values.server.name }} {{ .Values.server.service.port }}; do echo waiting for Server; sleep 5; done;']
+          command: [ 'sh', '-c', 'until wget -qO- http://{{ .Values.server.name }}:{{ .Values.server.service.port }}/status; do echo waiting for server; sleep 5; done;' ]
       containers:
         - name: {{ .Values.portal.name }}
           image: "{{ .Values.portal.image.repository }}:{{ .Values.portal.image.tag }}"
           imagePullPolicy: {{ .Values.portal.image.pullPolicy }}
           ports:
-            - containerPort: 80
+            - containerPort: 8191
           resources: {{- toYaml .Values.portal.resources | nindent 12 }}

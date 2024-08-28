@@ -20,16 +20,29 @@ spec:
       initContainers:
         - name: wait-for-mongo
           image: busybox
-          command: [ 'sh', '-c', 'until nc -z {{ .Values.mongodb.nameOverride }} {{ .Values.mongodb.service.port }}; do echo waiting for MongoDB; sleep 5; done;' ]
+          command: [ 'sh', '-c', 'until nc -z {{.Release.Name}}-{{ .Values.mongodb.nameOverride}} {{ .Values.mongodb.service.port }}; do echo waiting for MongoDB; sleep 5; done;' ]
       containers:
         - name: {{ .Values.server.name }}
           image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
           imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+          command:
+            - ./respond
+          args:
+            - '--config-file=/etc/config/config.yaml'
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           envFrom:
             - configMapRef:
                 name: {{ .Values.server.name }}
             - secretRef:
                 name: {{ .Values.server.name }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
           resources: {{- toYaml .Values.server.resources | nindent 12 }}
+          livenessProbe: {{- toYaml .Values.server.probes.livenessProbe | nindent 12 }}
+          readinessProbe: {{- toYaml .Values.server.probes.readinessProbe | nindent 12 }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Values.server.name }}

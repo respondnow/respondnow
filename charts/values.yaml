@@ -17,7 +17,7 @@ server:
       MONGO_DB_NAME: "respondnow"
       MONGO_DB_USERNAME: "root"
       ZOOM_LINK: "http://my-example-zoom-link"
-      ENABLE_SLACK_CLIENT: "true"
+      ENABLE_SLACK_CLIENT: "false"
       INCIDENT_CHANNEL_ID: ""
       CONNECTION_MODE: "SOCKET"
       DEFAULT_USER_ID: "admin"
@@ -39,6 +39,25 @@ server:
     tls: []
   resources: {}
   nodeSelector: {}
+  probes:
+    livenessProbe:
+      httpGet:
+        path: /status
+        port: 8080
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    readinessProbe:
+      httpGet:
+        path: /status
+        port: 8080
+      initialDelaySeconds: 15
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 3
+      successThreshold: 1
 
 portal:
   name: respondnow-portal
@@ -63,6 +82,25 @@ portal:
     tls: []
   resources: {}
   nodeSelector: {}
+  probes:
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 8191
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 8191
+      initialDelaySeconds: 15
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 3
+      successThreshold: 1
 
 mongodb:
   nameOverride: "mongodb"
