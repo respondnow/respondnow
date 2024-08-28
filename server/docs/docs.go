@@ -687,14 +687,18 @@ const docTemplate = `{
         "incident.ChangeType": {
             "type": "string",
             "enum": [
-                "updateSeverity",
-                "updateStatus",
-                "addComment"
+                "severity",
+                "status",
+                "comment",
+                "slackChannelCreated",
+                "incidentCreated"
             ],
             "x-enum-varnames": [
-                "UpdateSeverity",
-                "UpdateStatus",
-                "AddComment"
+                "ChangeTypeSeverity",
+                "ChangeTypeStatus",
+                "ChangeTypeComment",
+                "ChangeTypeSlackChannelCreated",
+                "ChangeTypeIncidentCreated"
             ]
         },
         "incident.Channel": {
@@ -711,6 +715,9 @@ const docTemplate = `{
                 },
                 "status": {
                     "$ref": "#/definitions/incident.ChannelStatus"
+                },
+                "teamId": {
+                    "type": "string"
                 },
                 "url": {
                     "type": "string"
@@ -1339,12 +1346,23 @@ const docTemplate = `{
         "incident.Timeline": {
             "type": "object",
             "properties": {
-                "change": {},
                 "createdAt": {
                     "type": "integer"
                 },
+                "currentState": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "previousState": {
+                    "type": "string"
+                },
+                "slack": {
+                    "$ref": "#/definitions/incident.Slack"
                 },
                 "type": {
                     "$ref": "#/definitions/incident.ChangeType"

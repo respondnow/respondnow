@@ -40,14 +40,18 @@ definitions:
     - Link
   incident.ChangeType:
     enum:
-    - updateSeverity
-    - updateStatus
-    - addComment
+    - severity
+    - status
+    - comment
+    - slackChannelCreated
+    - incidentCreated
     type: string
     x-enum-varnames:
-    - UpdateSeverity
-    - UpdateStatus
-    - AddComment
+    - ChangeTypeSeverity
+    - ChangeTypeStatus
+    - ChangeTypeComment
+    - ChangeTypeSlackChannelCreated
+    - ChangeTypeIncidentCreated
   incident.Channel:
     properties:
       id:
@@ -58,6 +62,8 @@ definitions:
         $ref: '#/definitions/incident.ChannelSource'
       status:
         $ref: '#/definitions/incident.ChannelStatus'
+      teamId:
+        type: string
       url:
         type: string
     type: object
@@ -483,11 +489,18 @@ definitions:
     - Resolved
   incident.Timeline:
     properties:
-      change: {}
       createdAt:
         type: integer
+      currentState:
+        type: string
       id:
         type: string
+      message:
+        type: string
+      previousState:
+        type: string
+      slack:
+        $ref: '#/definitions/incident.Slack'
       type:
         $ref: '#/definitions/incident.ChangeType'
       updatedAt:
