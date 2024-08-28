@@ -69,4 +69,5 @@ jobs:
           docker push ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
       - name: Post success message
+        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release-') }}
         run: echo "Docker image ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} successfully built and pushed to Docker Hub"
