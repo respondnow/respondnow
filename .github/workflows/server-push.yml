@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Publish Docker Image - Server
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
-        
+
       - name: Set up environment
         run: |
           # Extract the branch name from GITHUB_REF and handle fallback for tags
@@ -26,7 +26,7 @@ jobs:
             BRANCH_NAME=${GITHUB_REF#refs/tags/}
           fi
           echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
-          
+
           # If branch name is empty, default to 'latest'
           IMAGE_TAG=${BRANCH_NAME:-latest}
           echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
@@ -34,7 +34,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.5' # Adjust the Go version as necessary
+          go-version: "1.22.5" # Adjust the Go version as necessary
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -47,7 +47,7 @@ jobs:
           cd server
           ls
           docker build -t ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -f package/Dockerfile .
-          
+
       - name: Push Docker image to Docker Hub
         if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release-') }}
         run: |
