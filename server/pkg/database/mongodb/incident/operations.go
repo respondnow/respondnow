@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
+	"github.com/respondnow/respond/server/config"
 	"github.com/respondnow/respond/server/pkg/constant"
 	"github.com/respondnow/respond/server/pkg/database/mongodb"
 )
@@ -113,6 +114,7 @@ func (i *incidentOperator) UpdateByID(ctx context.Context, in Incident,
 
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "roles", Value: in.Roles}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "stages", Value: in.Stages}}})
+	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "timelines", Value: in.Timelines}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "channels", Value: in.Channels}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "conferenceDetails",
 		Value: in.ConferenceDetails}}})
@@ -272,20 +274,40 @@ func (i *incidentOperator) Validate(in *Incident) error {
 }
 
 func (i *incidentOperator) GetIncidentTypes() []Type {
-	return []Type{
-		Availability,
-		Latency,
-		Security,
-		Other,
+	resp := make([]Type, 0)
+	if len(config.ServerConfig.IncidentTypes) > 0 {
+		for _, incidentType := range config.ServerConfig.IncidentTypes {
+			resp = append(resp, Type(incidentType))
+		}
+	} else {
+		defaultSupportedTypes := []Type{
+			Availability,
+			Latency,
+			Security,
+			Other,
+		}
+		resp = append(resp, defaultSupportedTypes...)
 	}
+
+	return resp
 }
 
 func (i *incidentOperator) GetIncidentSeverities() []Severity {
-	return []Severity{
-		Severity0,
-		Severity1,
-		Severity2,
+	resp := make([]Severity, 0)
+	if len(config.ServerConfig.Severities) > 0 {
+		for severity := range config.ServerConfig.Severities {
+			resp = append(resp, Severity(severity))
+		}
+	} else {
+		defaultSupportedSeverities := []Severity{
+			Severity0,
+			Severity1,
+			Severity2,
+		}
+		resp = append(resp, defaultSupportedSeverities...)
 	}
+
+	return resp
 }
 
 func (i *incidentOperator) GetIncidentAttachmentType() []AttachmentType {
@@ -295,19 +317,39 @@ func (i *incidentOperator) GetIncidentAttachmentType() []AttachmentType {
 }
 
 func (i *incidentOperator) GetIncidentStageStatuses() []Status {
-	return []Status{
-		Started,
-		Acknowledged,
-		Investigating,
-		Identified,
-		Mitigated,
-		Resolved,
+	resp := make([]Status, 0)
+	if len(config.ServerConfig.Statuses) > 0 {
+		for _, status := range config.ServerConfig.Statuses {
+			resp = append(resp, Status(status))
+		}
+	} else {
+		defaultSupportedStatuses := []Status{
+			Started,
+			Acknowledged,
+			Investigating,
+			Identified,
+			Mitigated,
+			Resolved,
+		}
+		resp = append(resp, defaultSupportedStatuses...)
 	}
+
+	return resp
 }
 
 func (i *incidentOperator) GetIncidentRoles() []RoleType {
-	return []RoleType{
-		IncidentCommander,
-		CommunicationsLead,
+	resp := make([]RoleType, 0)
+	if len(config.ServerConfig.Roles) > 0 {
+		for role := range config.ServerConfig.Roles {
+			resp = append(resp, RoleType(role))
+		}
+	} else {
+		defaultSupportedRoles := []RoleType{
+			IncidentCommander,
+			CommunicationsLead,
+		}
+		resp = append(resp, defaultSupportedRoles...)
 	}
+
+	return resp
 }

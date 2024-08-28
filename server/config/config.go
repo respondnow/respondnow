@@ -8,9 +8,13 @@ import (
 )
 
 type Config struct {
-	// Address          string `json:"address"`
-	// ServerURL        string `json:"serverURL"`
-	// SkipSecureVerify bool   `json:"skipSecureVerify"`
+	Address          string            `json:"address"`
+	ServerURL        string            `json:"serverURL"`
+	SkipSecureVerify bool              `json:"skipSecureVerify"`
+	Roles            map[string]string `json:"roles"`
+	Severities       map[string]string `json:"severities"`
+	Statuses         []string          `json:"statuses"`
+	IncidentTypes    []string          `json:"incidentTypes"`
 }
 
 func New(configFilePath string) (*Config, error) {
@@ -30,3 +34,5 @@ func New(configFilePath string) (*Config, error) {
 	}
 	return cfg, nil
 }
+
+var ServerConfig *Config

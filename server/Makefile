@@ -67,11 +67,11 @@ run-dev-server: go-dep-update gen-server-api-doc
 	MONGO_DB_PASSWORD='' \
 	ZOOM_LINK='http://my-example-zoom-link' \
 	ENABLE_SLACK_CLIENT='true' \
+	INCIDENT_CHANNEL_ID='C07JK8CLL3F' \
 	CONNECTION_MODE='SOCKET' \
 	SLACK_APP_TOKEN='' \
 	SLACK_BOT_TOKEN='' \
 	go run ./cmd/ \
-		--debug=true \
 		--config-file=./cmd/config.yaml
 
 .PHONY: build-server-image

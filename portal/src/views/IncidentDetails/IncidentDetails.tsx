@@ -6,7 +6,7 @@ import { Fallback } from '@errors';
 import { DefaultLayout } from '@layouts';
 import { IncidentIncident } from '@services/server';
 import { generateSlackChannelLink } from '@utils';
-import SlackIcon from '@images/slack.svg';
+import SlackIcon from '@images/slack-mono.svg';
 import DetailsSection from './sections/DetailsSection';
 import TimelineSection from './sections/Timeline';
 
@@ -22,7 +22,7 @@ const IncidentDetailsView: React.FC<IncidentDetailsViewProps> = props => {
 
   return (
     <DefaultLayout
-      title={incidentData?.name || 'Incident Details'}
+      title={incidentData?.name || 'Incident Name'}
       loading={incidentDataLoading}
       noData={!isIncidentPresent}
       noDataProps={{

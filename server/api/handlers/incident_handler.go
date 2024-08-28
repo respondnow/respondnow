@@ -4,8 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/respondnow/respond/server/pkg/auth"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/respondnow/respond/server/pkg/constant"
@@ -21,7 +19,7 @@ import (
 //	@Summary		Create an incident
 //	@Description	Create an incident
 //	@id				CreateIncident
-//	@Security		ApiKeyAuth
+//	@Security		BearerAuth
 //
 //	@Tags			Incident
 //	@Accept			json
@@ -79,7 +77,7 @@ func CreateIncident() gin.HandlerFunc {
 
 		incident, err := incident.NewIncidentService(incidentdb.NewIncidentOperator(mongodb.Operator),
 			accountId, orgId, projectId).
-			Create(context.TODO(), payload, auth.CurrentUser{}, response.CorrelationId)
+			Create(context.TODO(), payload, utils.UserDetails{}, response.CorrelationId)
 		if err != nil {
 			logrus.WithField("correlationId", response.DefaultResponseDTO.CorrelationId).WithError(err).Error("failed to create incident")
 			response.Status = string(utils.ERROR)
@@ -98,6 +96,7 @@ func CreateIncident() gin.HandlerFunc {
 //	@Summary		List incidents
 //	@Description	List incidents
 //	@id				ListIncidents
+//	@Security		BearerAuth
 //
 //	@Tags			Incident Management
 //	@Accept			json
@@ -168,6 +167,7 @@ func ListIncidents() gin.HandlerFunc {
 //	@Summary		Get incident
 //	@Description	Get incident
 //	@id				GetIncident
+//	@Security		BearerAuth
 //
 //	@Tags			Incident Management
 //	@Accept			json

@@ -1,6 +1,7 @@
 declare namespace IncidentTimelineModuleScssNamespace {
   export interface IIncidentTimelineModuleScss {
     dividerContainer: string;
+    splitBar: string;
     timelineRowContainer: string;
   }
 }

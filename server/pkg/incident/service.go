@@ -6,8 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/respondnow/respond/server/pkg/auth"
-
+	"github.com/google/uuid"
 	"github.com/respondnow/respond/server/config"
 	"github.com/respondnow/respond/server/pkg/api"
 	"github.com/respondnow/respond/server/pkg/constant"
@@ -22,8 +21,9 @@ type IncidentService interface {
 	List(ctx context.Context, token string, listFilters ListFilters, correlationID, search string,
 		limit, page int64, all bool) (ListResponse, error)
 	Create(ctx context.Context, request CreateRequest,
-		currentUser auth.CurrentUser, correlationID string) (CreateResponse, error)
+		currentUser utils.UserDetails, correlationID string) (CreateResponse, error)
 	AddConferenceDetailsForIncident(conferenceType incident.ConferenceType) (incident.Conference, error)
+	GenerateIncidentIdentifier(createdAt *time.Time) string
 }
 
 type incidentService struct {
@@ -44,8 +44,14 @@ func NewIncidentService(
 	}
 }
 
+func (is incidentService) GenerateIncidentIdentifier(createdAt *time.Time) string {
+	fmtDateTime := createdAt.Format("2006-01-02-15-04-05")
+
+	return fmtDateTime + "-" + uuid.New().String()
+}
+
 func (is incidentService) Create(ctx context.Context, request CreateRequest,
-	currentUser auth.CurrentUser, correlationID string) (CreateResponse, error) {
+	currentUser utils.UserDetails, correlationID string) (CreateResponse, error) {
 	resp := CreateResponse{
 		Incident:      incident.Incident{},
 		CorrelationID: correlationID,
@@ -56,14 +62,29 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 		return resp, err
 	}
 
-	ts := time.Now().Unix()
+	createdAt := time.Now()
+	ts := createdAt.Unix()
 	// Set default values
 	if request.Status == "" {
 		request.Status = incident.Started
 	}
 	if request.Identifier == "" {
-		request.Identifier = request.Name + "-" + strconv.Itoa(int(time.Now().Unix()))
+		request.Identifier = is.GenerateIncidentIdentifier(&createdAt)
 	}
+	channelCreatedDetails := incident.Slack{}
+	if len(request.Channels) > 0 {
+		for _, channel := range request.Channels {
+			channelCreatedDetails = incident.Slack{
+				ChannelID:     channel.ID,
+				ChannelName:   channel.Name,
+				ChannelStatus: channel.Status,
+				SlackTeam: incident.SlackTeam{
+					TeamID: channel.TeamID,
+				},
+			}
+		}
+	}
+
 	newIncident := incident.Incident{
 		ResourceDetails: request.ResourceDetails,
 		IdentifierDetails: mongodb.IdentifierDetails{
@@ -82,29 +103,38 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 		Functionalities: request.Functionalities,
 		Environments:    request.Environments,
 		Attachments:     request.Attachments,
+		Timelines: []incident.Timeline{
+			{
+				ID:        strconv.Itoa(int(time.Now().Unix())),
+				Type:      incident.ChangeTypeIncidentCreated,
+				CreatedAt: ts,
+				UpdatedAt: &ts,
+				User:      currentUser,
+				Slack:     request.IncidentChannel.Slack,
+			},
+			{
+				ID:        strconv.Itoa(int(time.Now().Unix())),
+				Type:      incident.ChangeTypeSlackChannelCreated,
+				CreatedAt: ts,
+				UpdatedAt: &ts,
+				User:      currentUser,
+				Slack:     &channelCreatedDetails,
+			},
+		},
 		Stages: []incident.Stage{
 			{
 				ID:        strconv.Itoa(int(time.Now().Unix())),
 				Type:      request.Status,
 				CreatedAt: ts,
 				UpdatedAt: &ts,
-				User: utils.UserDetails{
-					UserName: currentUser.Username,
-					Email:    currentUser.Email,
-				},
+				User:      currentUser,
 			},
 		},
 		Roles: request.Roles,
 		AuditDetails: mongodb.AuditDetails{
-			CreatedBy: utils.UserDetails{
-				UserName: currentUser.Username,
-				Email:    currentUser.Email,
-			},
+			CreatedBy: currentUser,
 			CreatedAt: ts,
-			UpdatedBy: utils.UserDetails{
-				UserName: currentUser.Username,
-				Email:    currentUser.Email,
-			},
+			UpdatedBy: currentUser,
 			UpdatedAt: &ts,
 		},
 	}
