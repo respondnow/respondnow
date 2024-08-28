@@ -104,7 +104,7 @@ func getChannelSelectBlock() *slack.InputBlock {
 
 func getRoleBlock() *slack.InputBlock {
 	supportedRoles := incidentdb.NewIncidentOperator(mongodb.Operator).GetIncidentRoles()
-	initialOptionForIncidentRole := string(supportedRoles[0])
+	initialOptionForIncidentRole := string(incidentdb.DefaultRoleTypeForCreator)
 	incidentRoleOptions := []*slack.OptionBlockObject{}
 	for _, role := range supportedRoles {
 		incidentRoleOptions = append(incidentRoleOptions, slack.NewOptionBlockObject(
@@ -326,7 +326,7 @@ func (is incidentService) CreateIncident(evt *socketmode.Event) {
 		Summary:  summary.Value,
 		Severity: incidentdb.Severity(severity.SelectedOption.Value),
 		Roles:    incidentRoles,
-		Status:   incidentdb.Started,
+		Status:   incidentdb.DefaultStartStatus,
 		IncidentChannel: &incidentdb.IncidentChannel{
 			Type: incidentdb.ChannelSlack,
 			Slack: &incidentdb.Slack{

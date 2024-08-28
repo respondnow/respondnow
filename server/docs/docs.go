@@ -401,6 +401,7 @@ const docTemplate = `{
                     {
                         "enum": [
                             "Started",
+                            "Started",
                             "Acknowledged",
                             "Investigating",
                             "Identified",
@@ -1229,9 +1230,11 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "Incident Commander",
+                "Incident Commander",
                 "Communications Lead"
             ],
             "x-enum-varnames": [
+                "DefaultRoleTypeForCreator",
                 "IncidentCommander",
                 "CommunicationsLead"
             ]
@@ -1316,6 +1319,7 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "Started",
+                "Started",
                 "Acknowledged",
                 "Investigating",
                 "Identified",
@@ -1323,6 +1327,7 @@ const docTemplate = `{
                 "Resolved"
             ],
             "x-enum-varnames": [
+                "DefaultStartStatus",
                 "Started",
                 "Acknowledged",
                 "Investigating",

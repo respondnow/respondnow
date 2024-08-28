@@ -405,9 +405,11 @@ definitions:
   incident.RoleType:
     enum:
     - Incident Commander
+    - Incident Commander
     - Communications Lead
     type: string
     x-enum-varnames:
+    - DefaultRoleTypeForCreator
     - IncidentCommander
     - CommunicationsLead
   incident.Service:
@@ -464,6 +466,7 @@ definitions:
   incident.Status:
     enum:
     - Started
+    - Started
     - Acknowledged
     - Investigating
     - Identified
@@ -471,6 +474,7 @@ definitions:
     - Resolved
     type: string
     x-enum-varnames:
+    - DefaultStartStatus
     - Started
     - Acknowledged
     - Investigating
@@ -1002,6 +1006,7 @@ paths:
         type: string
       - description: status
         enum:
+        - Started
         - Started
         - Acknowledged
         - Investigating

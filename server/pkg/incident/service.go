@@ -59,7 +59,7 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 	ts := time.Now().Unix()
 	// Set default values
 	if request.Status == "" {
-		request.Status = incident.Started
+		request.Status = incident.DefaultStartStatus
 	}
 	if request.Identifier == "" {
 		request.Identifier = request.Name + "-" + strconv.Itoa(int(time.Now().Unix()))
@@ -73,7 +73,7 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 		},
 		Type:            request.Type,
 		Severity:        request.Severity,
-		Status:          incident.Started,
+		Status:          incident.DefaultStartStatus,
 		Summary:         request.Summary,
 		Active:          true,
 		IncidentChannel: request.IncidentChannel,

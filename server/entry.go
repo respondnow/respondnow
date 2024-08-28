@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -21,7 +22,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/respondnow/respond/server/api/middleware"
 	"github.com/respondnow/respond/server/api/routes"
-	"github.com/respondnow/respond/server/clients/slack/socketmode"
+	slackclient "github.com/respondnow/respond/server/clients/slack"
 	"github.com/respondnow/respond/server/config"
 	"github.com/respondnow/respond/server/pkg/database/mongodb"
 	"github.com/respondnow/respond/server/pkg/prometheus"
@@ -56,8 +57,10 @@ func run() error {
 	metricSrv := startServer(metricApp, config.EnvConfig.Ports.MetricPort, "Metric server")
 
 	// Setup clients
-	go setupClients()
-
+	go func() {
+		setupClients(ctx)
+		<-ctx.Done()
+	}()
 	backgroundProcess()
 
 	<-ctx.Done()
@@ -69,24 +72,39 @@ func run() error {
 	return ctx.Err()
 }
 
-func setupClients() {
+func setupClients(ctx context.Context) {
 	defer func() {
 		if r := recover(); r != nil {
 			logrus.Errorf("panic recovered: setup clients, recover: %+v", r)
 		}
 	}()
 	if config.EnvConfig.SlackConfig.EnableSlackClient {
-		err := setupSlackClient()
+		err := setupSlackClient(ctx)
 		if err != nil {
-			logrus.Errorf("failed to setup slack client: %+v", err)
+			logrus.Fatalf("failed to setup slack client: %+v", err)
 		}
 	}
 }
 
-func setupSlackClient() error {
+func setupSlackClient(ctx context.Context) error {
+	slackAPIClient, err := slackclient.New()
+	if err != nil {
+		return err
+	}
+	logrus.Infof("Adding bot user to incident channel: %s...", config.EnvConfig.SlackConfig.IncidentChannelID)
+	err = slackAPIClient.SetBotUserID(ctx)
+	if err != nil {
+		return err
+	}
+	err = slackAPIClient.AddBotUserToIncidentChannel(ctx, slackclient.BotUserID,
+		config.EnvConfig.SlackConfig.IncidentChannelID)
+	if err != nil {
+		return err
+	}
+
 	switch config.EnvConfig.SlackConfig.ConnectionMode {
 	case "SOCKET":
-		err := socketmode.ConnectSlackInSocketMode()
+		err := slackAPIClient.ConnectSlackInSocketMode(ctx)
 		if err != nil {
 			return err
 		}
@@ -94,10 +112,21 @@ func setupSlackClient() error {
 		return fmt.Errorf("unsupported connection mode provided: %s, supported mode: %s",
 			config.EnvConfig.SlackConfig.ConnectionMode, "SOCKET")
 	}
+
 	return nil
 }
 
 func loadConfig() {
+	configFile := flag.String("config-file", "/etc/config/config.yaml", "config file location")
+	flag.Parse()
+
+	// Setting up config
+	cfg, err := config.New(*configFile)
+	if err != nil {
+		logrus.Fatalf("error getting config, error : %s", err)
+	}
+	config.ServerConfig = cfg
+
 	if err := envconfig.Process("", &config.EnvConfig); err != nil {
 		logrus.Fatal(err)
 	}

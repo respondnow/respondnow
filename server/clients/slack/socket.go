@@ -1,11 +1,10 @@
-package socketmode
+package slackclient
 
 import (
 	"context"
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	slackincident "github.com/respondnow/respond/server/clients/slack/modals/incident"
 	"github.com/sirupsen/logrus"
@@ -15,34 +14,9 @@ import (
 	"github.com/slack-go/slack"
 )
 
-func ConnectSlackInSocketMode() error {
-	appToken := os.Getenv("SLACK_APP_TOKEN")
-	if appToken == "" {
-		return fmt.Errorf("SLACK_APP_TOKEN must be set")
-	}
-
-	if !strings.HasPrefix(appToken, "xapp-") {
-		return fmt.Errorf("SLACK_APP_TOKEN must have the prefix \"xapp-\"")
-	}
-
-	botToken := os.Getenv("SLACK_BOT_TOKEN")
-	if botToken == "" {
-		return fmt.Errorf("SLACK_BOT_TOKEN must be set")
-	}
-
-	if !strings.HasPrefix(botToken, "xoxb-") {
-		return fmt.Errorf("SLACK_BOT_TOKEN must have the prefix \"xoxb-\"")
-	}
-
-	api := slack.New(
-		botToken,
-		slack.OptionDebug(true),
-		slack.OptionLog(log.New(os.Stdout, "api: ", log.Lshortfile|log.LstdFlags)),
-		slack.OptionAppLevelToken(appToken),
-	)
-
+func (s slackService) ConnectSlackInSocketMode(ctx context.Context) error {
 	client := socketmode.New(
-		api,
+		s.client,
 		socketmode.OptionDebug(true),
 		socketmode.OptionLog(log.New(os.Stdout, "socketmode: ", log.Lshortfile|log.LstdFlags)),
 	)
@@ -67,7 +41,7 @@ func ConnectSlackInSocketMode() error {
 	// Handle a specific Interaction
 	socketmodeHandler.HandleInteraction(slack.InteractionTypeBlockActions, middlewareInteractionTypeBlockActions)
 
-	socketmodeHandler.RunEventLoopContext(context.Background())
+	socketmodeHandler.RunEventLoopContext(ctx)
 
 	return nil
 }

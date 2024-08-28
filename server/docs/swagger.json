@@ -395,6 +395,7 @@
                     {
                         "enum": [
                             "Started",
+                            "Started",
                             "Acknowledged",
                             "Investigating",
                             "Identified",
@@ -1223,9 +1224,11 @@
             "type": "string",
             "enum": [
                 "Incident Commander",
+                "Incident Commander",
                 "Communications Lead"
             ],
             "x-enum-varnames": [
+                "DefaultRoleTypeForCreator",
                 "IncidentCommander",
                 "CommunicationsLead"
             ]
@@ -1310,6 +1313,7 @@
             "type": "string",
             "enum": [
                 "Started",
+                "Started",
                 "Acknowledged",
                 "Investigating",
                 "Identified",
@@ -1317,6 +1321,7 @@
                 "Resolved"
             ],
             "x-enum-varnames": [
+                "DefaultStartStatus",
                 "Started",
                 "Acknowledged",
                 "Investigating",
