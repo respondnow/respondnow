@@ -1,11 +1,14 @@
 .detailsCardContainer {
   padding: 0 !important;
-  width: 40%;
+  width: 30%;
+  background-color: var(--white);
+  min-width: 400px;
 }
 
 .timelineCardContainer {
   padding: 0 !important;
-  width: 60%;
+  width: 70%;
+  background-color: var(--white);
 }
 
 .detailsSectionContainer {

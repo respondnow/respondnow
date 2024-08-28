@@ -32,7 +32,7 @@ interface ReducerReturn {
 }
 
 export const initialIncidenrsFilterState: IncidentsFilter = {
-  incidentName: undefined,
+  incidentName: '',
   incidentStatus: undefined,
   incidentTags: undefined,
   incidentTimeframe: undefined,

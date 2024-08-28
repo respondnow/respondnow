@@ -1,11 +1,18 @@
 .timelineRowContainer {
   display: grid;
-  grid-template-columns: 200px 30px 1fr;
+  grid-template-columns: 80px 30px 1fr;
   gap: 1rem;
+  min-height: 80px;
 
   .dividerContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    .splitBar {
+      width: 2px;
+      height: 100%;
+      background-color: var(--grey-100);
+    }
   }
 }
