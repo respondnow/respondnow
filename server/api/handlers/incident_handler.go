@@ -4,8 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/respondnow/respond/server/pkg/auth"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/respondnow/respond/server/pkg/constant"
@@ -79,7 +77,7 @@ func CreateIncident() gin.HandlerFunc {
 
 		incident, err := incident.NewIncidentService(incidentdb.NewIncidentOperator(mongodb.Operator),
 			accountId, orgId, projectId).
-			Create(context.TODO(), payload, auth.CurrentUser{}, response.CorrelationId)
+			Create(context.TODO(), payload, utils.UserDetails{}, response.CorrelationId)
 		if err != nil {
 			logrus.WithField("correlationId", response.DefaultResponseDTO.CorrelationId).WithError(err).Error("failed to create incident")
 			response.Status = string(utils.ERROR)

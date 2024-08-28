@@ -114,6 +114,7 @@ func (i *incidentOperator) UpdateByID(ctx context.Context, in Incident,
 
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "roles", Value: in.Roles}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "stages", Value: in.Stages}}})
+	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "timelines", Value: in.Timelines}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "channels", Value: in.Channels}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "conferenceDetails",
 		Value: in.ConferenceDetails}}})

@@ -68,18 +68,23 @@ type Incident struct {
 type ChangeType string
 
 const (
-	UpdateSeverity ChangeType = "updateSeverity"
-	UpdateStatus   ChangeType = "updateStatus"
-	AddComment     ChangeType = "addComment"
+	ChangeTypeSeverity            ChangeType = "severity"
+	ChangeTypeStatus              ChangeType = "status"
+	ChangeTypeComment             ChangeType = "comment"
+	ChangeTypeSlackChannelCreated ChangeType = "slackChannelCreated"
+	ChangeTypeIncidentCreated     ChangeType = "incidentCreated"
 )
 
 type Timeline struct {
-	ID        string            `bson:"id" json:"id"`
-	Type      ChangeType        `bson:"type" json:"type"`
-	Change    interface{}       `bson:"change" json:"change"`
-	CreatedAt int64             `bson:"createdAt" json:"createdAt"`
-	UpdatedAt *int64            `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
-	User      utils.UserDetails `bson:"userDetails" json:"userDetails"`
+	ID            string            `bson:"id" json:"id"`
+	Type          ChangeType        `bson:"type" json:"type"`
+	CreatedAt     int64             `bson:"createdAt" json:"createdAt"`
+	UpdatedAt     *int64            `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
+	PreviousState *string           `bson:"previousState,omitempty" json:"previousState,omitempty"`
+	CurrentState  *string           `bson:"currentState,omitempty" json:"currentState,omitempty"`
+	Slack         *Slack            `bson:"slack,omitempty" json:"slack,omitempty"`
+	User          utils.UserDetails `bson:"userDetails" json:"userDetails"`
+	Message       *string           `bson:"message,omitempty" json:"message,omitempty"`
 }
 
 type AttachmentType string
@@ -102,6 +107,7 @@ const (
 
 type Channel struct {
 	ID     string        `bson:"id" json:"id"`
+	TeamID string        `bson:"teamId" json:"teamId"`
 	Name   string        `bson:"name" json:"name"`
 	Source ChannelSource `bson:"source" json:"source"`
 	URL    string        `bson:"url" json:"url"`
