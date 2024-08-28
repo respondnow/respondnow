@@ -19,7 +19,7 @@ import (
 //	@Summary		Create an incident
 //	@Description	Create an incident
 //	@id				CreateIncident
-//	@Security		ApiKeyAuth
+//	@Security		BearerAuth
 //
 //	@Tags			Incident
 //	@Accept			json
@@ -96,6 +96,7 @@ func CreateIncident() gin.HandlerFunc {
 //	@Summary		List incidents
 //	@Description	List incidents
 //	@id				ListIncidents
+//	@Security		BearerAuth
 //
 //	@Tags			Incident Management
 //	@Accept			json
@@ -166,6 +167,7 @@ func ListIncidents() gin.HandlerFunc {
 //	@Summary		Get incident
 //	@Description	Get incident
 //	@id				GetIncident
+//	@Security		BearerAuth
 //
 //	@Tags			Incident Management
 //	@Accept			json

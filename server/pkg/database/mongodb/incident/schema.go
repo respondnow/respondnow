@@ -9,11 +9,6 @@ import (
 type Status string
 
 const (
-	DefaultStartStatus        = Started
-	DefaultRoleTypeForCreator = IncidentCommander
-)
-
-const (
 	Started       Status = "Started"
 	Acknowledged  Status = "Acknowledged"
 	Investigating Status = "Investigating"
