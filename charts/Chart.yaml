@@ -1,0 +1,11 @@
+apiVersion: v2
+name: respondnow
+description: Helm chart for RespondNow services
+version: 0.1.0
+appVersion: "1.0"
+
+dependencies:
+  - name: mongodb
+    version: "12.1.11"
+    repository: "https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami"
+    condition: mongodb.enabled

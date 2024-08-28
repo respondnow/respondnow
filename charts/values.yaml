@@ -1,0 +1,88 @@
+server:
+  name: respondnow-server
+  labels:
+    app: respondnow-server
+  annotations: {}
+  replicaCount: 1
+  image:
+    repository: imrajdas/respondnow-server
+    tag: "main"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8080
+  configMap:
+    data:
+      MONGO_URL: "mongodb://respondnow-mongodb-headless:27017"
+      MONGO_DB_NAME: "respondNow"
+      MONGO_DB_USERNAME: "root"
+      ZOOM_LINK: "http://my-example-zoom-link"
+      ENABLE_SLACK_CLIENT: "true"
+      CONNECTION_MODE: "SOCKET"
+      SLACK_APP_TOKEN: ""
+      SLACK_BOT_TOKEN: ""
+  secret:
+    data:
+      MONGO_DB_PASSWORD: "1234"
+  ingress:
+    enabled: true
+    annotations: {}
+    hosts:
+      - host: server.example.com
+        paths:
+          - /
+    tls: []
+  resources: {}
+  nodeSelector: {}
+
+portal:
+  name: respondnow-portal
+  labels:
+    app: respondnow-portal
+  annotations: {}
+  replicaCount: 1
+  image:
+    repository: imrajdas/respondnow-portal
+    tag: "main"
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8191
+  ingress:
+    enabled: true
+    annotations: {}
+    hosts:
+      - host: server.example.com
+        paths:
+          - /
+    tls: []
+  resources: {}
+  nodeSelector: {}
+
+mongodb:
+  # For some environments, mongo pings can take time to resolve
+  livenessProbe:
+    timeoutSeconds: 20
+  readinessProbe:
+    timeoutSeconds: 20
+  # Required when using Mac M1 - https://github.com/bitnami/containers/issues/40947#issuecomment-1968364385
+  # extraEnvVars:
+  #   - name: EXPERIMENTAL_DOCKER_DESKTOP_FORCE_QEMU
+  #     value: "1"
+  enabled: true
+  auth:
+    enabled: true
+    rootUser: "root"
+    rootPassword: "1234"
+    # -- existingSecret Existing secret with MongoDB(&reg;) credentials (keys: `mongodb-passwords`, `mongodb-root-password`, `mongodb-metrics-password`, ` mongodb-replica-set-key`)
+    existingSecret: ""
+  architecture: replicaset
+  replicaCount: 1
+  persistence:
+    enabled: true
+  volumePermissions:
+    enabled: true
+  metrics:
+    enabled: false
+    prometheusRule:
+      enabled: false

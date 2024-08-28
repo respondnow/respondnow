@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.portal.name }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{- toYaml .Values.portal.labels | nindent 4 }}
+spec:
+  type: {{ .Values.portal.service.type }}
+  ports:
+    - port: {{ .Values.portal.service.port }}
+      targetPort: 8191
+  selector:
+    app: {{ .Values.portal.labels.app }}
