@@ -54,3 +54,10 @@ passwordsDoNotMatch: Passwords do not match
 oldPassword: Old Password
 newPassword: New Password
 confirm: Confirm
+reportedAn: reported an
+title: Title
+incidentChannelCreated: Incident channel created
+addedMemberAutomatically: Added member(s) automatically
+updated: Updated
+slackChannel: Slack Channel
+commentedIn: commented in

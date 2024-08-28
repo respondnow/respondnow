@@ -9,5 +9,6 @@ export interface IncidentChannel {
   name?: string;
   source?: IncidentChannelSource;
   status?: IncidentChannelStatus;
+  teamId?: string;
   url?: string;
 }

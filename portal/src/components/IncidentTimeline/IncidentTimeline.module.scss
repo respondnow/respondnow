@@ -2,7 +2,6 @@
   display: grid;
   grid-template-columns: 80px 30px 1fr;
   gap: 1rem;
-  min-height: 80px;
 
   .dividerContainer {
     display: flex;
@@ -14,5 +13,23 @@
       height: 100%;
       background-color: var(--grey-100);
     }
+  }
+}
+
+.ctaButton {
+  display: inline-block;
+  background: var(--white);
+  border: 1px solid var(--grey-200);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  outline: none;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--grey-50);
+  }
+
+  &:active {
+    background: var(--grey-100);
   }
 }

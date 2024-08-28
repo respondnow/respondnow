@@ -5,13 +5,15 @@ import { FontVariation } from '@harnessio/design-system';
 import { Fallback } from '@errors';
 import { useStrings } from '@strings';
 import { IncidentIncident } from '@services/server';
+import IncidentTimeline from '@components/IncidentTimeline';
 import css from '../IncidentDetails.module.scss';
 
 interface TimelineSectionProps {
   incidentData: IncidentIncident | undefined;
 }
 
-const TimelineSection: React.FC<TimelineSectionProps> = () => {
+const TimelineSection: React.FC<TimelineSectionProps> = props => {
+  const { incidentData } = props;
   const { getString } = useStrings();
 
   return (
@@ -24,7 +26,7 @@ const TimelineSection: React.FC<TimelineSectionProps> = () => {
         className={css.timelineSectionContainer}
       >
         <Text font={{ variation: FontVariation.H5 }}>{getString('incidentTimeline')}</Text>
-        {/* <IncidentTimeline timeline={data} /> */}
+        <IncidentTimeline incident={incidentData} />
       </Layout.Vertical>
     </Card>
   );
