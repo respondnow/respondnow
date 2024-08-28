@@ -6,5 +6,5 @@ const (
 	AccountsCollection      = "accounts"
 	OrganizationsCollection = "organizations"
 	ProjectsCollection      = "projects"
-	UserMappingsCollection  = "userMappingsCollection"
+	UserMappingsCollection  = "userMappings"
 )
