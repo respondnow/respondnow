@@ -17,6 +17,10 @@ spec:
       annotations:
         {{- toYaml .Values.portal.annotations | nindent 8 }}
     spec:
+      initContainers:
+        - name: wait-for-server
+          image: busybox
+          command: ['sh', '-c', 'until nc -z {{ .Values.server.name }} {{ .Values.server.service.port }}; do echo waiting for Server; sleep 5; done;']
       containers:
         - name: {{ .Values.portal.name }}
           image: "{{ .Values.portal.image.repository }}:{{ .Values.portal.image.tag }}"

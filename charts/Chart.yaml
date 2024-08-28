@@ -6,6 +6,5 @@ appVersion: "1.0"
 
 dependencies:
   - name: mongodb
-    version: "12.1.11"
-    repository: "https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami"
-    condition: mongodb.enabled
+    version: 15.6.21
+    repository: https://charts.bitnami.com/bitnami
