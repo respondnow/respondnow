@@ -7,6 +7,8 @@ export type PrimitiveObject<T extends string> = Partial<Record<T, string | numbe
 export interface StringsMap {
   '404Error': unknown;
   'abbv.na': unknown;
+  addedMemberAutomatically: unknown;
+  commentedIn: unknown;
   confirm: unknown;
   continue: unknown;
   documentation: unknown;
@@ -25,6 +27,7 @@ export interface StringsMap {
   goBack: unknown;
   goToHome: unknown;
   incident: unknown;
+  incidentChannelCreated: unknown;
   incidentTimeline: unknown;
   incidents: unknown;
   keyMembers: unknown;
@@ -43,6 +46,7 @@ export interface StringsMap {
   passwordRequired: unknown;
   passwordsDoNotMatch: unknown;
   reEnterNewPassword: unknown;
+  reportedAn: unknown;
   reportedBy: unknown;
   resetFilters: unknown;
   respondNow: unknown;
@@ -50,13 +54,16 @@ export interface StringsMap {
   setUpSlackApp: unknown;
   severity: unknown;
   slackButtonText: unknown;
+  slackChannel: unknown;
   slackConfigDescription: unknown;
   slackConfigHeader: unknown;
   status: unknown;
   summary: unknown;
   tags: unknown;
   termsAndConditions: unknown;
+  title: unknown;
   updatePassword: unknown;
+  updated: unknown;
   viaSlack: unknown;
   viewChannel: unknown;
   welcomeText: PrimitiveObject<'name'>;
