@@ -1,17 +1,18 @@
-name: Build and Publish Docker Image
+name: Build and Publish Docker Image - Portal
 
 on:
   push:
     branches:
       - main
       - release-*
+      - fe-api-test
 
 env:
   REGISTRY: docker.io
   IMAGE_NAME: respondnow-portal
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +27,7 @@ jobs:
             BRANCH_NAME=${GITHUB_REF#refs/tags/}
           fi
           echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
-          
+
           # If branch name is empty, default to 'latest'
           IMAGE_TAG=${BRANCH_NAME:-latest}
           echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
@@ -38,18 +39,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 16
+          cache: "yarn"
+          cache-dependency-path: portal/yarn.lock
 
-      - name: Cache Node.js dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install and build with Yarn
+      - name: Install Dependencies
         run: |
-          cd portal && yarn install && yarn build
+          cd portal && yarn install --frozen-lockfile
+
+      - name: Build Portal
+        run: |
+          cd portal && yarn build
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
