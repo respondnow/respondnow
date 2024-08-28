@@ -1,6 +1,6 @@
 import React from 'react';
 import { CellProps, Renderer } from 'react-table';
-import { Avatar, Button, ButtonVariation, Container, Layout, Text } from '@harnessio/uicore';
+import { Avatar, Button, ButtonSize, ButtonVariation, Container, Layout, Text } from '@harnessio/uicore';
 import { Link } from 'react-router-dom';
 import { Color, FontVariation } from '@harnessio/design-system';
 import { isEmpty } from 'lodash-es';
@@ -11,6 +11,7 @@ import { paths } from '@routes/RouteDefinitions';
 import { generateSlackChannelLink, getDetailedTime } from '@utils';
 import StatusBadge from '@components/StatusBadge';
 import SlackIcon from '@images/slack.svg';
+import SlackIconMono from '@images/slack-mono.svg';
 import Duration from '@components/Duration';
 import css from '../CommonTableStyles.module.scss';
 
@@ -94,12 +95,13 @@ export const IncidentsName: CellRendererType = ({ row }) => {
 export const IncidentReportedBy: CellRendererType = ({ row }) => {
   const { getString } = useStrings();
   const { createdBy, createdAt } = row.original;
+  const name = createdBy?.name || createdBy?.userName;
   return (
     <Container flex={{ alignItems: 'center', justifyContent: 'flex-start' }} width="100%">
       <Avatar borderRadius={0} src={SlackIcon} name={createdBy?.name} hoverCard={false} size="small" />
       <Layout.Vertical margin={{ left: 'xsmall' }}>
         <Text font={{ variation: FontVariation.SMALL }} lineClamp={1} color={Color.GREY_700}>
-          {createdBy?.name + getString('viaSlack') || getString('abbv.na')}
+          {name ? `${name}${getString('viaSlack')}` : getString('abbv.na')}
         </Text>
         {createdAt && (
           <Text font={{ variation: FontVariation.TINY }} color={Color.GREY_400}>
@@ -147,6 +149,7 @@ export const IncidentCTA: CellRendererType = ({ row }) => {
   return (
     <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-end' }}>
       <Button
+        icon={<img src={SlackIconMono} height={12} />}
         disabled={!incidentChannel?.slack?.teamDomain || !channels?.[0].id}
         onClick={() => {
           window.open(
@@ -154,7 +157,12 @@ export const IncidentCTA: CellRendererType = ({ row }) => {
             '_blank'
           );
         }}
-        text={getString('viewChannel')}
+        size={ButtonSize.SMALL}
+        text={
+          <Text font={{ variation: FontVariation.SMALL_BOLD }} style={{ lineHeight: 1 }} color={Color.PRIMARY_7}>
+            {getString('viewChannel')}
+          </Text>
+        }
         variation={ButtonVariation.SECONDARY}
       />
     </Layout.Horizontal>

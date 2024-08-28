@@ -21,7 +21,7 @@ setUpSlackApp: Set up Slack App
 getStarted: Get Started
 welcomeText: Welcome {{name}}
 getStartedHeading: Let's install the RespondNow Slack app!
-slackConfigHeader: Next, configure the slack app.
+slackConfigHeader: Configure the slack app
 slackConfigDescription: You're just one step away! Manage your entire organization's incident flow - from report to resolution - all through your Slack workspace.
 slackButtonText: Get Started with Slack
 searchForAnIncident: Search for an incident
