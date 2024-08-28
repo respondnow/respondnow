@@ -7,8 +7,8 @@ on:
       - release-*
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: respond-portal
+  REGISTRY: docker.io
+  IMAGE_NAME: respondnow-portal
 
 jobs:
   build:
@@ -51,22 +51,22 @@ jobs:
         run: |
           cd portal && yarn install && yarn build
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_PAT }}
+          username: imrajdas
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
       - name: Build Docker image
         run: |
           cd portal
-          docker build -t ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -f Dockerfile .
+          docker build -t ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -f Dockerfile .
 
-      - name: Push Docker image to GHCR
+      - name: Push Docker image to Docker Hub
         if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release-') }}
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
       - name: Post success message
-        run: echo "Docker image ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} successfully built and pushed to GitHub Container Registry"
+        run: echo "Docker image ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} successfully built and pushed to Docker Hub"
