@@ -95,12 +95,13 @@ export const IncidentsName: CellRendererType = ({ row }) => {
 export const IncidentReportedBy: CellRendererType = ({ row }) => {
   const { getString } = useStrings();
   const { createdBy, createdAt } = row.original;
+  const name = createdBy?.name || createdBy?.userName;
   return (
     <Container flex={{ alignItems: 'center', justifyContent: 'flex-start' }} width="100%">
       <Avatar borderRadius={0} src={SlackIcon} name={createdBy?.name} hoverCard={false} size="small" />
       <Layout.Vertical margin={{ left: 'xsmall' }}>
         <Text font={{ variation: FontVariation.SMALL }} lineClamp={1} color={Color.GREY_700}>
-          {createdBy?.name + getString('viaSlack') || getString('abbv.na')}
+          {name ? `${name}${getString('viaSlack')}` : getString('abbv.na')}
         </Text>
         {createdAt && (
           <Text font={{ variation: FontVariation.TINY }} color={Color.GREY_400}>
