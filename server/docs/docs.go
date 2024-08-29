@@ -1355,6 +1355,10 @@ const docTemplate = `{
         "incident.Timeline": {
             "type": "object",
             "properties": {
+                "additionalDetails": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
                 "createdAt": {
                     "type": "integer"
                 },

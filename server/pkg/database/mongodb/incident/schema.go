@@ -86,15 +86,16 @@ const (
 )
 
 type Timeline struct {
-	ID            string            `bson:"id" json:"id"`
-	Type          ChangeType        `bson:"type" json:"type"`
-	CreatedAt     int64             `bson:"createdAt" json:"createdAt"`
-	UpdatedAt     *int64            `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
-	PreviousState *string           `bson:"previousState,omitempty" json:"previousState,omitempty"`
-	CurrentState  *string           `bson:"currentState,omitempty" json:"currentState,omitempty"`
-	Slack         *Slack            `bson:"slack,omitempty" json:"slack,omitempty"`
-	User          utils.UserDetails `bson:"userDetails" json:"userDetails"`
-	Message       *string           `bson:"message,omitempty" json:"message,omitempty"`
+	ID                string                 `bson:"id" json:"id"`
+	Type              ChangeType             `bson:"type" json:"type"`
+	CreatedAt         int64                  `bson:"createdAt" json:"createdAt"`
+	UpdatedAt         *int64                 `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
+	PreviousState     *string                `bson:"previousState,omitempty" json:"previousState,omitempty"`
+	CurrentState      *string                `bson:"currentState,omitempty" json:"currentState,omitempty"`
+	Slack             *Slack                 `bson:"slack,omitempty" json:"slack,omitempty"`
+	User              utils.UserDetails      `bson:"userDetails" json:"userDetails"`
+	Message           *string                `bson:"message,omitempty" json:"message,omitempty"`
+	AdditionalDetails map[string]interface{} `bson:"additionalDetails,omitempty" json:"additionalDetails,omitempty"`
 }
 
 type AttachmentType string

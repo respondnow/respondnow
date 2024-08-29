@@ -489,6 +489,9 @@ definitions:
     - Resolved
   incident.Timeline:
     properties:
+      additionalDetails:
+        additionalProperties: true
+        type: object
       createdAt:
         type: integer
       currentState:
