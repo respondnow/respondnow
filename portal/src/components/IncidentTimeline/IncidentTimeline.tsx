@@ -18,10 +18,6 @@ const IncidentTimeline: React.FC<IncidentTimelineProps> = props => {
   const { incident, showCommentsOnly } = props;
   const { getString } = useStrings();
 
-  // if (!incident || !incident.timelines) {
-  //   return null;
-  // }
-
   const incidentsToShow = showCommentsOnly
     ? incident?.timelines?.filter(timeline => timeline.type === 'comment')
     : incident?.timelines;
