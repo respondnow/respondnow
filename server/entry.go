@@ -92,7 +92,7 @@ func setupSlackClient(ctx context.Context) error {
 		return err
 	}
 	logrus.Infof("Adding bot user to incident channel: %s...", config.EnvConfig.SlackConfig.IncidentChannelID)
-	err = slackAPIClient.SetBotUserID(ctx)
+	err = slackAPIClient.SetBotUserIDAndName(ctx)
 	if err != nil {
 		return err
 	}

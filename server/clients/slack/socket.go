@@ -86,6 +86,14 @@ func middlewareEventsAPI(evt *socketmode.Event, client *socketmode.Client) {
 			}
 		case *slackevents.MemberJoinedChannelEvent:
 			logrus.Infof("user %q joined to channel %q", ev.User, ev.Channel)
+		case *slackevents.AppHomeOpenedEvent:
+			logrus.Infof("App home has been opened by %s", ev.User)
+			svc, err := New()
+			if err != nil {
+				logrus.Errorf("failed to create slack service: %v", err)
+				return
+			}
+			svc.HandleAppHome(ev)
 		}
 	default:
 		logrus.Errorf("unsupported Events API event received: %+v", eventsAPIEvent.Type)
@@ -328,6 +336,8 @@ func middlewareInteractionTypeBlockActions(evt *socketmode.Event, client *socket
 		switch blockAction.ActionID {
 		case "create_incident_channel_join_channel_button":
 			slackincident.NewIncidentService(client).HandleJoinChannelAction(evt, blockAction)
+		case "create_incident_modal":
+			slackincident.NewIncidentService(client).CreateIncidentView(evt)
 		case "update_incident_summary_button":
 			client.Debugf("Displaying modal for incident severity selection")
 			modalRequest := slack.ModalViewRequest{
