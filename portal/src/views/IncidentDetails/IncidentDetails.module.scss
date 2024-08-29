@@ -24,3 +24,23 @@
   overflow: auto;
   gap: 1rem;
 }
+
+.filterButton {
+  background: var(--white);
+  border: 1px solid var(--grey-400);
+  outline: none;
+  border-radius: 4px;
+  padding: 0.25rem 1rem;
+
+  &:hover {
+    background: var(--grey-100);
+  }
+
+  &:active {
+    background: var(--grey-200);
+  }
+
+  &.active {
+    background: var(--grey-100);
+  }
+}

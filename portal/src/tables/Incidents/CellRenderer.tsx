@@ -45,14 +45,27 @@ export const IncidentsName: CellRendererType = ({ row }) => {
           </Layout.Horizontal>
         </Link>
         {description && (
-          <Text
-            font={{ variation: FontVariation.TINY }}
-            style={{ fontSize: 11, marginTop: 2 }}
-            color={Color.GREY_500}
-            lineClamp={1}
-          >
-            {`"${description}"`}
-          </Text>
+          <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ marginTop: 2 }}>
+            <Text font={{ variation: FontVariation.TINY }} style={{ fontSize: 11 }} color={Color.GREY_500}>
+              &quot;
+            </Text>
+            <Text
+              font={{ variation: FontVariation.TINY }}
+              style={{ fontSize: 11 }}
+              color={Color.GREY_500}
+              lineClamp={1}
+            >
+              {description}
+            </Text>
+            <Text
+              font={{ variation: FontVariation.TINY }}
+              style={{ fontSize: 11 }}
+              color={Color.GREY_500}
+              lineClamp={1}
+            >
+              &quot;
+            </Text>
+          </Layout.Horizontal>
         )}
         {tags && !isEmpty(tags) && (
           <Layout.Horizontal spacing={'small'} style={{ flexWrap: 'wrap', gap: '2px', marginTop: 12 }}>

@@ -23,9 +23,9 @@ type IncidentService interface {
 	Create(ctx context.Context, request CreateRequest,
 		currentUser utils.UserDetails, correlationID string) (CreateResponse, error)
 	AddConferenceDetailsForIncident(conferenceType incident.ConferenceType) (incident.Conference, error)
-	GenerateIncidentIdentifier(createdAt *time.Time) string
 	ListSlackIncidents(ctx context.Context, slackIncidentType incident.SlackIncidentType) ([]incident.Incident, error)
 	GetSlackIncident(ctx context.Context, incidentId string) (incident.Incident, error)
+	GenerateIncidentIdentifier(createdAt int64) string
 }
 
 type incidentService struct {
@@ -46,10 +46,9 @@ func NewIncidentService(
 	}
 }
 
-func (is incidentService) GenerateIncidentIdentifier(createdAt *time.Time) string {
-	fmtDateTime := createdAt.Format("2006-01-02-15-04-05")
+func (is incidentService) GenerateIncidentIdentifier(createdAt int64) string {
 
-	return fmtDateTime + "-" + uuid.New().String()
+	return strconv.Itoa(int(createdAt)) + "-" + uuid.New().String()
 }
 
 func (is incidentService) Create(ctx context.Context, request CreateRequest,
@@ -64,14 +63,13 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 		return resp, err
 	}
 
-	createdAt := time.Now()
-	ts := createdAt.Unix()
+	ts := time.Now().Unix()
 	// Set default values
 	if request.Status == "" {
 		request.Status = incident.Started
 	}
 	if request.Identifier == "" {
-		request.Identifier = is.GenerateIncidentIdentifier(&createdAt)
+		request.Identifier = is.GenerateIncidentIdentifier(ts)
 	}
 	channelCreatedDetails := incident.Slack{}
 	if len(request.Channels) > 0 {
@@ -85,6 +83,12 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 				},
 			}
 		}
+	}
+
+	var incidentCreatedTimelineSeverity *string
+	if request.Severity != "" {
+		ts := string(request.Severity)
+		incidentCreatedTimelineSeverity = &ts
 	}
 
 	newIncident := incident.Incident{
@@ -107,12 +111,14 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 		Attachments:     request.Attachments,
 		Timelines: []incident.Timeline{
 			{
-				ID:        strconv.Itoa(int(time.Now().Unix())),
-				Type:      incident.ChangeTypeIncidentCreated,
-				CreatedAt: ts,
-				UpdatedAt: &ts,
-				User:      currentUser,
-				Slack:     request.IncidentChannel.Slack,
+				ID:            strconv.Itoa(int(time.Now().Unix())),
+				Type:          incident.ChangeTypeIncidentCreated,
+				CreatedAt:     ts,
+				UpdatedAt:     &ts,
+				PreviousState: incidentCreatedTimelineSeverity,
+				CurrentState:  incidentCreatedTimelineSeverity,
+				User:          currentUser,
+				Slack:         request.IncidentChannel.Slack,
 			},
 			{
 				ID:        strconv.Itoa(int(time.Now().Unix())),
