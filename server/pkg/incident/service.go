@@ -23,7 +23,7 @@ type IncidentService interface {
 	Create(ctx context.Context, request CreateRequest,
 		currentUser utils.UserDetails, correlationID string) (CreateResponse, error)
 	AddConferenceDetailsForIncident(conferenceType incident.ConferenceType) (incident.Conference, error)
-	GenerateIncidentIdentifier(createdAt *time.Time) string
+	GenerateIncidentIdentifier(createdAt int64) string
 }
 
 type incidentService struct {
@@ -44,10 +44,9 @@ func NewIncidentService(
 	}
 }
 
-func (is incidentService) GenerateIncidentIdentifier(createdAt *time.Time) string {
-	fmtDateTime := createdAt.Format("2006-01-02-15-04-05")
+func (is incidentService) GenerateIncidentIdentifier(createdAt int64) string {
 
-	return fmtDateTime + "-" + uuid.New().String()
+	return strconv.Itoa(int(createdAt)) + "-" + uuid.New().String()
 }
 
 func (is incidentService) Create(ctx context.Context, request CreateRequest,
@@ -62,14 +61,13 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 		return resp, err
 	}
 
-	createdAt := time.Now()
-	ts := createdAt.Unix()
+	ts := time.Now().Unix()
 	// Set default values
 	if request.Status == "" {
 		request.Status = incident.Started
 	}
 	if request.Identifier == "" {
-		request.Identifier = is.GenerateIncidentIdentifier(&createdAt)
+		request.Identifier = is.GenerateIncidentIdentifier(ts)
 	}
 	channelCreatedDetails := incident.Slack{}
 	if len(request.Channels) > 0 {
