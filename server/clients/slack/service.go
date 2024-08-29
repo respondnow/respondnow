@@ -9,19 +9,23 @@ import (
 
 	"github.com/respondnow/respond/server/config"
 	"github.com/slack-go/slack"
+	"github.com/slack-go/slack/slackevents"
+	"github.com/slack-go/slack/socketmode"
 )
 
 type SlackService interface {
 	ConnectSlackInSocketMode(ctx context.Context) error
-	SetBotUserID(ctx context.Context) error
+	SetBotUserIDAndName(ctx context.Context) error
 	GetBotDetails(ctx context.Context) (*slack.AuthTestResponse, error)
 	AddBotUserToIncidentChannel(ctx context.Context, botUserID, channelID string) error
 	ListUsers(ctx context.Context, channelID string) ([]string, error)
 	ListChannels(ctx context.Context) ([]slack.Channel, error)
+	HandleAppHome(evt *slackevents.AppHomeOpenedEvent)
 }
 
 type slackService struct {
-	client *slack.Client
+	client           *slack.Client
+	socketModeClient *socketmode.Client
 }
 
 func New() (SlackService, error) {
@@ -48,12 +52,19 @@ func New() (SlackService, error) {
 		return nil, fmt.Errorf("INCIDENT_CHANNEL_ID must be set")
 	}
 
+	client := slack.New(
+		botToken,
+		slack.OptionDebug(true),
+		slack.OptionLog(log.New(os.Stdout, "api: ", log.Lshortfile|log.LstdFlags)),
+		slack.OptionAppLevelToken(appToken),
+	)
+
 	return &slackService{
-		client: slack.New(
-			botToken,
-			slack.OptionDebug(true),
-			slack.OptionLog(log.New(os.Stdout, "api: ", log.Lshortfile|log.LstdFlags)),
-			slack.OptionAppLevelToken(appToken),
+		client: client,
+		socketModeClient: socketmode.New(
+			client,
+			socketmode.OptionDebug(true),
+			socketmode.OptionLog(log.New(os.Stdout, "socketmode: ", log.Lshortfile|log.LstdFlags)),
 		),
 	}, nil
 }

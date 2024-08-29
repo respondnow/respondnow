@@ -10,8 +10,9 @@ import (
 )
 
 var BotUserID string
+var BotUserName string
 
-func (s slackService) SetBotUserID(ctx context.Context) error {
+func (s slackService) SetBotUserIDAndName(ctx context.Context) error {
 	botDetails, err := s.GetBotDetails(ctx)
 	if err != nil {
 		return err
@@ -20,6 +21,7 @@ func (s slackService) SetBotUserID(ctx context.Context) error {
 		return fmt.Errorf("failed to set bot user ID: %s", "bot user ID is emty")
 	}
 	BotUserID = botDetails.UserID
+	BotUserName = botDetails.User
 
 	return nil
 }
