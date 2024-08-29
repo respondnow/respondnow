@@ -12,7 +12,7 @@ import StatusBadge from '@components/StatusBadge';
 import css from './IncidentTimeline.module.scss';
 
 interface IncidentTimelineHelperProps {
-  incident: IncidentIncident;
+  incident: IncidentIncident | undefined;
   timeline: IncidentTimeline;
 }
 
@@ -25,7 +25,7 @@ export function getTimelinePropsBasedOnIncidentData(
 
   const userName = timeline.userDetails?.name || timeline.userDetails?.userName;
 
-  if (!timeline) {
+  if (!timeline || !incident) {
     return undefined;
   }
 

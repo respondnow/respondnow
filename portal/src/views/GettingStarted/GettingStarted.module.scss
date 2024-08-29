@@ -5,3 +5,12 @@
   overflow: hidden;
   border: 0 !important;
 }
+
+.stepperContainer {
+  [data-testid='Stepper_main'] {
+    margin: 0 !important;
+    > div:last-child {
+      margin-bottom: 0 !important;
+    }
+  }
+}
