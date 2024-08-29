@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/respondnow/respond/server/config"
 	"github.com/slack-go/slack"
 )
 
@@ -24,7 +25,7 @@ type slackService struct {
 }
 
 func New() (SlackService, error) {
-	appToken := os.Getenv("SLACK_APP_TOKEN")
+	appToken := config.EnvConfig.SlackConfig.SlackAppToken
 	if appToken == "" {
 		return nil, fmt.Errorf("SLACK_APP_TOKEN must be set")
 	}
@@ -33,7 +34,7 @@ func New() (SlackService, error) {
 		return nil, fmt.Errorf("SLACK_APP_TOKEN must have the prefix \"xapp-\"")
 	}
 
-	botToken := os.Getenv("SLACK_BOT_TOKEN")
+	botToken := config.EnvConfig.SlackConfig.SlackBotToken
 	if botToken == "" {
 		return nil, fmt.Errorf("SLACK_BOT_TOKEN must be set")
 	}
@@ -42,12 +43,17 @@ func New() (SlackService, error) {
 		return nil, fmt.Errorf("SLACK_BOT_TOKEN must have the prefix \"xoxb-\"")
 	}
 
+	incidentChannelID := config.EnvConfig.SlackConfig.IncidentChannelID
+	if incidentChannelID == "" {
+		return nil, fmt.Errorf("INCIDENT_CHANNEL_ID must be set")
+	}
+
 	return &slackService{
 		client: slack.New(
 			botToken,
 			slack.OptionDebug(true),
 			slack.OptionLog(log.New(os.Stdout, "api: ", log.Lshortfile|log.LstdFlags)),
-			slack.OptionAppLevelToken(appToken),
+			slack.OptionAppLevelToken(config.EnvConfig.SlackConfig.SlackAppToken),
 		),
 	}, nil
 }

@@ -24,8 +24,8 @@ type Configuration struct {
 }
 
 type SlackConfig struct {
-	EnableSlackClient bool   `envconfig:"ENABLE_SLACK_CLIENT" split_words:"true"`
-	ConnectionMode    string `envconfig:"CONNECTION_MODE" split_words:"true"`
+	EnableSlackClient bool   `envconfig:"ENABLE_SLACK_CLIENT" split_words:"true" default:"true"`
+	ConnectionMode    string `envconfig:"CONNECTION_MODE" split_words:"true" default:"SOCKET"`
 	SlackAppToken     string `envconfig:"SLACK_APP_TOKEN" split_words:"true"`
 	SlackBotToken     string `envconfig:"SLACK_BOT_TOKEN" split_words:"true"`
 	IncidentChannelID string `envconfig:"INCIDENT_CHANNEL_ID" split_words:"true"`

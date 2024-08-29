@@ -93,9 +93,10 @@ func getSummaryBlock() *slack.InputBlock {
 
 func getChannelSelectBlock() *slack.InputBlock {
 	return slack.NewInputBlock("create_incident_modal_conversation_select", slack.NewTextBlockObject(
-		slack.PlainTextType, "Select a channel to post the result on", false, false,
+		slack.PlainTextType, "Select a channel to post the incident details...", false, false,
 	), nil, slack.SelectBlockElement{
 		Type:               slack.OptTypeChannels,
+		InitialChannel:     config.EnvConfig.SlackConfig.IncidentChannelID,
 		ActionID:           "create_incident_modal_select_conversation",
 		ResponseURLEnabled: true,
 	})
