@@ -62,6 +62,7 @@ updated: Updated
 slackChannel: Slack Channel
 commentedIn: commented in
 showCommentsOnly: Show Comments Only
+showAll: Show All
 noTimeLineDataAvailable: No timeline data available
 gettingStartedCreateSlackAppContent: Create a Slack App to start with, this will be used to manage incidents.
 gettingStartedInstallSlackAppContent: Install the Slack App to your workspace to start managing incidents.

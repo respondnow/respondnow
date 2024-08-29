@@ -61,6 +61,7 @@ export interface StringsMap {
   searchForAnIncident: unknown;
   setUpSlackApp: unknown;
   severity: unknown;
+  showAll: unknown;
   showCommentsOnly: unknown;
   slackButtonText: unknown;
   slackChannel: unknown;

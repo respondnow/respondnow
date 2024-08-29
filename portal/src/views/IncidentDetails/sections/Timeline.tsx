@@ -39,9 +39,10 @@ const TimelineSection: React.FC<TimelineSectionProps> = props => {
             className={cx(css.filterButton, {
               [css.active]: showCommentsOnly
             })}
+            width={180}
           >
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.GREY_800}>
-              {getString('showCommentsOnly')}
+              {showCommentsOnly ? getString('showAll') : getString('showCommentsOnly')}
             </Text>
           </Button>
         </Layout.Horizontal>
