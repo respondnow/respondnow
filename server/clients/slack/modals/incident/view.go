@@ -34,30 +34,35 @@ func (is incidentService) ListIncidents(evt *socketmode.Event, slackIncidentType
 
 	var blocks []slack.Block
 
-	for _, i := range listIncidents {
-		var commander string
-		for _, role := range i.Roles {
-			if role.Type == incident.IncidentCommander {
-				commander = role.User.UserId
+	if len(listIncidents) == 0 {
+		text := ":information_source: No incidents found."
+		blocks = append(blocks, slack.NewSectionBlock(createMarkdownTextBlock(text), nil, nil))
+	} else {
+		for _, i := range listIncidents {
+			var commander string
+			for _, role := range i.Roles {
+				if role.Type == incident.IncidentCommander {
+					commander = role.User.UserId
+				}
 			}
+
+			if commander != "" {
+				commander = fmt.Sprintf("<@%s>", commander)
+			} else {
+				commander = "N/A"
+			}
+
+			text := fmt.Sprintf(
+				":writing_hand: *Name:* %s\n:vertical_traffic_light: *Severity:* %s\n:firefighter: *Commander:* %s\n:eyes: *Current Status:* %s\n\n",
+				i.Name, i.Severity, commander, i.Status)
+
+			sectionBlock := slack.NewSectionBlock(
+				createMarkdownTextBlock(text),
+				nil, slack.NewAccessory(
+					slack.NewButtonBlockElement("view_incident_"+i.Identifier, i.Identifier, createPlainTextBlock("🔍 View Details"))))
+
+			blocks = append(blocks, sectionBlock, slack.NewDividerBlock())
 		}
-
-		if commander != "" {
-			commander = fmt.Sprintf("<@%s>", commander)
-		} else {
-			commander = "N/A"
-		}
-
-		text := fmt.Sprintf(
-			":writing_hand: *Name:* %s\n:vertical_traffic_light: *Severity:* %s\n:firefighter: *Commander:* %s\n:eyes: *Current Status:* %s\n\n",
-			i.Name, i.Severity, commander, i.Status)
-
-		sectionBlock := slack.NewSectionBlock(
-			createMarkdownTextBlock(text),
-			nil, slack.NewAccessory(
-				slack.NewButtonBlockElement("view_incident_"+i.Identifier, i.Identifier, createPlainTextBlock("🔍 View Details"))))
-
-		blocks = append(blocks, sectionBlock, slack.NewDividerBlock())
 	}
 
 	modalRequest := slack.ModalViewRequest{
