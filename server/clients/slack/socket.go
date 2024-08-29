@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	slackincident "github.com/respondnow/respond/server/clients/slack/modals/incident"
+	"github.com/respondnow/respond/server/pkg/database/mongodb/incident"
 	"github.com/sirupsen/logrus"
 	"github.com/slack-go/slack/slackevents"
 	"github.com/slack-go/slack/socketmode"
@@ -165,8 +167,13 @@ func middlewareInteractionTypeShortcut(evt *socketmode.Event, client *socketmode
 	switch shortcut.CallbackID {
 	case "open_incident_modal":
 		slackincident.NewIncidentService(client).CreateIncidentView(evt)
+	case "list_open_incidents_modal":
+		slackincident.NewIncidentService(client).ListIncidents(evt, incident.Open)
+	case "list_closed_incidents_modal":
+		slackincident.NewIncidentService(client).ListIncidents(evt, incident.Closed)
 	default:
-		logrus.Infof("unsupported shortcut callback received: %s", shortcut.CallbackID)
+		logrus.Infof("Unsupported action callback received: %s", shortcut.CallbackID)
+
 	}
 }
 
@@ -183,7 +190,13 @@ func middlewareInteractionTypeBlockActions(evt *socketmode.Event, client *socket
 		case "create_incident_channel_join_channel_button":
 			slackincident.NewIncidentService(client).HandleJoinChannelAction(evt, blockAction)
 		default:
-			logrus.Infof("unsupported blockAction callback received: %s", blockAction.ActionID)
+			incidentID := blockAction.ActionID
+			if strings.HasPrefix(incidentID, "view_incident_") {
+				slackincident.NewIncidentService(client).ShowIncident(evt, blockAction.Value)
+				return
+			} else {
+				logrus.Infof("Unsupported action callback received: %s", blockActions.CallbackID)
+			}
 		}
 	}
 }

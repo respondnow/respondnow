@@ -13,6 +13,7 @@ const (
 	ID                        = "_id"
 	IncidentChannelType       = "incidentChannel.type"
 	IncidentIdentifier        = "incidentIdentifier"
+	Identifier                = "identifier"
 	Limit                     = "limit"
 	Name                      = "name"
 	Namespace                 = "namespace"

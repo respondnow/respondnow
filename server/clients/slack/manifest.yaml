@@ -17,7 +17,7 @@ features:
       description: Creates a new incident.
     - name: List closed incidents
       type: global
-      callback_id: list_closed_incidents
+      callback_id: list_closed_incidents_modal
       description: Allows you to list all the resolved incidents.
     - name: List open incidents
       type: global
