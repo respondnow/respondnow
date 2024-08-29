@@ -160,7 +160,7 @@ func (is incidentService) ShowIncident(evt *socketmode.Event, incidentID string)
 	}
 
 	if getIncident.Status == incident.Resolved {
-		completedAt := time.Unix(getIncident.UpdatedAt, 0).UTC().Format("Monday, Jan 2, 2006 at 3:04 PM")
+		completedAt := time.Unix(*getIncident.UpdatedAt, 0).UTC().Format("Monday, Jan 2, 2006 at 3:04 PM")
 		blocks = append(blocks, slack.NewSectionBlock(
 			slack.NewTextBlockObject("mrkdwn", fmt.Sprintf(":checkered_flag: *Completed At:* %s", completedAt), false, false),
 			nil,
