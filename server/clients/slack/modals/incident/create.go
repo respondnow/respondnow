@@ -3,6 +3,7 @@ package incident
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -22,7 +23,7 @@ const (
 	// Limit the channel name to 76 to take this into account
 	slackChannelNameLengthCap = 80
 	// How many characters does the incident prefix take up?
-	channelNamePrefixLength = len("rn-")
+	channelNamePrefixLength = len("rn-2006-01-02-15-04-05-")
 	// How long can the provided name can be?
 	incidentNameMaxLength = slackChannelNameLengthCap - channelNamePrefixLength
 )
@@ -92,9 +93,10 @@ func getSummaryBlock() *slack.InputBlock {
 
 func getChannelSelectBlock() *slack.InputBlock {
 	return slack.NewInputBlock("create_incident_modal_conversation_select", slack.NewTextBlockObject(
-		slack.PlainTextType, "Select a channel to post the result on", false, false,
+		slack.PlainTextType, "Select a channel to post the incident details", false, false,
 	), nil, slack.SelectBlockElement{
 		Type:               slack.OptTypeChannels,
+		InitialChannel:     config.EnvConfig.SlackConfig.IncidentChannelID,
 		ActionID:           "create_incident_modal_select_conversation",
 		ResponseURLEnabled: true,
 	})
@@ -300,9 +302,9 @@ func (is incidentService) CreateIncident(evt *socketmode.Event) {
 		config.EnvConfig.DefaultHierarchy.DefaultOrgId,
 		config.EnvConfig.DefaultHierarchy.DefaultProjectId,
 	)
-	incidentIdentifier := incidentService.GenerateIncidentIdentifier(&createdAt)
+	incidentIdentifier := incidentService.GenerateIncidentIdentifier(createdAt.Unix())
 	channel, err := is.client.Client.CreateConversation(slack.CreateConversationParams{
-		ChannelName: generateSlackChannelName(incidentIdentifier),
+		ChannelName: generateSlackChannelName(name.Value, &createdAt),
 		IsPrivate:   false,
 		TeamID:      callback.Team.ID,
 	})
@@ -483,21 +485,22 @@ func (is incidentService) sendCreateIncidentResponseMsg(teamID, channelID, joinC
 	return nil
 }
 
-func generateSlackChannelName(id string) string {
-	channelName := strings.ToLower("rn-" + id)
-	if len(channelName) > slackChannelNameLengthCap {
-		return channelName[:slackChannelNameLengthCap]
-	}
-	return channelName
-}
-
-// func generateSlackChannelName(incidentName string, createdAt *time.Time) string {
-// 	fmtDateTime := createdAt.Format("20060102150405")
-// 	incidentName = strings.ToLower(strings.ReplaceAll(strings.TrimSpace(incidentName), " ", "-"))
-// 	incidentName = regexp.MustCompile(`[^a-zA-Z0-9 ]+`).ReplaceAllString(incidentName, "")
-
-// 	return "rn-" + fmtDateTime + "-" + incidentName
+// func generateSlackChannelName(id string) string {
+// 	channelName := strings.ToLower("rn-" + id)
+// 	if len(channelName) > slackChannelNameLengthCap {
+// 		return channelName[:slackChannelNameLengthCap]
+// 	}
+// 	return channelName
 // }
+
+func generateSlackChannelName(incidentName string, createdAt *time.Time) string {
+	fmtDateTime := createdAt.Format("2006-01-02-15-04-05")
+	incidentName = strings.ToLower(strings.TrimSpace(incidentName))
+	incidentName = regexp.MustCompile(`[^a-zA-Z0-9]+`).ReplaceAllString(incidentName, "-")
+	incidentName = strings.ReplaceAll(strings.Trim(incidentName, "-"), "--", "-")
+
+	return "rn-" + fmtDateTime + "-" + incidentName
+}
 
 func (is incidentService) HandleJoinChannelAction(evt *socketmode.Event, blockAction *slack.BlockAction) {
 	callback, ok := evt.Data.(slack.InteractionCallback)
