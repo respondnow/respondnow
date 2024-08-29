@@ -495,8 +495,9 @@ func (is incidentService) sendCreateIncidentResponseMsg(teamID, channelID, joinC
 
 func generateSlackChannelName(incidentName string, createdAt *time.Time) string {
 	fmtDateTime := createdAt.Format("2006-01-02-15-04-05")
-	incidentName = strings.ToLower(strings.ReplaceAll(strings.TrimSpace(incidentName), " ", "-"))
-	incidentName = regexp.MustCompile(`[^a-zA-Z0-9 ]+`).ReplaceAllString(incidentName, "-")
+	incidentName = strings.ToLower(strings.TrimSpace(incidentName))
+	incidentName = regexp.MustCompile(`[^a-zA-Z0-9]+`).ReplaceAllString(incidentName, "-")
+	incidentName = strings.ReplaceAll(strings.Trim(incidentName, "-"), "--", "-")
 
 	return "rn-" + fmtDateTime + "-" + incidentName
 }
