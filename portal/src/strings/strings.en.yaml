@@ -61,3 +61,12 @@ addedMemberAutomatically: Added member(s) automatically
 updated: Updated
 slackChannel: Slack Channel
 commentedIn: commented in
+showCommentsOnly: Show Comments Only
+noTimeLineDataAvailable: No timeline data available
+gettingStartedCreateSlackAppContent: Create a Slack App to start with, this will be used to manage incidents.
+gettingStartedInstallSlackAppContent: Install the Slack App to your workspace to start managing incidents.
+gettingStartedConfigureIncidentChannelContent: Create a channel in Slack to manage incidents. Configure the channel with the Slack App you just created.
+goToIncidentDashboard: Go to Incidents Dashboard
+gettingStartedCreateSlackAppHeader: Create a Slack App
+gettingStartedInstallSlackAppHeader: Install the Slack App to your workspace
+gettingStartedConfigureIncidentChannelHeader: Create and configure an incident channel

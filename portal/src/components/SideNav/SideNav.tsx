@@ -72,7 +72,7 @@ const SideNav: React.FC = () => {
       <Layout.Vertical>
         <Container padding="medium" border={{ top: true }}>
           <SidebarLink
-            to="#"
+            to={{ pathname: 'https://respondnow.github.io/respond', state: { external: true } }}
             icon="link"
             label={getString('documentation')}
             target="_blank"

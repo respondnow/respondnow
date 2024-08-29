@@ -27,7 +27,7 @@ const IncidentsView: React.FC<IncidentsViewProps> = props => {
 
   const isDataPresent = !!tableData.content.length;
 
-  const reportIncidentButton = <Button variation={ButtonVariation.PRIMARY} text="Report Incident on Slack" />;
+  const reportIncidentButton = <Button disabled variation={ButtonVariation.PRIMARY} text="Report Incident on Slack" />;
 
   return (
     <DefaultLayout

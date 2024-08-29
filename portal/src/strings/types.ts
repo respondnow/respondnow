@@ -24,8 +24,15 @@ export interface StringsMap {
   getStarted: unknown;
   getStartedHeading: unknown;
   gettingStarted: unknown;
+  gettingStartedConfigureIncidentChannelContent: unknown;
+  gettingStartedConfigureIncidentChannelHeader: unknown;
+  gettingStartedCreateSlackAppContent: unknown;
+  gettingStartedCreateSlackAppHeader: unknown;
+  gettingStartedInstallSlackAppContent: unknown;
+  gettingStartedInstallSlackAppHeader: unknown;
   goBack: unknown;
   goToHome: unknown;
+  goToIncidentDashboard: unknown;
   incident: unknown;
   incidentChannelCreated: unknown;
   incidentTimeline: unknown;
@@ -41,6 +48,7 @@ export interface StringsMap {
   noIncidentsFoundDescription: unknown;
   noIncidentsFoundMatchingFilters: unknown;
   noIncidentsFoundMatchingFiltersDescription: unknown;
+  noTimeLineDataAvailable: unknown;
   oldPassword: unknown;
   password: unknown;
   passwordRequired: unknown;
@@ -53,6 +61,7 @@ export interface StringsMap {
   searchForAnIncident: unknown;
   setUpSlackApp: unknown;
   severity: unknown;
+  showCommentsOnly: unknown;
   slackButtonText: unknown;
   slackChannel: unknown;
   slackConfigDescription: unknown;

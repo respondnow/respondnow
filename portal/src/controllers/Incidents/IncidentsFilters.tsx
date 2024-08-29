@@ -64,7 +64,7 @@ export const IncidentsSearchBar = ({ state, dispatch, resetPage }: FilterProps):
   const { getString } = useStrings();
   const ref = React.useRef<ExpandingSearchInputHandle | undefined>();
   React.useEffect(() => {
-    if (state.incidentName === undefined && ref.current) {
+    if (state.incidentName === '' && ref.current) {
       ref.current.clear();
     }
   }, [state.incidentName]);
