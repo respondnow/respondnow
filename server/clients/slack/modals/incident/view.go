@@ -18,7 +18,7 @@ func (is incidentService) ListIncidents(evt *socketmode.Event, slackIncidentType
 
 	inf := incident2.NewIncidentService(incident.NewIncidentOperator(mongodb.Operator), "", "", "")
 
-	listIncidents, err := inf.ListSlackIncidents(context.Background(), slackIncidentType)
+	listIncidents, err := inf.ListIncidentsForSlackView(context.Background(), slackIncidentType)
 	if err != nil {
 		logrus.Errorf("failed to list incidents: %v", err)
 		return
@@ -75,7 +75,7 @@ func (is incidentService) ListIncidents(evt *socketmode.Event, slackIncidentType
 
 	triggerID := evt.Data.(slack.InteractionCallback).TriggerID
 	if _, err := is.client.Client.OpenView(triggerID, modalRequest); err != nil {
-		logrus.Errorf("failed to open view: %v", err)
+		logrus.Errorf("failed to list incidents: %v", err)
 	}
 }
 
@@ -84,7 +84,7 @@ func (is incidentService) ShowIncident(evt *socketmode.Event, incidentID string)
 
 	inf := incident2.NewIncidentService(incident.NewIncidentOperator(mongodb.Operator), "", "", "")
 
-	getIncident, err := inf.GetSlackIncident(context.Background(), incidentID)
+	getIncident, err := inf.GetIncidentForSlackView(context.Background(), incidentID)
 	if err != nil {
 		logrus.Errorf("failed to get incident: %v", err)
 		return
@@ -181,6 +181,6 @@ func (is incidentService) ShowIncident(evt *socketmode.Event, incidentID string)
 	// Open the modal view
 	triggerID := evt.Data.(slack.InteractionCallback).TriggerID
 	if _, err = is.client.Client.PushViewContext(context.Background(), triggerID, modal); err != nil {
-		logrus.Errorf("Failed to open incident details view: %v", err)
+		logrus.Errorf("failed to open incident details view: %v", err)
 	}
 }

@@ -192,6 +192,6 @@ type SlackTeam struct {
 type SlackIncidentType string
 
 const (
-	ClosedSlackIncident SlackIncidentType = "CLOSED_SLACK_INCIDENT"
-	OpenSlackIncident   SlackIncidentType = "OPEN_SLACK_INCIDENT"
+	Closed SlackIncidentType = "CLOSED"
+	Open   SlackIncidentType = "OPEN"
 )

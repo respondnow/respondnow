@@ -23,8 +23,8 @@ type IncidentService interface {
 	Create(ctx context.Context, request CreateRequest,
 		currentUser utils.UserDetails, correlationID string) (CreateResponse, error)
 	AddConferenceDetailsForIncident(conferenceType incident.ConferenceType) (incident.Conference, error)
-	ListSlackIncidents(ctx context.Context, slackIncidentType incident.SlackIncidentType) ([]incident.Incident, error)
-	GetSlackIncident(ctx context.Context, incidentId string) (incident.Incident, error)
+	ListIncidentsForSlackView(ctx context.Context, slackIncidentType incident.SlackIncidentType) ([]incident.Incident, error)
+	GetIncidentForSlackView(ctx context.Context, incidentId string) (incident.Incident, error)
 	GenerateIncidentIdentifier(createdAt int64) string
 }
 
@@ -309,12 +309,12 @@ func (is incidentService) Get(ctx context.Context, id string) (incident.Incident
 	return resp, nil
 }
 
-func (is incidentService) ListSlackIncidents(ctx context.Context, slackIncidentType incident.SlackIncidentType) ([]incident.Incident, error) {
+func (is incidentService) ListIncidentsForSlackView(ctx context.Context, slackIncidentType incident.SlackIncidentType) ([]incident.Incident, error) {
 	var status []incident.Status
 
-	if slackIncidentType == incident.ClosedSlackIncident {
+	if slackIncidentType == incident.Closed {
 		status = []incident.Status{incident.Resolved}
-	} else if slackIncidentType == incident.OpenSlackIncident {
+	} else if slackIncidentType == incident.Open {
 		status = []incident.Status{incident.Started, incident.Acknowledged, incident.Investigating, incident.Identified, incident.Mitigated}
 	}
 
@@ -327,7 +327,7 @@ func (is incidentService) ListSlackIncidents(ctx context.Context, slackIncidentT
 	return listIncidents, nil
 }
 
-func (is incidentService) GetSlackIncident(ctx context.Context, incidentId string) (incident.Incident, error) {
+func (is incidentService) GetIncidentForSlackView(ctx context.Context, incidentId string) (incident.Incident, error) {
 	query := bson.M{constant.Removed: false, constant.Identifier: incidentId}
 	getIncident, err := is.incidentOperator.Get(ctx, query)
 	if err != nil {

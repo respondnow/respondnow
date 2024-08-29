@@ -168,9 +168,9 @@ func middlewareInteractionTypeShortcut(evt *socketmode.Event, client *socketmode
 	case "open_incident_modal":
 		slackincident.NewIncidentService(client).CreateIncidentView(evt)
 	case "list_open_incidents_modal":
-		slackincident.NewIncidentService(client).ListIncidents(evt, incident.OpenSlackIncident)
+		slackincident.NewIncidentService(client).ListIncidents(evt, incident.Open)
 	case "list_closed_incidents_modal":
-		slackincident.NewIncidentService(client).ListIncidents(evt, incident.ClosedSlackIncident)
+		slackincident.NewIncidentService(client).ListIncidents(evt, incident.Closed)
 	default:
 		logrus.Infof("Unsupported action callback received: %s", shortcut.CallbackID)
 
