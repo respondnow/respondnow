@@ -2,6 +2,7 @@ package slackclient
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
 	"github.com/slack-go/slack"
@@ -41,6 +42,18 @@ func (s slackService) HandleAppHome(evt *slackevents.AppHomeOpenedEvent) {
 				"> :wave:*!\n\nI'm your friendly Respond Now, and my " +
 				"sole purpose is to help us manage incidents.\n",
 		}, nil, nil, slack.SectionBlockOptionBlockID("app_home_resp_intro")),
+
+		slack.NewHeaderBlock(&slack.TextBlockObject{
+			Type: slack.PlainTextType,
+			Text: ":slack: Adding me to a channel",
+		}, slack.HeaderBlockOptionBlockID("app_home_resp_add_to_channel_header")),
+
+		slack.NewDividerBlock(),
+
+		slack.NewSectionBlock(&slack.TextBlockObject{
+			Type: slack.MarkdownType,
+			Text: fmt.Sprintf("To add me to a new channel, please use <@%s>", BotUserID),
+		}, nil, nil, slack.SectionBlockOptionBlockID("app_home_resp_add_to_channel_steps")),
 
 		slack.NewHeaderBlock(&slack.TextBlockObject{
 			Type: slack.PlainTextType,
