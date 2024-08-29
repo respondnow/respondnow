@@ -699,6 +699,8 @@ const docTemplate = `{
                 "severity",
                 "status",
                 "comment",
+                "summary",
+                "roles",
                 "slackChannelCreated",
                 "incidentCreated"
             ],
@@ -706,6 +708,8 @@ const docTemplate = `{
                 "ChangeTypeSeverity",
                 "ChangeTypeStatus",
                 "ChangeTypeComment",
+                "ChangeTypeSummary",
+                "ChangeTypeRoles",
                 "ChangeTypeSlackChannelCreated",
                 "ChangeTypeIncidentCreated"
             ]
@@ -1351,6 +1355,10 @@ const docTemplate = `{
         "incident.Timeline": {
             "type": "object",
             "properties": {
+                "additionalDetails": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
                 "createdAt": {
                     "type": "integer"
                 },

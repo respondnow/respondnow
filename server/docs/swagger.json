@@ -693,6 +693,8 @@
                 "severity",
                 "status",
                 "comment",
+                "summary",
+                "roles",
                 "slackChannelCreated",
                 "incidentCreated"
             ],
@@ -700,6 +702,8 @@
                 "ChangeTypeSeverity",
                 "ChangeTypeStatus",
                 "ChangeTypeComment",
+                "ChangeTypeSummary",
+                "ChangeTypeRoles",
                 "ChangeTypeSlackChannelCreated",
                 "ChangeTypeIncidentCreated"
             ]
@@ -1345,6 +1349,10 @@
         "incident.Timeline": {
             "type": "object",
             "properties": {
+                "additionalDetails": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
                 "createdAt": {
                     "type": "integer"
                 },
