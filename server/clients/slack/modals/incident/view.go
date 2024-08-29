@@ -25,7 +25,7 @@ func (is incidentService) ListIncidents(evt *socketmode.Event, slackIncidentType
 	}
 
 	createMarkdownTextBlock := func(text string) *slack.TextBlockObject {
-		return slack.NewTextBlockObject("mrkdwn", text, false, false)
+		return slack.NewTextBlockObject(slack.MarkdownType, text, false, false)
 	}
 
 	createPlainTextBlock := func(text string) *slack.TextBlockObject {
@@ -118,42 +118,42 @@ func (is incidentService) ShowIncident(evt *socketmode.Event, incidentID string)
 
 	blocks := []slack.Block{
 		slack.NewSectionBlock(
-			slack.NewTextBlockObject("mrkdwn", "*Incident Details*", false, false),
+			slack.NewTextBlockObject(slack.MarkdownType, "*Incident Details*", false, false),
 			nil,
 			nil,
 		),
 		slack.NewSectionBlock(
-			slack.NewTextBlockObject("mrkdwn", fmt.Sprintf(":writing_hand: *Name:* %s", getIncident.Name), false, false),
+			slack.NewTextBlockObject(slack.MarkdownType, fmt.Sprintf(":writing_hand: *Name:* %s", getIncident.Name), false, false),
 			nil,
 			nil,
 		),
 		slack.NewSectionBlock(
-			slack.NewTextBlockObject("mrkdwn", fmt.Sprintf(":vertical_traffic_light: *Severity:* %s", string(getIncident.Severity)), false, false),
+			slack.NewTextBlockObject(slack.MarkdownType, fmt.Sprintf(":vertical_traffic_light: *Severity:* %s", string(getIncident.Severity)), false, false),
 			nil,
 			nil,
 		),
 		slack.NewSectionBlock(
-			slack.NewTextBlockObject("mrkdwn", fmt.Sprintf(":eyes: *Current Status:* %s", string(getIncident.Status)), false, false),
+			slack.NewTextBlockObject(slack.MarkdownType, fmt.Sprintf(":eyes: *Current Status:* %s", string(getIncident.Status)), false, false),
 			nil,
 			nil,
 		),
 		slack.NewSectionBlock(
-			slack.NewTextBlockObject("mrkdwn", fmt.Sprintf(":firefighter: *Commander:* %s", commander), false, false),
+			slack.NewTextBlockObject(slack.MarkdownType, fmt.Sprintf(":firefighter: *Commander:* %s", commander), false, false),
 			nil,
 			nil,
 		),
 		slack.NewSectionBlock(
-			slack.NewTextBlockObject("mrkdwn", fmt.Sprintf(":phone: *Communications Lead:* %s", communicationsLead), false, false),
+			slack.NewTextBlockObject(slack.MarkdownType, fmt.Sprintf(":phone: *Communications Lead:* %s", communicationsLead), false, false),
 			nil,
 			nil,
 		),
 		slack.NewSectionBlock(
-			slack.NewTextBlockObject("mrkdwn", fmt.Sprintf(":open_book: *Summary:* %s", getIncident.Summary), false, false),
+			slack.NewTextBlockObject(slack.MarkdownType, fmt.Sprintf(":open_book: *Summary:* %s", getIncident.Summary), false, false),
 			nil,
 			nil,
 		),
 		slack.NewSectionBlock(
-			slack.NewTextBlockObject("mrkdwn", fmt.Sprintf(":clock1: *Started At:* %s", startedAt), false, false),
+			slack.NewTextBlockObject(slack.MarkdownType, fmt.Sprintf(":clock1: *Started At:* %s", startedAt), false, false),
 			nil,
 			nil,
 		),
@@ -162,7 +162,7 @@ func (is incidentService) ShowIncident(evt *socketmode.Event, incidentID string)
 	if getIncident.Status == incident.Resolved {
 		completedAt := time.Unix(*getIncident.UpdatedAt, 0).UTC().Format("Monday, Jan 2, 2006 at 3:04 PM")
 		blocks = append(blocks, slack.NewSectionBlock(
-			slack.NewTextBlockObject("mrkdwn", fmt.Sprintf(":checkered_flag: *Completed At:* %s", completedAt), false, false),
+			slack.NewTextBlockObject(slack.MarkdownType, fmt.Sprintf(":checkered_flag: *Completed At:* %s", completedAt), false, false),
 			nil,
 			nil,
 		))
