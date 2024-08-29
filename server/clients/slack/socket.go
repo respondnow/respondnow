@@ -162,11 +162,24 @@ func middlewareInteractionTypeViewSubmission(evt *socketmode.Event, client *sock
 		slackincident.NewIncidentService(client).UpdateIncidentSummary(evt)
 	case "incident_roles_modal":
 		rolesData := viewSubmission.View.State.Values
-		logrus.Infof("Incident Identifier: %s, Updated Roles Data: %+v", incidentIdentifier, rolesData)
+		supportedIncidentRoles := incidentdb.NewIncidentOperator(mongodb.Operator).GetIncidentRoles()
+
+		for _, role := range supportedIncidentRoles {
+			roleKey := "create_incident_modal_set_" + string(role)
+			for _, roleData := range rolesData {
+				if roleInfo, exists := roleData[roleKey]; exists {
+					userID := roleInfo.SelectedUser
+					logrus.Infof("Incident Identifier: %s, Role: %s, Assigned User: %s", incidentIdentifier, role, userID)
+				}
+			}
+		}
+		slackincident.NewIncidentService(client).UpdateIncidentRole(evt)
 	case "incident_status_modal":
 		status := viewSubmission.View.State.Values["incident_status"]["create_incident_modal_set_incident_status"].SelectedOption.Value
 		logrus.Infof("Incident Identifier: %s, Updated Status: %s", incidentIdentifier, status)
+		slackincident.NewIncidentService(client).UpdateIncidentStatus(evt)
 	case "incident_severity_modal":
+		slackincident.NewIncidentService(client).UpdateIncidentSeverity(evt)
 		severity := viewSubmission.View.State.Values["incident_severity"]["create_incident_modal_set_incident_severity"].SelectedOption.Value
 		logrus.Infof("Incident Identifier: %s, Updated Severity: %s", incidentIdentifier, severity)
 	default:
@@ -322,7 +335,7 @@ func middlewareInteractionTypeBlockActions(evt *socketmode.Event, client *socket
 				PrivateMetadata: blockAction.Value,
 				CallbackID:      "incident_summary_modal",
 				Title: slack.NewTextBlockObject("plain_text",
-					"Update Incident Severity", false, false),
+					"Update Incident Summary", false, false),
 				Blocks: slack.Blocks{
 					BlockSet: []slack.Block{
 						getSummaryBlock(),

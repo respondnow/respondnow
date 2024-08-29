@@ -24,6 +24,9 @@ type IncidentService interface {
 	Create(ctx context.Context, request CreateRequest,
 		currentUser utils.UserDetails, correlationID string) (CreateResponse, error)
 	UpdateSummary(ctx context.Context, incidentID, newSummary string, currentUser utils.UserDetails) (incident.Incident, error)
+	UpdateSeverity(ctx context.Context, incidentID string, newSummary string, currentUser utils.UserDetails) (incident.Incident, error)
+	UpdateStatus(ctx context.Context, incidentID string, newStatus string, currentUser utils.UserDetails) (incident.Incident, error)
+	UpdateRoles(ctx context.Context, incidentID string, roleAssignments map[string]utils.UserDetails, currentUser utils.UserDetails) (incident.Incident, error)
 	AddConferenceDetailsForIncident(conferenceType incident.ConferenceType) (incident.Conference, error)
 	ListIncidentsForSlackView(ctx context.Context, slackIncidentType incident.SlackIncidentType) ([]incident.Incident, error)
 	GetIncidentForSlackView(ctx context.Context, incidentId string) (incident.Incident, error)
@@ -81,6 +84,108 @@ func (is incidentService) UpdateSummary(ctx context.Context, incidentID, newSumm
 	}
 
 	return updatedIncident, nil
+}
+
+func (is incidentService) UpdateSeverity(ctx context.Context, incidentID string, newSeverity string,
+	currentUser utils.UserDetails) (incident.Incident, error) {
+	existingIncident, err := is.Get(ctx, incidentID)
+	if err != nil {
+		return incident.Incident{}, err
+	}
+
+	logrus.Infof("new severity of the incident is: %v\n", newSeverity)
+
+	existingIncident.Severity = incident.Severity(newSeverity)
+
+	ts := time.Now().Unix()
+	existingIncident.AuditDetails.UpdatedBy = currentUser
+	existingIncident.AuditDetails.UpdatedAt = &ts
+
+	existingIncident.Timelines = append(existingIncident.Timelines, incident.Timeline{
+		ID:        strconv.Itoa(int(ts)),
+		Type:      incident.ChangeTypeSeverity,
+		CreatedAt: ts,
+		UpdatedAt: &ts,
+		User:      currentUser,
+	})
+
+	updatedIncident, err := is.incidentOperator.UpdateByID(ctx, existingIncident)
+	if err != nil {
+		return incident.Incident{}, err
+	}
+
+	return updatedIncident, nil
+}
+
+func (is incidentService) UpdateStatus(ctx context.Context, incidentID string, newStatus string,
+	currentUser utils.UserDetails) (incident.Incident, error) {
+	existingIncident, err := is.Get(ctx, incidentID)
+	if err != nil {
+		return incident.Incident{}, err
+	}
+
+	logrus.Infof("new status of the incident is: %v\n", newStatus)
+
+	existingIncident.Status = incident.Status(newStatus)
+
+	ts := time.Now().Unix()
+	existingIncident.AuditDetails.UpdatedBy = currentUser
+	existingIncident.AuditDetails.UpdatedAt = &ts
+
+	existingIncident.Timelines = append(existingIncident.Timelines, incident.Timeline{
+		ID:        strconv.Itoa(int(ts)),
+		Type:      incident.ChangeTypeStatus,
+		CreatedAt: ts,
+		UpdatedAt: &ts,
+		User:      currentUser,
+	})
+
+	updatedIncident, err := is.incidentOperator.UpdateByID(ctx, existingIncident)
+	if err != nil {
+		return incident.Incident{}, err
+	}
+
+	return updatedIncident, nil
+}
+
+func (is incidentService) UpdateRoles(ctx context.Context, incidentID string,
+	roleAssignments map[string]utils.UserDetails, currentUser utils.UserDetails) (incident.Incident, error) {
+	existingIncident, err := is.Get(ctx, incidentID)
+	if err != nil {
+		return incident.Incident{}, err
+	}
+
+	var updatedRoles []incident.Role
+	for role, userDetails := range roleAssignments {
+		updatedRoles = append(updatedRoles, incident.Role{
+			Type: incident.RoleType(role),
+			User: userDetails,
+		})
+	}
+
+	logrus.Infof("Updated roles: %+v\n", updatedRoles)
+
+	existingIncident.Roles = updatedRoles
+
+	ts := time.Now().Unix()
+	existingIncident.AuditDetails.UpdatedBy = currentUser
+	existingIncident.AuditDetails.UpdatedAt = &ts
+
+	existingIncident.Timelines = append(existingIncident.Timelines, incident.Timeline{
+		ID:        strconv.Itoa(int(ts)),
+		Type:      incident.ChangeTypeStatus,
+		CreatedAt: ts,
+		UpdatedAt: &ts,
+		User:      currentUser,
+	})
+
+	updatedIncident, err := is.incidentOperator.UpdateByID(ctx, existingIncident)
+	if err != nil {
+		return incident.Incident{}, err
+	}
+
+	return updatedIncident, nil
+
 }
 
 func (is incidentService) Create(ctx context.Context, request CreateRequest,

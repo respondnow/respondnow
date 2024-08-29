@@ -29,6 +29,19 @@ const (
 	Severity2 Severity = "SEV2 - Minor, Low Impact"
 )
 
+func mapToSeverity(severityStr string) Severity {
+	switch severityStr {
+	case string(Severity0):
+		return Severity0
+	case string(Severity1):
+		return Severity1
+	case string(Severity2):
+		return Severity2
+	default:
+		return Severity2
+	}
+}
+
 type Type string
 
 const (

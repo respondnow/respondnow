@@ -43,6 +43,8 @@ definitions:
     - severity
     - status
     - comment
+    - summary
+    - roles
     - slackChannelCreated
     - incidentCreated
     type: string
@@ -50,6 +52,8 @@ definitions:
     - ChangeTypeSeverity
     - ChangeTypeStatus
     - ChangeTypeComment
+    - ChangeTypeSummary
+    - ChangeTypeRoles
     - ChangeTypeSlackChannelCreated
     - ChangeTypeIncidentCreated
   incident.Channel:

@@ -693,6 +693,8 @@
                 "severity",
                 "status",
                 "comment",
+                "summary",
+                "roles",
                 "slackChannelCreated",
                 "incidentCreated"
             ],
@@ -700,6 +702,8 @@
                 "ChangeTypeSeverity",
                 "ChangeTypeStatus",
                 "ChangeTypeComment",
+                "ChangeTypeSummary",
+                "ChangeTypeRoles",
                 "ChangeTypeSlackChannelCreated",
                 "ChangeTypeIncidentCreated"
             ]
