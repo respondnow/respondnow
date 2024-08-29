@@ -53,7 +53,7 @@ func New() (SlackService, error) {
 			botToken,
 			slack.OptionDebug(true),
 			slack.OptionLog(log.New(os.Stdout, "api: ", log.Lshortfile|log.LstdFlags)),
-			slack.OptionAppLevelToken(config.EnvConfig.SlackConfig.SlackAppToken),
+			slack.OptionAppLevelToken(appToken),
 		),
 	}, nil
 }

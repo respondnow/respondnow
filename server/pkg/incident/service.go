@@ -83,6 +83,12 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 		}
 	}
 
+	var incidentCreatedTimelineSeverity *string
+	if request.Severity != "" {
+		ts := string(request.Severity)
+		incidentCreatedTimelineSeverity = &ts
+	}
+
 	newIncident := incident.Incident{
 		ResourceDetails: request.ResourceDetails,
 		IdentifierDetails: mongodb.IdentifierDetails{
@@ -103,12 +109,14 @@ func (is incidentService) Create(ctx context.Context, request CreateRequest,
 		Attachments:     request.Attachments,
 		Timelines: []incident.Timeline{
 			{
-				ID:        strconv.Itoa(int(time.Now().Unix())),
-				Type:      incident.ChangeTypeIncidentCreated,
-				CreatedAt: ts,
-				UpdatedAt: &ts,
-				User:      currentUser,
-				Slack:     request.IncidentChannel.Slack,
+				ID:            strconv.Itoa(int(time.Now().Unix())),
+				Type:          incident.ChangeTypeIncidentCreated,
+				CreatedAt:     ts,
+				UpdatedAt:     &ts,
+				PreviousState: incidentCreatedTimelineSeverity,
+				CurrentState:  incidentCreatedTimelineSeverity,
+				User:          currentUser,
+				Slack:         request.IncidentChannel.Slack,
 			},
 			{
 				ID:        strconv.Itoa(int(time.Now().Unix())),
