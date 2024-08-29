@@ -18,12 +18,14 @@ import (
 
 type IncidentService interface {
 	Get(ctx context.Context, id string) (incident.Incident, error)
-	List(ctx context.Context, token string, listFilters ListFilters, correlationID, search string,
+	List(ctx context.Context, listFilters ListFilters, correlationID, search string,
 		limit, page int64, all bool) (ListResponse, error)
 	Create(ctx context.Context, request CreateRequest,
 		currentUser utils.UserDetails, correlationID string) (CreateResponse, error)
 	AddConferenceDetailsForIncident(conferenceType incident.ConferenceType) (incident.Conference, error)
 	GenerateIncidentIdentifier(createdAt *time.Time) string
+	ListSlackIncidents(ctx context.Context, slackIncidentType incident.SlackIncidentType) ([]incident.Incident, error)
+	GetSlackIncident(ctx context.Context, incidentId string) (incident.Incident, error)
 }
 
 type incidentService struct {
@@ -186,7 +188,7 @@ func (is incidentService) AddConferenceDetailsForIncident(conferenceType inciden
 	}
 }
 
-func (is incidentService) List(ctx context.Context, token string, listFilters ListFilters, correlationID,
+func (is incidentService) List(ctx context.Context, listFilters ListFilters, correlationID,
 	search string, limit, page int64, all bool) (ListResponse, error) {
 	resp := ListResponse{}
 	filter := bson.D{}
@@ -299,4 +301,32 @@ func (is incidentService) Get(ctx context.Context, id string) (incident.Incident
 	}
 
 	return resp, nil
+}
+
+func (is incidentService) ListSlackIncidents(ctx context.Context, slackIncidentType incident.SlackIncidentType) ([]incident.Incident, error) {
+	var status []incident.Status
+
+	if slackIncidentType == incident.ClosedSlackIncident {
+		status = []incident.Status{incident.Resolved}
+	} else if slackIncidentType == incident.OpenSlackIncident {
+		status = []incident.Status{incident.Started, incident.Acknowledged, incident.Investigating, incident.Identified, incident.Mitigated}
+	}
+
+	query := bson.M{constant.Removed: false, constant.Status: bson.M{"$in": status}}
+	listIncidents, err := is.incidentOperator.List(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("getting error on calling mongo, err: %v", err)
+	}
+
+	return listIncidents, nil
+}
+
+func (is incidentService) GetSlackIncident(ctx context.Context, incidentId string) (incident.Incident, error) {
+	query := bson.M{constant.Removed: false, constant.Identifier: incidentId}
+	getIncident, err := is.incidentOperator.Get(ctx, query)
+	if err != nil {
+		return incident.Incident{}, fmt.Errorf("getting error on calling mongo, err: %v", err)
+	}
+
+	return getIncident, err
 }

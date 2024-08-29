@@ -23,6 +23,14 @@ features:
       type: global
       callback_id: open_incident_timeline
       description: Allows you to manage an incident's timeline.
+    - name: List closed incidents
+      type: global
+      callback_id: list_closed_incidents_modal
+      description: Allows you to list all the resolved incidents.
+    - name: List open incidents
+      type: global
+      callback_id: list_open_incidents_modal
+      description: Allows you to list all the open incidents.
 oauth_config:
   scopes:
     user:

@@ -188,3 +188,10 @@ type SlackTeam struct {
 	TeamName   string `bson:"teamName" json:"teamName"`
 	TeamDomain string `bson:"teamDomain" json:"teamDomain"`
 }
+
+type SlackIncidentType string
+
+const (
+	ClosedSlackIncident SlackIncidentType = "CLOSED_SLACK_INCIDENT"
+	OpenSlackIncident   SlackIncidentType = "OPEN_SLACK_INCIDENT"
+)

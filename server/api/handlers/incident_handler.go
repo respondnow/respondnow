@@ -142,7 +142,7 @@ func ListIncidents() gin.HandlerFunc {
 		response.Status = string(utils.SUCCESS)
 		result, err := incident.NewIncidentService(
 			incidentdb.NewIncidentOperator(mongodb.Operator), aID, oID, pID).
-			List(context.TODO(), c.Request.Header.Get(constant.Authorization),
+			List(context.TODO(),
 				incident.ListFilters{
 					Type:                incidentdb.Type(incidentType),
 					Severity:            incidentdb.Severity(severity),

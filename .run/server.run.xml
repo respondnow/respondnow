@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="server" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="respond" />
+    <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="MONGO_DB_PASSWORD" value="" />
+      <env name="MONGO_DB_USERNAME" value="" />
+    </envs>
+    <kind value="FILE" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/server/cmd/main.go" />
+    <method v="2" />
+  </configuration>
+</component>
