@@ -1,8 +1,8 @@
 site_name: RespondNow
-site_url: https://respondnow.github.io/respondnow
+site_url: https://respondnow.github.io/respond
 site_description: Documentation for RespondNow
-repo_name: respondnow/respondnow
-repo_url: https://github.com/respondnow/respondnow
+repo_name: respondnow/respond
+repo_url: https://github.com/respondnow/respond
 theme:
   name: material
   custom_dir: overrides
@@ -49,3 +49,19 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Introduction: introduction/introduction.md
+  - Getting Started:
+    - Prerequisites: getting-started/prerequisites.md
+    - Create Slack App: getting-started/create-slack-app-with-app-manifest.md
+    - Deploy RespondNow Server: getting-started/deploy-rn-server-with-helm.md
+    - Verify RespondNow Portal: getting-started/verify-rn-portal.md 
+  - User Guide:
+    - Slack-Based Incident Lifecycle Management:
+      - Create Incidents: user-guide/slack-based-incident-management/create-incidents.md
+      - List Incidents: user-guide/slack-based-incident-management/list-incidents.md 
+      - View Incident Details: user-guide/slack-based-incident-management/view-incident-details.md
+      - Update Incidents: user-guide/slack-based-incident-management/update-incidents.md
+    - Navigate the RespondNow Portal:
+      - View Incident Details: user-guide/navigate-the-respondnow-portal/view-incident-details.md
+  - Release Notes: release-notes/release-notes-tracker.md
+
