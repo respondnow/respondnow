@@ -5,6 +5,9 @@ on:
     branches:
       - main
       - release-*
+  release:
+    types:
+      - created
 
 env:
   REGISTRY: ghcr.io
@@ -20,15 +23,16 @@ jobs:
 
       - name: Set up environment
         run: |
-          # Extract the branch name from GITHUB_REF and handle fallback for tags
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
-          if [ "$BRANCH_NAME" == "$GITHUB_REF" ]; then
-            BRANCH_NAME=${GITHUB_REF#refs/tags/}
+          if [ "${{ github.event_name }}" == "release" ]; then
+            IMAGE_TAG=${{ github.event.release.tag_name }}
+          else
+            # Extract the branch name from GITHUB_REF and handle fallback for tags
+            BRANCH_NAME=${GITHUB_REF#refs/heads/}
+            if [ "$BRANCH_NAME" == "$GITHUB_REF" ]; then
+              BRANCH_NAME=${GITHUB_REF#refs/tags/}
+            fi
+            IMAGE_TAG=${BRANCH_NAME:-latest}
           fi
-          echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
-          
-          # If branch name is empty, default to 'latest'
-          IMAGE_TAG=${BRANCH_NAME:-latest}
           echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
@@ -64,7 +68,10 @@ jobs:
           docker build -t ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -f Dockerfile .
 
       - name: Push Docker image to GHCR
-        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release-') }}
+        if: |
+          github.ref == 'refs/heads/main' ||
+          startsWith(github.ref, 'refs/heads/release-') ||
+          github.event_name == 'release'
         run: |
           docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
