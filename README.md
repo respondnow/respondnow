@@ -16,7 +16,7 @@ Please find the installation instructions [here](https://github.com/respondnow/r
 
 ### Useful Links
 - [Website](https://respondnow.io/)
-- [Docs](https://respondnow.github.io) 
+- [Docs](https://respondnow.github.io/respondnow/) 
 - [Community](https://slack.cncf.io) : Join the #respond-now channel on the CNCF slack workspace
 
 ## License 
