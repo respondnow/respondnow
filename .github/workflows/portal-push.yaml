@@ -1,4 +1,4 @@
-name: Build and Publish Docker Image - Portal
+name: Build and Publish Docker Image
 
 on:
   push:
@@ -7,11 +7,11 @@ on:
       - release-*
 
 env:
-  REGISTRY: docker.io
+  REGISTRY: ghcr.io
   IMAGE_NAME: respondnow-portal
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +26,7 @@ jobs:
             BRANCH_NAME=${GITHUB_REF#refs/tags/}
           fi
           echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
-
+          
           # If branch name is empty, default to 'latest'
           IMAGE_TAG=${BRANCH_NAME:-latest}
           echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
@@ -38,34 +38,35 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 16
-          cache: "yarn"
-          cache-dependency-path: portal/yarn.lock
 
-      - name: Install Dependencies
+      - name: Cache Node.js dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install and build with Yarn
         run: |
-          cd portal && yarn install --frozen-lockfile
+          cd portal && yarn install && yarn build
 
-      - name: Build Portal
-        run: |
-          cd portal && yarn build
-
-      - name: Log in to Docker Hub
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: imrajdas
-          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
 
       - name: Build Docker image
         run: |
           cd portal
-          docker build -t ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -f Dockerfile .
+          docker build -t ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -f Dockerfile .
 
-      - name: Push Docker image to Docker Hub
+      - name: Push Docker image to GHCR
         if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release-') }}
         run: |
-          docker push ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
       - name: Post success message
-        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release-') }}
-        run: echo "Docker image ${{ env.REGISTRY }}/imrajdas/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} successfully built and pushed to Docker Hub"
+        run: echo "Docker image ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} successfully built and pushed to GitHub Container Registry"
