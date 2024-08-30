@@ -13,6 +13,11 @@ RespondNow is an open source incident management server that runs on Kubernetes 
 
 <br>
 
+### Get Started
+https://github.com/respondnow/respondnow-helm/blob/main/README.md
+
+<br>
+
 ### Useful Links
 - [Website](https://respondnow.io/)
 - [Docs](https://respondnow.github.io) 
