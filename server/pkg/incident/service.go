@@ -63,7 +63,7 @@ func (is incidentService) UpdateSummary(ctx context.Context, incidentID, newSumm
 		return incident.Incident{}, err
 	}
 
-	logrus.Infof("new summary of the incident is: %v\n", newSummary)
+	logrus.Infof("New summary of the incident is: %v\n", newSummary)
 
 	ts := time.Now().Unix()
 	existingIncident.AuditDetails.UpdatedBy = currentUser
@@ -130,7 +130,7 @@ func (is incidentService) UpdateSeverity(ctx context.Context, incidentID string,
 		return incident.Incident{}, err
 	}
 
-	logrus.Infof("new severity of the incident is: %v\n", newSeverity)
+	logrus.Infof("New severity of the incident is: %v\n", newSeverity)
 
 	ts := time.Now().Unix()
 	existingIncident.AuditDetails.UpdatedBy = currentUser
@@ -138,7 +138,7 @@ func (is incidentService) UpdateSeverity(ctx context.Context, incidentID string,
 	existingIncident.UpdatedAt = &ts
 
 	previousSeverity := string(existingIncident.Severity)
-	logrus.Infof("previous severity: %v, current severity: %v\n", previousSeverity, newSeverity)
+	logrus.Infof("Previous severity: %v, current severity: %v\n", previousSeverity, newSeverity)
 
 	existingIncident.Timelines = append(existingIncident.Timelines, incident.Timeline{
 		ID:            strconv.Itoa(int(ts)),
@@ -166,7 +166,7 @@ func (is incidentService) UpdateStatus(ctx context.Context, incidentID string, n
 		return incident.Incident{}, err
 	}
 
-	logrus.Infof("new status of the incident is: %v\n", newStatus)
+	logrus.Infof("New status of the incident is: %v\n", newStatus)
 
 	ts := time.Now().Unix()
 	existingIncident.AuditDetails.UpdatedBy = currentUser

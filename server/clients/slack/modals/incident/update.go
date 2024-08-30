@@ -21,7 +21,6 @@ func (is incidentService) UpdateIncidentSummary(evt *socketmode.Event) {
 		logrus.Infof("Ignored %+v\n", evt)
 		return
 	}
-	logrus.Infof("callback data for update: %+v\n", callback)
 
 	is.client.Ack(*evt.Request)
 
@@ -54,8 +53,6 @@ func (is incidentService) UpdateIncidentSummary(evt *socketmode.Event) {
 		logrus.Errorf("failed to update incident summary: %+v", err)
 		return
 	}
-	logrus.Infof("Incident summary has been updated: %+v", updatedIncident)
-	logrus.Infof("Incident channels for updated summary: %+v\n", updatedIncident.Channels[0].ID)
 
 	err = is.sendUpdateSummaryResponseMsg(updatedIncident.Channels[0].ID, updatedIncident, summary.Value)
 	if err != nil {
@@ -73,7 +70,6 @@ func (is incidentService) AddIncidentComment(evt *socketmode.Event) {
 		logrus.Infof("Ignored %+v\n", evt)
 		return
 	}
-	logrus.Infof("callback data for update: %+v\n", callback)
 
 	is.client.Ack(*evt.Request)
 
@@ -107,8 +103,6 @@ func (is incidentService) AddIncidentComment(evt *socketmode.Event) {
 		logrus.Errorf("failed to update incident comment: %+v", err)
 		return
 	}
-	logrus.Infof("Incident comment has been updated: %+v", updatedIncident)
-	logrus.Infof("Incident channels for updated comment: %+v\n", updatedIncident.Channels[0].ID)
 
 	err = is.sendUpdateCommentResponseMsg(updatedIncident.Channels[0].ID, updatedIncident, comment.Value)
 	if err != nil {
@@ -126,7 +120,7 @@ func (is incidentService) UpdateIncidentStatus(evt *socketmode.Event) {
 		logrus.Infof("Ignored %+v\n", evt)
 		return
 	}
-	logrus.Infof("callback data for update: %+v\n", callback)
+	logrus.Infof("Callback data for update: %+v\n", callback)
 
 	is.client.Ack(*evt.Request)
 
@@ -140,7 +134,7 @@ func (is incidentService) UpdateIncidentStatus(evt *socketmode.Event) {
 	}
 
 	status := responseSubmitted["incident_status"]["create_incident_modal_set_incident_status"]
-	logrus.Infof("new status is: %v\n", incidentdb.Status(status.SelectedOption.Value))
+	logrus.Infof("New status is: %v\n", incidentdb.Status(status.SelectedOption.Value))
 
 	incidentIdentifier := callback.View.PrivateMetadata
 
@@ -180,7 +174,7 @@ func (is incidentService) UpdateIncidentRole(evt *socketmode.Event) {
 		logrus.Infof("Ignored %+v\n", evt)
 		return
 	}
-	logrus.Infof("callback data for update: %+v\n", callback)
+	logrus.Infof("Callback data for update: %+v\n", callback)
 
 	is.client.Ack(*evt.Request)
 
@@ -194,7 +188,6 @@ func (is incidentService) UpdateIncidentRole(evt *socketmode.Event) {
 			"empty response submitted")
 		return
 	}
-	logrus.Infof("responseSubmitted: %+v\n", responseSubmitted)
 
 	rolesData := callback.View.State.Values
 	supportedIncidentRoles := incidentdb.NewIncidentOperator(mongodb.Operator).GetIncidentRoles()
@@ -259,7 +252,7 @@ func (is incidentService) UpdateIncidentSeverity(evt *socketmode.Event) {
 		logrus.Infof("Ignored %+v\n", evt)
 		return
 	}
-	logrus.Infof("callback data for update: %+v\n", callback)
+	logrus.Infof("Callback data for update: %+v\n", callback)
 
 	is.client.Ack(*evt.Request)
 
@@ -272,7 +265,6 @@ func (is incidentService) UpdateIncidentSeverity(evt *socketmode.Event) {
 	}
 
 	severity := responseSubmitted["incident_severity"]["create_incident_modal_set_incident_severity"]
-	logrus.Infof("new severity is: %v\n", incidentdb.Severity(severity.SelectedOption.Value))
 
 	incidentIdentifier := callback.View.PrivateMetadata
 
@@ -321,10 +313,10 @@ func (is incidentService) sendUpdateSummaryResponseMsg(channelID string,
 		newSummary,
 	)
 
-	logrus.Infof("send update summary response message to channel %v", channelID)
+	logrus.Infof("Send update summary response message to channel %v", channelID)
 	_, _, err = is.client.Client.PostMessageContext(context.TODO(), channelID, slack.MsgOptionText(messageText, false))
 	if err != nil {
-		logrus.Infof("there is some error while posting the update message back to the slack")
+		logrus.Infof("There is some error while posting the update message back to the slack: %v", err)
 		return err
 	}
 
@@ -346,10 +338,10 @@ func (is incidentService) sendUpdateCommentResponseMsg(channelID string,
 		newComment,
 	)
 
-	logrus.Infof("send update comment response message to channel %v", channelID)
+	logrus.Infof("Send update comment response message to channel %v", channelID)
 	_, _, err = is.client.Client.PostMessageContext(context.TODO(), channelID, slack.MsgOptionText(messageText, false))
 	if err != nil {
-		logrus.Infof("there is some error while posting the update message back to the slack")
+		logrus.Infof("There is some error while posting the update message back to the slack: %v", err)
 		return err
 	}
 
@@ -370,10 +362,10 @@ func (is incidentService) sendUpdateSeverityResponseMsg(channelID string, update
 		newSeverity,
 	)
 
-	logrus.Infof("send update severity response message to channel %v", channelID)
+	logrus.Infof("Send update severity response message to channel %v", channelID)
 	_, _, err = is.client.Client.PostMessageContext(context.TODO(), channelID, slack.MsgOptionText(messageText, false))
 	if err != nil {
-		logrus.Infof("there is some error while posting the update message back to the slack")
+		logrus.Errorf("there is some error while posting the update message back to the slack: %v\n", err)
 		return err
 	}
 
@@ -395,10 +387,10 @@ func (is incidentService) sendUpdateStatusResponseMsg(channelID string, updatedI
 		newStatus,
 	)
 
-	logrus.Infof("send update severity response message to channel %v", channelID)
+	logrus.Infof("Send update severity response message to channel %v", channelID)
 	_, _, err = is.client.Client.PostMessageContext(context.TODO(), channelID, slack.MsgOptionText(messageText, false))
 	if err != nil {
-		logrus.Infof("there is some error while posting the update message back to the slack")
+		logrus.Errorf("there is some error while posting the update message back to the slack: %v\n", err)
 		return err
 	}
 
@@ -417,10 +409,10 @@ func (is incidentService) sendUpdateRolesResponseMsg(channelID string,
 		strings.Join(roleUpdates, "\n"),
 	)
 
-	logrus.Infof("send update roles response message to channel %v", channelID)
+	logrus.Infof("Send update roles response message to channel %v", channelID)
 	_, _, err := is.client.Client.PostMessageContext(context.TODO(), channelID, slack.MsgOptionText(messageText, false))
 	if err != nil {
-		logrus.Errorf("there is some error while posting the update message back to the slack")
+		logrus.Errorf("there is some error while posting the update message back to the slack: %v\n", err)
 		return err
 	}
 
