@@ -1,8 +1,10 @@
 [<img alt="RespondNow" src="https://github.com/user-attachments/assets/4792d8ba-0ab9-4126-a360-ef6b5bab4889" align="left"> ](https://respondnow.io/)
 
+<br><br><br>
+
 ### Open Source Incident Management using Slack
 <br>
-RespondNow is n open source incident management server that runs on Kubernetes managed by you. It comes with a slack application for collaborating on the incident response. 
+RespondNow is an open source incident management server that runs on Kubernetes managed by you. It comes with a slack application for collaborating on the incident responses. 
 
 
 ### RespondNow goals
