@@ -168,6 +168,8 @@ definitions:
         items:
           $ref: '#/definitions/incident.Channel'
         type: array
+      comment:
+        type: string
       conferenceDetails:
         items:
           $ref: '#/definitions/incident.Conference'
@@ -238,6 +240,7 @@ definitions:
         $ref: '#/definitions/utils.UserDetails'
     required:
     - active
+    - comment
     - id
     - identifier
     - name
@@ -295,6 +298,8 @@ definitions:
         items:
           $ref: '#/definitions/incident.Channel'
         type: array
+      comment:
+        type: string
       conferenceDetails:
         items:
           $ref: '#/definitions/incident.Conference'
@@ -363,6 +368,7 @@ definitions:
         $ref: '#/definitions/utils.UserDetails'
     required:
     - active
+    - comment
     - id
     - identifier
     - name

@@ -24,6 +24,7 @@ type IncidentService interface {
 	Create(ctx context.Context, request CreateRequest,
 		currentUser utils.UserDetails, correlationID string) (CreateResponse, error)
 	UpdateSummary(ctx context.Context, incidentID, newSummary string, currentUser utils.UserDetails) (incident.Incident, error)
+	UpdateComment(ctx context.Context, incidentID, newSummary string, currentUser utils.UserDetails) (incident.Incident, error)
 	UpdateSeverity(ctx context.Context, incidentID string, newSummary string, currentUser utils.UserDetails) (incident.Incident, error)
 	UpdateStatus(ctx context.Context, incidentID string, newStatus string, currentUser utils.UserDetails) (incident.Incident, error)
 	UpdateRoles(ctx context.Context, incidentID string, roleAssignments map[string]utils.UserDetails, currentUser utils.UserDetails) (incident.Incident, error)
@@ -80,6 +81,39 @@ func (is incidentService) UpdateSummary(ctx context.Context, incidentID, newSumm
 	})
 	existingIncident.Summary = newSummary
 	existingIncident.Description = newSummary
+
+	updatedIncident, err := is.incidentOperator.UpdateByID(ctx, existingIncident)
+	if err != nil {
+		return incident.Incident{}, err
+	}
+
+	return updatedIncident, nil
+}
+
+func (is incidentService) UpdateComment(ctx context.Context, incidentID, newComment string,
+	currentUser utils.UserDetails) (incident.Incident, error) {
+	existingIncident, err := is.Get(ctx, incidentID)
+	if err != nil {
+		return incident.Incident{}, err
+	}
+
+	logrus.Infof("new comment on the incident is: %v\n", newComment)
+
+	ts := time.Now().Unix()
+	existingIncident.AuditDetails.UpdatedBy = currentUser
+	existingIncident.AuditDetails.UpdatedAt = &ts
+	existingIncident.UpdatedAt = &ts
+
+	existingIncident.Timelines = append(existingIncident.Timelines, incident.Timeline{
+		ID:            strconv.Itoa(int(ts)),
+		Type:          incident.ChangeTypeComment,
+		CreatedAt:     ts,
+		UpdatedAt:     &ts,
+		User:          currentUser,
+		PreviousState: &existingIncident.Comment,
+		CurrentState:  &newComment,
+	})
+	existingIncident.Comment = newComment
 
 	updatedIncident, err := is.incidentOperator.UpdateByID(ctx, existingIncident)
 	if err != nil {

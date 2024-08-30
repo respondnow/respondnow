@@ -59,6 +59,7 @@ type Incident struct {
 	Severity                  Severity         `bson:"severity" json:"severity" binding:"required"`
 	Status                    Status           `bson:"status" json:"status" binding:"required"`
 	Summary                   string           `bson:"summary" json:"summary" binding:"required"`
+	Comment                   string           `bson:"comment" json:"comment" binding:"required"`
 	Active                    bool             `bson:"active" json:"active" binding:"required"`
 	Services                  []Service        `bson:"services,omitempty" json:"services,omitempty"`
 	Environments              []Environment    `bson:"environments,omitempty" json:"environments,omitempty"`

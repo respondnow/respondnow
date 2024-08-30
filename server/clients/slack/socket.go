@@ -168,6 +168,11 @@ func middlewareInteractionTypeViewSubmission(evt *socketmode.Event, client *sock
 		summary := viewSubmission.View.State.Values["create_incident_modal_summary"]["create_incident_modal_set_summary"].Value
 		logrus.Infof("Incident Identifier: %s, Updated Summary: %s", incidentIdentifier, summary)
 		slackincident.NewIncidentService(client).UpdateIncidentSummary(evt)
+	case "incident_comment_modal":
+		logrus.Infof("update comment : %+v\n", viewSubmission.View.State.Values)
+		summary := viewSubmission.View.State.Values["create_incident_modal_comment"]["create_incident_modal_set_comment"].Value
+		logrus.Infof("Incident Identifier: %s, Updated Summary: %s", incidentIdentifier, summary)
+		slackincident.NewIncidentService(client).UpdateIncidentSummary(evt)
 	case "incident_roles_modal":
 		rolesData := viewSubmission.View.State.Values
 		supportedIncidentRoles := incidentdb.NewIncidentOperator(mongodb.Operator).GetIncidentRoles()
@@ -308,6 +313,18 @@ func getSummaryBlock() *slack.InputBlock {
 	})
 }
 
+func getCommentBlock() *slack.InputBlock {
+	return slack.NewInputBlock("create_incident_modal_comment", slack.NewTextBlockObject(
+		slack.PlainTextType, ":speech_balloon: Comment", false, false,
+	), nil, slack.PlainTextInputBlockElement{
+		Type:      slack.METPlainTextInput,
+		Multiline: true,
+		ActionID:  "create_incident_modal_set_comment",
+		Placeholder: slack.NewTextBlockObject(slack.PlainTextType, "Add a comment",
+			false, false),
+	})
+}
+
 func getRolesBlock() []slack.Block {
 	supportedIncidentRoles := incidentdb.NewIncidentOperator(mongodb.Operator).GetIncidentRoles()
 	var blocks []slack.Block
@@ -339,7 +356,7 @@ func middlewareInteractionTypeBlockActions(evt *socketmode.Event, client *socket
 		case "create_incident_modal":
 			slackincident.NewIncidentService(client).CreateIncidentView(evt)
 		case "update_incident_summary_button":
-			client.Debugf("Displaying modal for incident severity selection")
+			client.Debugf("Displaying modal for incident summary")
 			modalRequest := slack.ModalViewRequest{
 				Type:            slack.VTModal,
 				PrivateMetadata: blockAction.Value,
@@ -349,6 +366,26 @@ func middlewareInteractionTypeBlockActions(evt *socketmode.Event, client *socket
 				Blocks: slack.Blocks{
 					BlockSet: []slack.Block{
 						getSummaryBlock(),
+					},
+				},
+				Submit: slack.NewTextBlockObject("plain_text", "Submit", false, false),
+			}
+
+			_, err := client.OpenView(blockActions.TriggerID, modalRequest)
+			if err != nil {
+				logrus.Errorf("Error opening modal: %v", err)
+			}
+		case "update_incident_comment_button":
+			client.Debugf("Displaying modal for incident comment")
+			modalRequest := slack.ModalViewRequest{
+				Type:            slack.VTModal,
+				PrivateMetadata: blockAction.Value,
+				CallbackID:      "incident_comment_modal",
+				Title: slack.NewTextBlockObject("plain_text",
+					"Add comment", false, false),
+				Blocks: slack.Blocks{
+					BlockSet: []slack.Block{
+						getCommentBlock(),
 					},
 				},
 				Submit: slack.NewTextBlockObject("plain_text", "Submit", false, false),

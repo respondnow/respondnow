@@ -468,6 +468,12 @@ func (is incidentService) sendCreateIncidentResponseMsg(teamID, channelID, joinC
 			},
 			slack.ButtonBlockElement{
 				Type:     slack.METButton,
+				Text:     &slack.TextBlockObject{Type: slack.PlainTextType, Text: "Add comment"},
+				ActionID: "update_incident_comment_button",
+				Value:    newIncident.Identifier,
+			},
+			slack.ButtonBlockElement{
+				Type:     slack.METButton,
 				Text:     &slack.TextBlockObject{Type: slack.PlainTextType, Text: "Assign Roles"},
 				ActionID: "update_incident_assign_roles_button",
 				Value:    newIncident.Identifier,

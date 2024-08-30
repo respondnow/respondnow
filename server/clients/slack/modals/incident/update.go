@@ -67,6 +67,59 @@ func (is incidentService) UpdateIncidentSummary(evt *socketmode.Event) {
 	}
 }
 
+func (is incidentService) UpdateIncidentComment(evt *socketmode.Event) {
+	callback, ok := evt.Data.(slack.InteractionCallback)
+	if !ok {
+		logrus.Infof("Ignored %+v\n", evt)
+		return
+	}
+	logrus.Infof("callback data for update: %+v\n", callback)
+
+	is.client.Ack(*evt.Request)
+
+	responseSubmitted := callback.View.State.Values
+	slackUser := callback.User
+
+	if responseSubmitted == nil {
+		logrus.Errorf("failed to process update incident comment update request from slack: %s",
+			"empty response submitted")
+		return
+	}
+
+	comment := responseSubmitted["create_incident_modal_comment"]["create_incident_modal_set_comment"]
+
+	incidentIdentifier := callback.View.PrivateMetadata
+
+	incidentService := incident.NewIncidentService(incidentdb.NewIncidentOperator(mongodb.Operator),
+		config.EnvConfig.DefaultHierarchy.DefaultAccountId,
+		config.EnvConfig.DefaultHierarchy.DefaultOrgId,
+		config.EnvConfig.DefaultHierarchy.DefaultProjectId,
+	)
+
+	updatedIncident, err := incidentService.UpdateComment(context.TODO(), incidentIdentifier, comment.Value, utils.UserDetails{
+		Email:    slackUser.Profile.Email,
+		Name:     slackUser.Profile.DisplayName,
+		UserName: slackUser.Name,
+		UserId:   slackUser.ID,
+		Source:   utils.Slack,
+	})
+	if err != nil {
+		logrus.Errorf("failed to update incident comment: %+v", err)
+		return
+	}
+	logrus.Infof("Incident comment has been updated: %+v", updatedIncident)
+	logrus.Infof("Incident channels for updated comment: %+v\n", updatedIncident.Channels[0].ID)
+
+	err = is.sendUpdateSummaryResponseMsg(updatedIncident.Channels[0].ID, updatedIncident, comment.Value)
+	if err != nil {
+		logrus.Errorf("failed to post summary update to the channel: %s, error: %+v",
+			updatedIncident.IncidentChannel.Slack.ChannelID, err)
+		return
+	} else {
+		logrus.Infof("Comment update confirmation successfully posted to channel: %s", updatedIncident.IncidentChannel.Slack.ChannelID)
+	}
+}
+
 func (is incidentService) UpdateIncidentStatus(evt *socketmode.Event) {
 	callback, ok := evt.Data.(slack.InteractionCallback)
 	if !ok {
@@ -269,6 +322,31 @@ func (is incidentService) sendUpdateSummaryResponseMsg(channelID string,
 	)
 
 	logrus.Infof("send update summary response message to channel %v", channelID)
+	_, _, err = is.client.Client.PostMessageContext(context.TODO(), channelID, slack.MsgOptionText(messageText, false))
+	if err != nil {
+		logrus.Infof("there is some error while posting the update message back to the slack")
+		return err
+	}
+
+	return nil
+}
+
+func (is incidentService) sendUpdateCommentResponseMsg(channelID string,
+	updatedIncident incidentdb.Incident, newSummary string) error {
+	userInfo, err := is.client.GetUserInfo(updatedIncident.AuditDetails.UpdatedBy.UserId)
+	if err != nil {
+		logrus.Errorf("failed to fetch user info for Slack ID %s: %+v", updatedIncident.AuditDetails.UpdatedBy.UserId, err)
+		return err
+	}
+	slackHandle := userInfo.Name
+
+	messageText := fmt.Sprintf(
+		":memo: *Comment Added*\n <@%s> added the comment: _%s_",
+		slackHandle,
+		newSummary,
+	)
+
+	logrus.Infof("send update comment response message to channel %v", channelID)
 	_, _, err = is.client.Client.PostMessageContext(context.TODO(), channelID, slack.MsgOptionText(messageText, false))
 	if err != nil {
 		logrus.Infof("there is some error while posting the update message back to the slack")
