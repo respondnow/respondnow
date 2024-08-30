@@ -110,7 +110,7 @@ func (is incidentService) UpdateIncidentComment(evt *socketmode.Event) {
 	logrus.Infof("Incident comment has been updated: %+v", updatedIncident)
 	logrus.Infof("Incident channels for updated comment: %+v\n", updatedIncident.Channels[0].ID)
 
-	err = is.sendUpdateSummaryResponseMsg(updatedIncident.Channels[0].ID, updatedIncident, comment.Value)
+	err = is.sendUpdateCommentResponseMsg(updatedIncident.Channels[0].ID, updatedIncident, comment.Value)
 	if err != nil {
 		logrus.Errorf("failed to post summary update to the channel: %s, error: %+v",
 			updatedIncident.IncidentChannel.Slack.ChannelID, err)
@@ -332,7 +332,7 @@ func (is incidentService) sendUpdateSummaryResponseMsg(channelID string,
 }
 
 func (is incidentService) sendUpdateCommentResponseMsg(channelID string,
-	updatedIncident incidentdb.Incident, newSummary string) error {
+	updatedIncident incidentdb.Incident, newComment string) error {
 	userInfo, err := is.client.GetUserInfo(updatedIncident.AuditDetails.UpdatedBy.UserId)
 	if err != nil {
 		logrus.Errorf("failed to fetch user info for Slack ID %s: %+v", updatedIncident.AuditDetails.UpdatedBy.UserId, err)
@@ -343,7 +343,7 @@ func (is incidentService) sendUpdateCommentResponseMsg(channelID string,
 	messageText := fmt.Sprintf(
 		":memo: *Comment Added*\n <@%s> added the comment: _%s_",
 		slackHandle,
-		newSummary,
+		newComment,
 	)
 
 	logrus.Infof("send update comment response message to channel %v", channelID)
