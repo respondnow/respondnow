@@ -6,7 +6,6 @@ on:
       - main
       - release/*
       - develop
-      - test-server
   release:
     types:
       - created
@@ -57,7 +56,7 @@ jobs:
 
       - name: Push Docker image to GitHub Container Registry
         if: |
-          github.ref == 'refs/heads/main' || github.ref == 'refs/heads/test-server' ||
+          github.ref == 'refs/heads/main' ||
           startsWith(github.ref, 'refs/heads/release/') ||
           github.ref == 'refs/heads/develop' ||
           github.event_name == 'release'
@@ -66,7 +65,7 @@ jobs:
 
       - name: Post success message
         if: |
-          github.ref == 'refs/heads/main' || github.ref == 'refs/heads/test-server' ||
+          github.ref == 'refs/heads/main' ||
           startsWith(github.ref, 'refs/heads/release/') ||
           github.ref == 'refs/heads/develop' ||
           github.event_name == 'release'
