@@ -9,7 +9,7 @@ on:
       - test-server
 
 env:
-  REGISTRY: docker.io
+  REGISTRY: ghcr.io
   IMAGE_NAME: respondnow-server
 
 jobs:
