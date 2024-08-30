@@ -107,6 +107,7 @@ func (i *incidentOperator) UpdateByID(ctx context.Context, in Incident,
 		Value: in.Status}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "active", Value: in.Active}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "summary", Value: in.Summary}}})
+	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "comment", Value: in.Comment}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "services", Value: in.Services}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "environments", Value: in.Environments}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "functionalities",
@@ -120,7 +121,7 @@ func (i *incidentOperator) UpdateByID(ctx context.Context, in Incident,
 		Value: in.ConferenceDetails}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "attachments", Value: in.Attachments}}})
 
-	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "updatedAt", Value: in.Services}}})
+	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "updatedAt", Value: in.UpdatedAt}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "updatedBy", Value: in.UpdatedBy}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "removed", Value: in.Removed}}})
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "removedAt", Value: in.RemovedAt}}})

@@ -13,7 +13,7 @@ type IncidentService interface {
 	ListIncidents(evt *socketmode.Event, slackIncidentType incident.SlackIncidentType)
 	ShowIncident(evt *socketmode.Event, incidentID string)
 	UpdateIncidentSummary(evt *socketmode.Event)
-	UpdateIncidentComment(evt *socketmode.Event)
+	AddIncidentComment(evt *socketmode.Event)
 	UpdateIncidentSeverity(evt *socketmode.Event)
 	UpdateIncidentStatus(evt *socketmode.Event)
 	UpdateIncidentRole(evt *socketmode.Event)

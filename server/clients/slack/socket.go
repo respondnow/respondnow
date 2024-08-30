@@ -172,7 +172,7 @@ func middlewareInteractionTypeViewSubmission(evt *socketmode.Event, client *sock
 		logrus.Infof("update comment : %+v\n", viewSubmission.View.State.Values)
 		summary := viewSubmission.View.State.Values["create_incident_modal_comment"]["create_incident_modal_set_comment"].Value
 		logrus.Infof("Incident Identifier: %s, Updated Summary: %s", incidentIdentifier, summary)
-		slackincident.NewIncidentService(client).UpdateIncidentComment(evt)
+		slackincident.NewIncidentService(client).AddIncidentComment(evt)
 	case "incident_roles_modal":
 		rolesData := viewSubmission.View.State.Values
 		supportedIncidentRoles := incidentdb.NewIncidentOperator(mongodb.Operator).GetIncidentRoles()

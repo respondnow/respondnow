@@ -63,7 +63,7 @@ func (is incidentService) UpdateSummary(ctx context.Context, incidentID, newSumm
 		return incident.Incident{}, err
 	}
 
-	logrus.Infof("New summary of the incident is: %v\n", newSummary)
+	oldSummary := existingIncident.Description
 
 	ts := time.Now().Unix()
 	existingIncident.AuditDetails.UpdatedBy = currentUser
@@ -76,7 +76,7 @@ func (is incidentService) UpdateSummary(ctx context.Context, incidentID, newSumm
 		CreatedAt:     ts,
 		UpdatedAt:     &ts,
 		User:          currentUser,
-		PreviousState: &existingIncident.Summary,
+		PreviousState: &oldSummary,
 		CurrentState:  &newSummary,
 	})
 	existingIncident.Summary = newSummary
@@ -98,6 +98,7 @@ func (is incidentService) UpdateComment(ctx context.Context, incidentID, newComm
 	}
 
 	logrus.Infof("A new comment has been added on the incident: %v\n", newComment)
+	oldComment := existingIncident.Comment
 
 	ts := time.Now().Unix()
 	existingIncident.AuditDetails.UpdatedBy = currentUser
@@ -110,7 +111,7 @@ func (is incidentService) UpdateComment(ctx context.Context, incidentID, newComm
 		CreatedAt:     ts,
 		UpdatedAt:     &ts,
 		User:          currentUser,
-		PreviousState: &existingIncident.Comment,
+		PreviousState: &oldComment,
 		CurrentState:  &newComment,
 	})
 	existingIncident.Comment = newComment
@@ -167,6 +168,7 @@ func (is incidentService) UpdateStatus(ctx context.Context, incidentID string, n
 	}
 
 	logrus.Infof("New status of the incident is: %v\n", newStatus)
+	existingStatus := string(existingIncident.Status)
 
 	ts := time.Now().Unix()
 	existingIncident.AuditDetails.UpdatedBy = currentUser
@@ -179,7 +181,7 @@ func (is incidentService) UpdateStatus(ctx context.Context, incidentID string, n
 		CreatedAt:     ts,
 		UpdatedAt:     &ts,
 		User:          currentUser,
-		PreviousState: (*string)(&existingIncident.Status),
+		PreviousState: &existingStatus,
 		CurrentState:  &newStatus,
 	})
 

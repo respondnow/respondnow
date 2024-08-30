@@ -308,7 +308,7 @@ func (is incidentService) sendUpdateSummaryResponseMsg(channelID string,
 	slackHandle := userInfo.Name
 
 	messageText := fmt.Sprintf(
-		":memo: *Summary Updated*\n <@%s> updated the summary to: _%s_",
+		":memo: *Summary Updated*\n <@%s> updated the summary:\n> _%s_",
 		slackHandle,
 		newSummary,
 	)
@@ -333,7 +333,7 @@ func (is incidentService) sendUpdateCommentResponseMsg(channelID string,
 	slackHandle := userInfo.Name
 
 	messageText := fmt.Sprintf(
-		":memo: *Comment Added*\n <@%s> added the comment: _%s_",
+		":speech_balloon: *Comment Added*\n <@%s> added a new comment\n> _%s_",
 		slackHandle,
 		newComment,
 	)
