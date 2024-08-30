@@ -86,7 +86,7 @@ func (s slackService) HandleAppHome(evt *slackevents.AppHomeOpenedEvent) {
 
 		slack.NewSectionBlock(&slack.TextBlockObject{
 			Type: slack.MarkdownType,
-			Text: "I have a lot of features. To check them all out, visit my <https://github.com/respondnow/respond/blob/main/README.md|docs>.",
+			Text: "I have a lot of features. To check them all out, visit my <https://github.com/respondnow/respondnow/blob/main/README.md|docs>.",
 		}, nil, nil, slack.SectionBlockOptionBlockID("app_home_resp_docs_content")),
 
 		// slack.NewHeaderBlock(&slack.TextBlockObject{

@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/respondnow/respond/server/utils"
-	"github.com/respondnow/respond/server/version"
+	"github.com/respondnow/respondnow/server/utils"
+	"github.com/respondnow/respondnow/server/version"
 	"github.com/sirupsen/logrus"
 )
 

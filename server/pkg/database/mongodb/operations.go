@@ -3,13 +3,13 @@ package mongodb
 import (
 	"context"
 
-	"github.com/respondnow/respond/server/config"
+	"github.com/respondnow/respondnow/server/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-//go:generate mockgen -destination=mocks/mock_mongodb.go -package=mock_mongodb github.com/respondnow/respond/server/pkg/database/mongodb MongoOperator
+//go:generate mockgen -destination=mocks/mock_mongodb.go -package=mock_mongodb github.com/respondnow/respondnow/server/pkg/database/mongodb MongoOperator
 type MongoOperator interface {
 	Create(ctx context.Context, collectionType int, document interface{},
 		opts ...*options.InsertOneOptions) (*mongo.InsertOneResult, error)

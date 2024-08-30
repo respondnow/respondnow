@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/respondnow/respond/server/utils"
+	"github.com/respondnow/respondnow/server/utils"
 )
 
 type AddUserInput struct {

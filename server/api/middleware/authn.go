@@ -8,9 +8,9 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
-	"github.com/respondnow/respond/server/config"
-	"github.com/respondnow/respond/server/pkg/auth"
-	"github.com/respondnow/respond/server/utils"
+	"github.com/respondnow/respondnow/server/config"
+	"github.com/respondnow/respondnow/server/pkg/auth"
+	"github.com/respondnow/respondnow/server/utils"
 )
 
 func AuthMiddleware() gin.HandlerFunc {

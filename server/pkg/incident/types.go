@@ -1,10 +1,10 @@
 package incident
 
 import (
-	"github.com/respondnow/respond/server/pkg/api"
-	"github.com/respondnow/respond/server/pkg/database/mongodb"
-	"github.com/respondnow/respond/server/pkg/database/mongodb/incident"
-	"github.com/respondnow/respond/server/utils"
+	"github.com/respondnow/respondnow/server/pkg/api"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb/incident"
+	"github.com/respondnow/respondnow/server/utils"
 )
 
 type ListResponseDTO struct {

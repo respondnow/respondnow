@@ -11,22 +11,22 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/respondnow/respond/server/pkg/database/mongodb/hierarchy"
-	hierarchy2 "github.com/respondnow/respond/server/pkg/hierarchy"
-	"github.com/respondnow/respond/server/pkg/user"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb/hierarchy"
+	hierarchy2 "github.com/respondnow/respondnow/server/pkg/hierarchy"
+	"github.com/respondnow/respondnow/server/pkg/user"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	auth2 "github.com/respondnow/respond/server/pkg/database/mongodb/user"
+	auth2 "github.com/respondnow/respondnow/server/pkg/database/mongodb/user"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/respondnow/respond/server/api/middleware"
-	"github.com/respondnow/respond/server/api/routes"
-	slackclient "github.com/respondnow/respond/server/clients/slack"
-	"github.com/respondnow/respond/server/config"
-	"github.com/respondnow/respond/server/pkg/database/mongodb"
-	"github.com/respondnow/respond/server/pkg/prometheus"
-	"github.com/respondnow/respond/server/utils"
+	"github.com/respondnow/respondnow/server/api/middleware"
+	"github.com/respondnow/respondnow/server/api/routes"
+	slackclient "github.com/respondnow/respondnow/server/clients/slack"
+	"github.com/respondnow/respondnow/server/config"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb"
+	"github.com/respondnow/respondnow/server/pkg/prometheus"
+	"github.com/respondnow/respondnow/server/utils"
 	"github.com/sirupsen/logrus"
 )
 

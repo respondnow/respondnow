@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/respondnow/respond/server/config"
-	"github.com/respondnow/respond/server/pkg/api"
-	"github.com/respondnow/respond/server/pkg/constant"
-	"github.com/respondnow/respond/server/pkg/database/mongodb"
-	"github.com/respondnow/respond/server/pkg/database/mongodb/incident"
-	"github.com/respondnow/respond/server/utils"
+	"github.com/respondnow/respondnow/server/config"
+	"github.com/respondnow/respondnow/server/pkg/api"
+	"github.com/respondnow/respondnow/server/pkg/constant"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb/incident"
+	"github.com/respondnow/respondnow/server/utils"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 )

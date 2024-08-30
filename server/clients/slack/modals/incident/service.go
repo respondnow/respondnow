@@ -1,7 +1,7 @@
 package incident
 
 import (
-	"github.com/respondnow/respond/server/pkg/database/mongodb/incident"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb/incident"
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/socketmode"
 )

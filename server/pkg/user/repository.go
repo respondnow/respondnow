@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	"github.com/respondnow/respond/server/pkg/database/mongodb/user"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb/user"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

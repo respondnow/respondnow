@@ -1,8 +1,8 @@
 package incident
 
 import (
-	"github.com/respondnow/respond/server/pkg/database/mongodb"
-	"github.com/respondnow/respond/server/utils"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb"
+	"github.com/respondnow/respondnow/server/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
