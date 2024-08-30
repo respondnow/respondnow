@@ -1,7 +1,7 @@
 display_information:
   name: RespondNow
   description: RespondNow helps with incident management.
-  background_color: '#000a47'
+  background_color: '#5b44ba'
 features:
   app_home:
     home_tab_enabled: true
