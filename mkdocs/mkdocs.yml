@@ -1,8 +1,8 @@
 site_name: RespondNow
-site_url: https://respondnow.github.io/respond
+site_url: https://respondnow.github.io/respondnow
 site_description: Documentation for RespondNow
-repo_name: respondnow/respond
-repo_url: https://github.com/respondnow/respond
+repo_name: respondnow/respondnow
+repo_url: https://github.com/respondnow/respondnow
 theme:
   name: material
   custom_dir: overrides
