@@ -399,9 +399,11 @@ func (is incidentService) sendUpdateStatusResponseMsg(channelID string, updatedI
 
 func (is incidentService) sendUpdateRolesResponseMsg(channelID string,
 	updatedIncident incidentdb.Incident, roleAssignments map[string]utils.UserDetails) error {
+	rolesAndUserMapping := make(map[string]incidentdb.RoleType, 0)
 	var roleUpdates []string
 	for role, userDetails := range roleAssignments {
 		roleUpdates = append(roleUpdates, fmt.Sprintf("*%s*: <@%s>", role, userDetails.UserId))
+		rolesAndUserMapping[userDetails.UserId] = incidentdb.RoleType(role)
 	}
 
 	messageText := fmt.Sprintf(
@@ -414,6 +416,14 @@ func (is incidentService) sendUpdateRolesResponseMsg(channelID string,
 	if err != nil {
 		logrus.Errorf("there is some error while posting the update message back to the slack: %v\n", err)
 		return err
+	}
+
+	for user, roles := range rolesAndUserMapping {
+		_, _, err := is.client.Client.PostMessageContext(context.TODO(), user,
+			slack.MsgOptionBlocks(getUserRoleNotificationBlocks(roles, channelID)...))
+		if err != nil {
+			logrus.Errorf("failed to notify user for the role assigned: %+v", err)
+		}
 	}
 
 	return nil
