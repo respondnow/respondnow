@@ -24,7 +24,7 @@ type IncidentService interface {
 	Create(ctx context.Context, request CreateRequest,
 		currentUser utils.UserDetails, correlationID string) (CreateResponse, error)
 	UpdateSummary(ctx context.Context, incidentID, newSummary string, currentUser utils.UserDetails) (incident.Incident, error)
-	UpdateComment(ctx context.Context, incidentID, newSummary string, currentUser utils.UserDetails) (incident.Incident, error)
+	AddComment(ctx context.Context, incidentID, newSummary string, currentUser utils.UserDetails) (incident.Incident, error)
 	UpdateSeverity(ctx context.Context, incidentID string, newSummary string, currentUser utils.UserDetails) (incident.Incident, error)
 	UpdateStatus(ctx context.Context, incidentID string, newStatus string, currentUser utils.UserDetails) (incident.Incident, error)
 	UpdateRoles(ctx context.Context, incidentID string, roleAssignments map[string]utils.UserDetails, currentUser utils.UserDetails) (incident.Incident, error)
@@ -90,7 +90,7 @@ func (is incidentService) UpdateSummary(ctx context.Context, incidentID, newSumm
 	return updatedIncident, nil
 }
 
-func (is incidentService) UpdateComment(ctx context.Context, incidentID, newComment string,
+func (is incidentService) AddComment(ctx context.Context, incidentID, newComment string,
 	currentUser utils.UserDetails) (incident.Incident, error) {
 	existingIncident, err := is.Get(ctx, incidentID)
 	if err != nil {

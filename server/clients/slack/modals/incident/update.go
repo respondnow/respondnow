@@ -92,7 +92,7 @@ func (is incidentService) AddIncidentComment(evt *socketmode.Event) {
 		config.EnvConfig.DefaultHierarchy.DefaultProjectId,
 	)
 
-	updatedIncident, err := incidentService.UpdateComment(context.TODO(), incidentIdentifier, comment.Value, utils.UserDetails{
+	updatedIncident, err := incidentService.AddComment(context.TODO(), incidentIdentifier, comment.Value, utils.UserDetails{
 		Email:    slackUser.Profile.Email,
 		Name:     slackUser.Profile.DisplayName,
 		UserName: slackUser.Name,
