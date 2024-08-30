@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon } from '@harnessio/icons';
 import { Color, FontVariation } from '@harnessio/design-system';
-import { Button, Layout, Text } from '@harnessio/uicore';
+import { Avatar, Button, Layout, Text } from '@harnessio/uicore';
 import { TimelineUtilReturn } from '@interfaces';
 import { IncidentIncident, IncidentSeverity, IncidentStatus, IncidentTimeline } from '@services/server';
 import { useStrings } from '@strings';
@@ -147,7 +147,7 @@ export function getTimelinePropsBasedOnIncidentData(
         ),
         bodyContent: (
           <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500}>
-            &ldquo;{timeline.message}&ldquo;
+            &ldquo;{timeline.currentState}&ldquo;
           </Text>
         )
       };
@@ -196,6 +196,109 @@ export function getTimelinePropsBasedOnIncidentData(
             <StatusBadge status={timeline.previousState as IncidentStatus} />
             <Icon name="arrow-right" size={13} color={Color.GREY_500} />
             <StatusBadge status={timeline.currentState as IncidentStatus} />
+          </Layout.Horizontal>
+        )
+      };
+    case 'summary':
+      return {
+        icon: SlackIconRenderer,
+        headerContent: (
+          <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
+            <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
+              {userName}
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_800}>
+              {getString('updated').toLowerCase()}
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.GREY_800}>
+              {getString('incident')} {getString('summary')}
+            </Text>
+          </Layout.Horizontal>
+        ),
+        bodyContent: (
+          <Layout.Vertical style={{ gap: '0.25rem' }}>
+            <Layout.Horizontal
+              flex={{ alignItems: 'flex-start', justifyContent: 'flex-start' }}
+              style={{ gap: '0.2rem' }}
+            >
+              <Text font={{ variation: FontVariation.SMALL_SEMI }} color={Color.GREY_800}>
+                {getString('from')}:
+              </Text>
+              <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500}>
+                &ldquo;{timeline.previousState}&ldquo;
+              </Text>
+            </Layout.Horizontal>
+            <Layout.Horizontal
+              flex={{ alignItems: 'flex-start', justifyContent: 'flex-start' }}
+              style={{ gap: '0.2rem' }}
+            >
+              <Text font={{ variation: FontVariation.SMALL_SEMI }} color={Color.GREY_800}>
+                {getString('to')}:
+              </Text>
+              <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500}>
+                &ldquo;{timeline.currentState}&ldquo;
+              </Text>
+            </Layout.Horizontal>
+          </Layout.Vertical>
+        )
+      };
+    case 'roles':
+      return {
+        icon: SlackIconRenderer,
+        headerContent: (
+          <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
+            <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
+              {userName}
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_800}>
+              {getString('updated').toLowerCase()}
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.GREY_800}>
+              {getString('incident')} {getString('keyMembers')}
+            </Text>
+          </Layout.Horizontal>
+        ),
+        bodyContent: (
+          <Layout.Horizontal style={{ gap: '0.5rem' }} flex={{ alignItems: 'center', justifyContent: 'flex-start' }}>
+            <Layout.Vertical style={{ gap: '0.25rem' }}>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {(timeline.additionalDetails as any).previousState.map((member: any) => (
+                <Layout.Horizontal
+                  key={member?.userDetails?.username}
+                  flex={{ alignItems: 'center', justifyContent: 'flex-start' }}
+                >
+                  <Avatar hoverCard={false} src={SlackIcon} size="small" />
+                  <Layout.Vertical>
+                    <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_800}>
+                      {member?.userDetails?.name || member?.userDetails?.username}
+                    </Text>
+                    <Text font={{ variation: FontVariation.TINY, italic: true }} color={Color.GREY_500}>
+                      {member?.roleType}
+                    </Text>
+                  </Layout.Vertical>
+                </Layout.Horizontal>
+              ))}
+            </Layout.Vertical>
+            <Icon name="arrow-right" size={13} color={Color.GREY_500} />
+            <Layout.Vertical style={{ gap: '0.25rem' }}>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {(timeline.additionalDetails as any).currentState.map((member: any) => (
+                <Layout.Horizontal
+                  key={member?.userDetails?.username}
+                  flex={{ alignItems: 'center', justifyContent: 'flex-start' }}
+                >
+                  <Avatar hoverCard={false} src={SlackIcon} size="small" />
+                  <Layout.Vertical>
+                    <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_800}>
+                      {member?.userDetails?.name || member?.userDetails?.username}
+                    </Text>
+                    <Text font={{ variation: FontVariation.TINY, italic: true }} color={Color.GREY_500}>
+                      {member?.roleType}
+                    </Text>
+                  </Layout.Vertical>
+                </Layout.Horizontal>
+              ))}
+            </Layout.Vertical>
           </Layout.Horizontal>
         )
       };

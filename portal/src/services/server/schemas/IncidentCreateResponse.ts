@@ -21,6 +21,7 @@ export interface IncidentCreateResponse {
   active: boolean;
   attachments?: IncidentAttachment[];
   channels?: IncidentChannel[];
+  comment: string;
   conferenceDetails?: IncidentConference[];
   correlationID?: string;
   createdAt?: number;

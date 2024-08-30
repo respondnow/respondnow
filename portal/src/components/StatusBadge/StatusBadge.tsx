@@ -16,7 +16,7 @@ const StatusBadge: React.FC<{ status: IncidentStatus | undefined }> = ({ status 
       case 'Acknowledged':
         return {
           foregroundColor: Color.PRIMARY_7,
-          icon: 'status-running'
+          icon: 'status-pending'
         };
       case 'Resolved':
         return {
@@ -26,27 +26,27 @@ const StatusBadge: React.FC<{ status: IncidentStatus | undefined }> = ({ status 
       case 'Identified':
         return {
           foregroundColor: Color.PRIMARY_7,
-          icon: 'status-running'
+          icon: 'status-pending'
         };
       case 'Investigating':
         return {
           foregroundColor: Color.PRIMARY_7,
-          icon: 'status-running'
+          icon: 'status-pending'
         };
       case 'Mitigated':
         return {
           foregroundColor: Color.PRIMARY_7,
-          icon: 'status-running'
+          icon: 'status-pending'
         };
       case 'Started':
         return {
           foregroundColor: Color.PRIMARY_7,
-          icon: 'status-running'
+          icon: 'status-pending'
         };
       default:
         return {
           foregroundColor: Color.BLACK,
-          icon: 'status-running'
+          icon: 'status-pending'
         };
     }
   };

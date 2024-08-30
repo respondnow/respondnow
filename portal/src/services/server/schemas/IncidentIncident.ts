@@ -21,6 +21,7 @@ export interface IncidentIncident {
   active: boolean;
   attachments?: IncidentAttachment[];
   channels?: IncidentChannel[];
+  comment: string;
   conferenceDetails?: IncidentConference[];
   createdAt?: number;
   createdBy?: UtilsUserDetails;

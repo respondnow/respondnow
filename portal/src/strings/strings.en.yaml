@@ -71,3 +71,5 @@ goToIncidentDashboard: Go to Incidents Dashboard
 gettingStartedCreateSlackAppHeader: Create a Slack App
 gettingStartedInstallSlackAppHeader: Install the Slack App to your workspace
 gettingStartedConfigureIncidentChannelHeader: Create and configure an incident channel
+from: From
+to: To

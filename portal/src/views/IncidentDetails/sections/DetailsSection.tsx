@@ -76,7 +76,7 @@ const DetailsSection: React.FC<DetailsSectionProps> = props => {
           width="100%"
         >
           <Text font={{ variation: FontVariation.H6 }}>{getString('keyMembers')}</Text>
-          <Layout.Vertical width="100%">
+          <Layout.Vertical width="100%" style={{ gap: '0.25rem' }}>
             {incidentData?.roles?.map(member => (
               <Layout.Horizontal
                 key={member.userDetails?.userName}
