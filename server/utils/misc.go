@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/respondnow/respond/server/pkg/constant"
+	"github.com/respondnow/respondnow/server/pkg/constant"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

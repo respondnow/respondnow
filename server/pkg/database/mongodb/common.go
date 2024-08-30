@@ -1,7 +1,7 @@
 package mongodb
 
 import (
-	"github.com/respondnow/respond/server/utils"
+	"github.com/respondnow/respondnow/server/utils"
 )
 
 type ResourceDetails struct {

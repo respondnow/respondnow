@@ -6,17 +6,17 @@ import (
 	"net/http"
 	"time"
 
-	hierarchy2 "github.com/respondnow/respond/server/pkg/hierarchy"
+	hierarchy2 "github.com/respondnow/respondnow/server/pkg/hierarchy"
 
-	"github.com/respondnow/respond/server/pkg/database/mongodb/hierarchy"
-	"github.com/respondnow/respond/server/pkg/user"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb/hierarchy"
+	"github.com/respondnow/respondnow/server/pkg/user"
 	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/respondnow/respond/server/pkg/database/mongodb"
-	auth2 "github.com/respondnow/respond/server/pkg/database/mongodb/user"
-	"github.com/respondnow/respond/server/utils"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb"
+	auth2 "github.com/respondnow/respondnow/server/pkg/database/mongodb/user"
+	"github.com/respondnow/respondnow/server/utils"
 	"github.com/sirupsen/logrus"
 )
 

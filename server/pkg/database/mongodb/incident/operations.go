@@ -10,9 +10,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/respondnow/respond/server/config"
-	"github.com/respondnow/respond/server/pkg/constant"
-	"github.com/respondnow/respond/server/pkg/database/mongodb"
+	"github.com/respondnow/respondnow/server/config"
+	"github.com/respondnow/respondnow/server/pkg/constant"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb"
 )
 
 func (i *incidentOperator) Create(ctx context.Context, in Incident,

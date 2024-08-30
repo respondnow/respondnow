@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/respondnow/respond/server/config"
+	"github.com/respondnow/respondnow/server/config"
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
 	"github.com/slack-go/slack/socketmode"

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/respondnow/respond/server"
-	_ "github.com/respondnow/respond/server/docs"
+	"github.com/respondnow/respondnow/server"
+	_ "github.com/respondnow/respondnow/server/docs"
 )
 
 //	@title			RespondNow Server

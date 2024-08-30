@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/respondnow/respond/server/pkg/prometheus"
+	"github.com/respondnow/respondnow/server/pkg/prometheus"
 )
 
 func RequestMetricsMiddleware() gin.HandlerFunc {

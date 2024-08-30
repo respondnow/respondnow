@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/respondnow/respond/server/config"
+	"github.com/respondnow/respondnow/server/config"
 )
 
 type RestCallOption struct {

@@ -3,7 +3,7 @@ package hierarchy
 import (
 	"context"
 
-	"github.com/respondnow/respond/server/pkg/database/mongodb/hierarchy"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb/hierarchy"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

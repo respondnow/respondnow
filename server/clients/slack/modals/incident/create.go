@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/respondnow/respond/server/config"
+	"github.com/respondnow/respondnow/server/config"
 
-	"github.com/respondnow/respond/server/pkg/database/mongodb"
-	incidentdb "github.com/respondnow/respond/server/pkg/database/mongodb/incident"
-	"github.com/respondnow/respond/server/pkg/incident"
-	"github.com/respondnow/respond/server/utils"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb"
+	incidentdb "github.com/respondnow/respondnow/server/pkg/database/mongodb/incident"
+	"github.com/respondnow/respondnow/server/pkg/incident"
+	"github.com/respondnow/respondnow/server/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/socketmode"

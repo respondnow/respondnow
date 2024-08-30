@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/respondnow/respond/server/pkg/database/mongodb/user"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb/user"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/respondnow/respond/server/config"
+	"github.com/respondnow/respondnow/server/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
