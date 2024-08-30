@@ -28,6 +28,46 @@ const (
 	incidentNameMaxLength = slackChannelNameLengthCap - channelNamePrefixLength
 )
 
+func getIncidentCommanderRoleDescription() string {
+	return "The Incident Commander is the decision maker during a major incident, delegating tasks and listening to input from subject matter experts in order to bring the incident to resolution. They become the highest ranking individual on any major incident call, regardless of their day-to-day rank. Their decisions made as commander are final.\n\nYour job as an Incident Commander is to listen to the call and to watch the incident Slack room in order to provide clear coordination, recruiting others to gather context and details. You should not be performing any actions or remediations, checking graphs, or investigating logs. Those tasks should be delegated.\n\nAn IC should also be considering next steps and backup plans at every opportunity, in an effort to avoid getting stuck without any clear options to proceed and to keep things moving towards resolution.\n\nMore information: https://response.pagerduty.com/training/incident_commander/"
+}
+
+func getCommunicationsLeadRoleDescription() string {
+	return "The purpose of the Communications Liaison is to be the primary individual in charge of notifying our customers of the current conditions, and informing the Incident Commander of any relevant feedback from customers as the incident progresses.\n\nIt's important for the rest of the command staff to be able to focus on the problem at hand, rather than worrying about crafting messages to customers.\n\nYour job as Communications Liaison is to listen to the call, watch the incident Slack room, and track incoming customer support requests, keeping track of what's going on and how far the incident is progressing (still investigating vs close to resolution).\n\nThe Incident Commander will instruct you to notify customers of the incident and keep them updated at various points throughout the call. You will be required to craft the message, gain approval from the IC, and then disseminate that message to customers.\n\nMore information: https://response.pagerduty.com/training/customer_liaison/"
+}
+
+func getUserRoleNotificationBlocks(role incidentdb.RoleType, channel string) []slack.Block {
+	slackBlocks := []slack.Block{
+		slack.NewHeaderBlock(&slack.TextBlockObject{
+			Type: slack.PlainTextType,
+			Text: fmt.Sprintf(":wave: You have been elected as the %s for an incident.", role),
+		}, slack.HeaderBlockOptionBlockID("user_role_notification_header")),
+	}
+
+	if role == incidentdb.IncidentCommander {
+		slackBlocks = append(slackBlocks, slack.NewSectionBlock(&slack.TextBlockObject{
+			Type: slack.MarkdownType,
+			Text: getIncidentCommanderRoleDescription(),
+		}, nil, nil, slack.SectionBlockOptionBlockID("user_role_notification_description")))
+	} else if role == incidentdb.CommunicationsLead {
+		slackBlocks = append(slackBlocks, slack.NewSectionBlock(&slack.TextBlockObject{
+			Type: slack.MarkdownType,
+			Text: getCommunicationsLeadRoleDescription(),
+		}, nil, nil, slack.SectionBlockOptionBlockID("user_role_notification_description")))
+	}
+
+	slackBlocks = append(slackBlocks,
+
+		slack.NewDividerBlock(),
+
+		slack.NewSectionBlock(&slack.TextBlockObject{
+			Type: slack.MarkdownType,
+			Text: fmt.Sprintf("Please join the channel here: <#%s>", channel),
+		}, nil, nil, slack.SectionBlockOptionBlockID("user_role_notification_channel")))
+
+	return slackBlocks
+}
+
 func getSeverityBlock() *slack.InputBlock {
 	supportedIncidentSeverities := incidentdb.NewIncidentOperator(mongodb.Operator).GetIncidentSeverities()
 	initialOptionForIncidentSeverity := string(supportedIncidentSeverities[len(supportedIncidentSeverities)-1])
@@ -399,6 +439,18 @@ func (is incidentService) CreateIncident(evt *socketmode.Event) {
 		return
 	} else {
 		logrus.Infof("A new incident creation response successfully posted to channel:%s", channel.ID)
+	}
+
+	var rolesAssigned []incidentdb.RoleType
+	for _, role := range newIncident.Roles {
+		rolesAssigned = append(rolesAssigned, role.Type)
+	}
+	for _, role := range rolesAssigned {
+		_, _, err := is.client.Client.PostMessageContext(context.TODO(), callback.User.ID,
+			slack.MsgOptionBlocks(getUserRoleNotificationBlocks(role, channel.ID)...))
+		if err != nil {
+			logrus.Errorf("failed to notify user for the role assigned: %+v", err)
+		}
 	}
 }
 
