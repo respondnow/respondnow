@@ -67,7 +67,7 @@ func (is incidentService) UpdateIncidentSummary(evt *socketmode.Event) {
 	}
 }
 
-func (is incidentService) UpdateIncidentComment(evt *socketmode.Event) {
+func (is incidentService) AddIncidentComment(evt *socketmode.Event) {
 	callback, ok := evt.Data.(slack.InteractionCallback)
 	if !ok {
 		logrus.Infof("Ignored %+v\n", evt)
