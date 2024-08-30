@@ -97,7 +97,7 @@ func (is incidentService) UpdateComment(ctx context.Context, incidentID, newComm
 		return incident.Incident{}, err
 	}
 
-	logrus.Infof("new comment on the incident is: %v\n", newComment)
+	logrus.Infof("A new comment has been added on the incident: %v\n", newComment)
 
 	ts := time.Now().Unix()
 	existingIncident.AuditDetails.UpdatedBy = currentUser
