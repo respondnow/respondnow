@@ -26,7 +26,7 @@ spec:
           image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
           imagePullPolicy: {{ .Values.server.image.pullPolicy }}
           command:
-            - ./respond
+            - ./respondnow
           args:
             - '--config-file=/etc/config/config.yaml'
           ports:
