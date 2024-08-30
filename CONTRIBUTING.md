@@ -76,7 +76,7 @@ If you are new to Go, consider reading [Effective Go](https://golang.org/doc/eff
   - Commit header (first line) should convey what changed
   - Commit body should include details such as why the changes are required and how the proposed changes
   - DCO Signed
-- If your PR is not getting reviewed or you need a specific person to review it, please reach out to the RespondNow contributors at the [respondnow slack channel](#)
+- If your PR is not getting reviewed or you need a specific person to review it, please reach out to the RespondNow contributors at the [respondnow slack channel](https://app.slack.com/client/T08PSQ7BQ/C07K7TBH4P3)
 
 ## Highlighted Repositories
 
