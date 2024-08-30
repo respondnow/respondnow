@@ -91,6 +91,18 @@ func getSummaryBlock() *slack.InputBlock {
 	})
 }
 
+func getCommentBlock() *slack.InputBlock {
+	return slack.NewInputBlock("create_incident_modal_comment", slack.NewTextBlockObject(
+		slack.PlainTextType, ":speech_balloon: Comment", false, false,
+	), nil, slack.PlainTextInputBlockElement{
+		Type:      slack.METPlainTextInput,
+		Multiline: true,
+		ActionID:  "create_incident_modal_set_comment",
+		Placeholder: slack.NewTextBlockObject(slack.PlainTextType, "Add a comment.",
+			false, false),
+	})
+}
+
 func getChannelSelectBlock() *slack.InputBlock {
 	return slack.NewInputBlock("create_incident_modal_conversation_select", slack.NewTextBlockObject(
 		slack.PlainTextType, "Select a channel to post the incident details", false, false,
@@ -468,6 +480,12 @@ func (is incidentService) sendCreateIncidentResponseMsg(teamID, channelID, joinC
 			},
 			slack.ButtonBlockElement{
 				Type:     slack.METButton,
+				Text:     &slack.TextBlockObject{Type: slack.PlainTextType, Text: "Add a comment"},
+				ActionID: "update_incident_comment_button",
+				Value:    newIncident.Identifier,
+			},
+			slack.ButtonBlockElement{
+				Type:     slack.METButton,
 				Text:     &slack.TextBlockObject{Type: slack.PlainTextType, Text: "Assign Roles"},
 				ActionID: "update_incident_assign_roles_button",
 				Value:    newIncident.Identifier,
@@ -515,14 +533,6 @@ func (is incidentService) sendCreateIncidentResponseMsg(teamID, channelID, joinC
 
 	return nil
 }
-
-// func generateSlackChannelName(id string) string {
-// 	channelName := strings.ToLower("rn-" + id)
-// 	if len(channelName) > slackChannelNameLengthCap {
-// 		return channelName[:slackChannelNameLengthCap]
-// 	}
-// 	return channelName
-// }
 
 func generateSlackChannelName(incidentName string, createdAt *time.Time) string {
 	fmtDateTime := createdAt.Format("2006-01-02-15-04-05")

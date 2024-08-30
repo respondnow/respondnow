@@ -858,6 +858,7 @@
             "type": "object",
             "required": [
                 "active",
+                "comment",
                 "id",
                 "identifier",
                 "name",
@@ -883,6 +884,9 @@
                     "items": {
                         "$ref": "#/definitions/incident.Channel"
                     }
+                },
+                "comment": {
+                    "type": "string"
                 },
                 "conferenceDetails": {
                     "type": "array",
@@ -1048,6 +1052,7 @@
             "type": "object",
             "required": [
                 "active",
+                "comment",
                 "id",
                 "identifier",
                 "name",
@@ -1073,6 +1078,9 @@
                     "items": {
                         "$ref": "#/definitions/incident.Channel"
                     }
+                },
+                "comment": {
+                    "type": "string"
                 },
                 "conferenceDetails": {
                     "type": "array",

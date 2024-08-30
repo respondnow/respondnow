@@ -864,6 +864,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "active",
+                "comment",
                 "id",
                 "identifier",
                 "name",
@@ -889,6 +890,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/incident.Channel"
                     }
+                },
+                "comment": {
+                    "type": "string"
                 },
                 "conferenceDetails": {
                     "type": "array",
@@ -1054,6 +1058,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "active",
+                "comment",
                 "id",
                 "identifier",
                 "name",
@@ -1079,6 +1084,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/incident.Channel"
                     }
+                },
+                "comment": {
+                    "type": "string"
                 },
                 "conferenceDetails": {
                     "type": "array",
