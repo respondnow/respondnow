@@ -1,13 +1,13 @@
 ### Component-Wise Code Owners & Primary Reviewers
 
-| Area          | Source            | Maintainers                 | Reviewers                   |
-| ------------- | ----------------- | --------------------------- | --------------------------- |
-| frontend      | respondnow/portal | @hrishavjha, @sahilkr24     | @hrishavjha, @sahilkr24     |
-| backend       | respondnow/server | @sagarkrsd, @imrajdas       | @imrajdas, @naveen-harness  |
-| slack-app     | respondnow/server | @sagarkrsd, @naveen-harness | @sagarkrsd, @naveen-harness |
-| helm-charts   | respondnow-helm   | @imrajdas                   | @sagarkrsd                  |
-| documentation | respondnow/mkdocs | @sahilkr24, @ksatchit       | @hrishavjha, @sahilkr24     |
-| websites      | respondnow-io     | @hrishavjha, @sahilkr24     | @hrishavjha, @sahilkr24     |
+| Area          | Source                 | Maintainers                 | Reviewers                   |
+| ------------- | ---------------------- | --------------------------- | --------------------------- |
+| backend       | respond/server         | @sagarkrsd, @naveen-harness | @sagarkrsd, @imrajdas       |
+| clients       | respond/server/clients | @sagarkrsd, @naveen-harness | @sagarkrsd, @naveen-harness |
+| documentation | respond/mkdocs         | @sahilkr24, @ksatchit       | @hrishavjha, @sahilkr24     |
+| frontend      | respond/portal         | @hrishavjha, @sahilkr24     | @hrishavjha, @sahilkr24     |
+| helm-charts   | respondnow-helm        | @imrajdas, @sagarkrsd       | @imrajdas, @sagarkrsd       |
+| websites      | respondnow-io          | @hrishavjha, @sahilkr24     | @hrishavjha, @sahilkr24     |
 
 ### Consolidated Maintainers List
 
