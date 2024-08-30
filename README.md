@@ -11,7 +11,8 @@ RespondNow is an open source incident management server that runs on Kubernetes 
 - Build a free and easy to use incident management tool that operates entirely in your slack workspace. Make the collaboration around incident response native to your existing mode of collaboration.
 - Bring together a community of developers and SREs that contribute to the buildup of reusable runbooks.
 
-<br>
+### Get Started
+Please find the installation instructions [here](https://github.com/respondnow/respondnow-helm/blob/main/README.md)
 
 ### Useful Links
 - [Website](https://respondnow.io/)
