@@ -1,9 +1,9 @@
-# Makefile for building respond server
+# Makefile for building respondnow server
 # Reference Guide - https://www.gnu.org/software/make/manual/make.html
 
 DOCKER_REGISTRY ?= docker.io
 DOCKER_REPO ?= respondnow
-DOCKER_IMAGE ?= respond
+DOCKER_IMAGE ?= respondnow
 DOCKER_TAG ?= ci
 IS_DOCKER_INSTALLED = $(shell which docker >> /dev/null 2>&1; echo $$?)
 HOME = $(shell echo $$HOME)

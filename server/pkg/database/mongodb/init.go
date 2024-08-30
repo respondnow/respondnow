@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/respondnow/respond/server/pkg/constant"
-	"github.com/respondnow/respond/server/pkg/database/mongodb/index"
+	"github.com/respondnow/respondnow/server/pkg/constant"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb/index"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

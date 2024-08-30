@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/respondnow/respond/server/config"
+	"github.com/respondnow/respondnow/server/config"
 	"github.com/sirupsen/logrus"
 	"github.com/slack-go/slack"
 )

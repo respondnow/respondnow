@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/respondnow/respond/server/api/handlers"
+	"github.com/respondnow/respondnow/server/api/handlers"
 )
 
 func IncidentRouter(router *gin.RouterGroup) {

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/respondnow/respond/server/pkg/database/mongodb"
-	"github.com/respondnow/respond/server/pkg/database/mongodb/incident"
-	incident2 "github.com/respondnow/respond/server/pkg/incident"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb/incident"
+	incident2 "github.com/respondnow/respondnow/server/pkg/incident"
 	"github.com/sirupsen/logrus"
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/socketmode"

@@ -1,7 +1,7 @@
 package index
 
 import (
-	"github.com/respondnow/respond/server/pkg/constant"
+	"github.com/respondnow/respondnow/server/pkg/constant"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

@@ -6,11 +6,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/respondnow/respond/server/pkg/constant"
-	"github.com/respondnow/respond/server/pkg/database/mongodb"
-	incidentdb "github.com/respondnow/respond/server/pkg/database/mongodb/incident"
-	"github.com/respondnow/respond/server/pkg/incident"
-	"github.com/respondnow/respond/server/utils"
+	"github.com/respondnow/respondnow/server/pkg/constant"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb"
+	incidentdb "github.com/respondnow/respondnow/server/pkg/database/mongodb/incident"
+	"github.com/respondnow/respondnow/server/pkg/incident"
+	"github.com/respondnow/respondnow/server/utils"
 	"github.com/sirupsen/logrus"
 )
 

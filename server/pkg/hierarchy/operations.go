@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/respondnow/respond/server/pkg/database/mongodb/hierarchy"
+	"github.com/respondnow/respondnow/server/pkg/database/mongodb/hierarchy"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

@@ -1,4 +1,4 @@
-module github.com/respondnow/respond/server
+module github.com/respondnow/respondnow/server
 
 go 1.22.5
 
