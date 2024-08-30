@@ -67,6 +67,7 @@ func (is incidentService) UpdateSummary(ctx context.Context, incidentID, newSumm
 	ts := time.Now().Unix()
 	existingIncident.AuditDetails.UpdatedBy = currentUser
 	existingIncident.AuditDetails.UpdatedAt = &ts
+	existingIncident.UpdatedAt = &ts
 
 	existingIncident.Timelines = append(existingIncident.Timelines, incident.Timeline{
 		ID:            strconv.Itoa(int(ts)),
@@ -100,8 +101,10 @@ func (is incidentService) UpdateSeverity(ctx context.Context, incidentID string,
 	ts := time.Now().Unix()
 	existingIncident.AuditDetails.UpdatedBy = currentUser
 	existingIncident.AuditDetails.UpdatedAt = &ts
+	existingIncident.UpdatedAt = &ts
 
 	previousSeverity := string(existingIncident.Severity)
+	logrus.Infof("previous severity: %v, current severity: %v\n", previousSeverity, newSeverity)
 
 	existingIncident.Timelines = append(existingIncident.Timelines, incident.Timeline{
 		ID:            strconv.Itoa(int(ts)),
@@ -134,6 +137,7 @@ func (is incidentService) UpdateStatus(ctx context.Context, incidentID string, n
 	ts := time.Now().Unix()
 	existingIncident.AuditDetails.UpdatedBy = currentUser
 	existingIncident.AuditDetails.UpdatedAt = &ts
+	existingIncident.UpdatedAt = &ts
 
 	existingIncident.Timelines = append(existingIncident.Timelines, incident.Timeline{
 		ID:            strconv.Itoa(int(ts)),
@@ -161,15 +165,41 @@ func (is incidentService) UpdateRoles(ctx context.Context, incidentID string,
 		return incident.Incident{}, err
 	}
 
-	var updatedRoles []incident.Role
-	roleDetailsMap := make(map[string]interface{})
-	for role, userDetails := range roleAssignments {
-		updatedRoles = append(updatedRoles, incident.Role{
-			Type: incident.RoleType(role),
-			User: userDetails,
-		})
+	existingRoleMap := make(map[string]incident.Role)
+	for _, role := range existingIncident.Roles {
+		existingRoleMap[string(role.Type)] = role
 	}
 
+	supportedIncidentRoles := is.incidentOperator.GetIncidentRoles()
+
+	toUpdateRoleMap := make(map[string]incident.Role)
+
+	for _, roleType := range supportedIncidentRoles {
+		roleStr := string(roleType)
+
+		if userDetails, exists := roleAssignments[roleStr]; exists {
+			toUpdateRoleMap[roleStr] = incident.Role{
+				Type: roleType,
+				User: userDetails,
+			}
+		} else if existingRole, exists := existingRoleMap[roleStr]; exists {
+			toUpdateRoleMap[roleStr] = existingRole
+		} else {
+			toUpdateRoleMap[roleStr] = incident.Role{
+				Type: roleType,
+				User: utils.UserDetails{},
+			}
+		}
+	}
+
+	var updatedRoles []incident.Role
+	for _, role := range toUpdateRoleMap {
+		if role.User.UserId != "" {
+			updatedRoles = append(updatedRoles, role)
+		}
+	}
+
+	roleDetailsMap := make(map[string]interface{})
 	roleDetailsMap["previousState"] = existingIncident.Roles
 	roleDetailsMap["currentState"] = updatedRoles
 
@@ -180,6 +210,7 @@ func (is incidentService) UpdateRoles(ctx context.Context, incidentID string,
 	ts := time.Now().Unix()
 	existingIncident.AuditDetails.UpdatedBy = currentUser
 	existingIncident.AuditDetails.UpdatedAt = &ts
+	existingIncident.UpdatedAt = &ts
 
 	existingIncident.Timelines = append(existingIncident.Timelines, incident.Timeline{
 		ID:                strconv.Itoa(int(ts)),
@@ -194,9 +225,7 @@ func (is incidentService) UpdateRoles(ctx context.Context, incidentID string,
 	if err != nil {
 		return incident.Incident{}, err
 	}
-
 	return updatedIncident, nil
-
 }
 
 func (is incidentService) Create(ctx context.Context, request CreateRequest,

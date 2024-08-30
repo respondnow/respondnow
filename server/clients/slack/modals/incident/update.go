@@ -43,14 +43,6 @@ func (is incidentService) UpdateIncidentSummary(evt *socketmode.Event) {
 		config.EnvConfig.DefaultHierarchy.DefaultProjectId,
 	)
 
-	//currentIncident, err := incidentService.Get(context.TODO(), incidentIdentifier)
-	//if err != nil {
-	//	logrus.Errorf("failed to retrieve current incident details: %+v", err)
-	//	return
-	//}
-
-	//oldSummary := currentIncident.Summary
-
 	updatedIncident, err := incidentService.UpdateSummary(context.TODO(), incidentIdentifier, summary.Value, utils.UserDetails{
 		Email:    slackUser.Profile.Email,
 		Name:     slackUser.Profile.DisplayName,
@@ -104,14 +96,6 @@ func (is incidentService) UpdateIncidentStatus(evt *socketmode.Event) {
 		config.EnvConfig.DefaultHierarchy.DefaultOrgId,
 		config.EnvConfig.DefaultHierarchy.DefaultProjectId,
 	)
-
-	//currentIncident, err := incidentService.Get(context.TODO(), incidentIdentifier)
-	//if err != nil {
-	//	logrus.Errorf("failed to retrieve current incident details: %+v", err)
-	//	return
-	//}
-
-	//oldSeverity := currentIncident.Status
 
 	updatedIncident, err := incidentService.UpdateStatus(context.TODO(), incidentIdentifier, status.SelectedOption.Value,
 		utils.UserDetails{
@@ -244,14 +228,6 @@ func (is incidentService) UpdateIncidentSeverity(evt *socketmode.Event) {
 		config.EnvConfig.DefaultHierarchy.DefaultOrgId,
 		config.EnvConfig.DefaultHierarchy.DefaultProjectId,
 	)
-
-	//currentIncident, err := incidentService.Get(context.TODO(), incidentIdentifier)
-	//if err != nil {
-	//	logrus.Errorf("failed to retrieve current incident details: %+v", err)
-	//	return
-	//}
-
-	//oldSeverity := currentIncident.Severity
 
 	updatedIncident, err := incidentService.UpdateSeverity(context.TODO(), incidentIdentifier, severity.SelectedOption.Value,
 		utils.UserDetails{

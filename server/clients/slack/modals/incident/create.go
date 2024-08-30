@@ -516,14 +516,6 @@ func (is incidentService) sendCreateIncidentResponseMsg(teamID, channelID, joinC
 	return nil
 }
 
-// func generateSlackChannelName(id string) string {
-// 	channelName := strings.ToLower("rn-" + id)
-// 	if len(channelName) > slackChannelNameLengthCap {
-// 		return channelName[:slackChannelNameLengthCap]
-// 	}
-// 	return channelName
-// }
-
 func generateSlackChannelName(incidentName string, createdAt *time.Time) string {
 	fmtDateTime := createdAt.Format("2006-01-02-15-04-05")
 	incidentName = strings.ToLower(strings.TrimSpace(incidentName))
