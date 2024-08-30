@@ -98,7 +98,7 @@ func getCommentBlock() *slack.InputBlock {
 		Type:      slack.METPlainTextInput,
 		Multiline: true,
 		ActionID:  "create_incident_modal_set_comment",
-		Placeholder: slack.NewTextBlockObject(slack.PlainTextType, "A a comment.",
+		Placeholder: slack.NewTextBlockObject(slack.PlainTextType, "Add a comment.",
 			false, false),
 	})
 }
