@@ -6,6 +6,7 @@ import type { IncidentChangeType } from '../schemas/IncidentChangeType';
 import type { UtilsUserDetails } from '../schemas/UtilsUserDetails';
 
 export interface IncidentTimeline {
+  additionalDetails?: { [key: string]: any };
   createdAt?: number;
   currentState?: string;
   id?: string;

@@ -21,6 +21,7 @@ export interface StringsMap {
   enterOldPassword: unknown;
   fieldMaxLength: PrimitiveObject<'length'>;
   fieldMinLength: PrimitiveObject<'length'>;
+  from: unknown;
   getStarted: unknown;
   getStartedHeading: unknown;
   gettingStarted: unknown;
@@ -72,6 +73,7 @@ export interface StringsMap {
   tags: unknown;
   termsAndConditions: unknown;
   title: unknown;
+  to: unknown;
   updatePassword: unknown;
   updated: unknown;
   viaSlack: unknown;
