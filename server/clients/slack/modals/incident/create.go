@@ -480,7 +480,7 @@ func (is incidentService) sendCreateIncidentResponseMsg(teamID, channelID, joinC
 			},
 			slack.ButtonBlockElement{
 				Type:     slack.METButton,
-				Text:     &slack.TextBlockObject{Type: slack.PlainTextType, Text: "Add comment"},
+				Text:     &slack.TextBlockObject{Type: slack.PlainTextType, Text: "Add a comment"},
 				ActionID: "update_incident_comment_button",
 				Value:    newIncident.Identifier,
 			},
