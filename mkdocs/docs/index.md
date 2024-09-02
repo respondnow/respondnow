@@ -10,7 +10,7 @@ Built with a cloud-native architecture, RespondNow is designed for scalability a
 
 RespondNow is built around three key components that work together to deliver a comprehensive incident management experience:
 
-![respond-now-components](https://github.com/user-attachments/assets/91f8374a-2411-4f75-bea5-4e4721cfaac0)
+![respond-now-components](./images/framework-components.png)
 
 **Incident Management Server**: This is the core of RespondNow, responsible for processing and managing all incident-related data and operations. It provides the foundational backend that powers the entire framework.
 
