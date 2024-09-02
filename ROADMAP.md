@@ -1,0 +1,12 @@
+- HTTP(S) mode support for RespondNow slack app
+- Support for attachment objects/artifacts in an Incident
+- Ability to extend RespondNow for Incident types, Severity levels, Incident statuses
+- Support for user-defined Roles for team members participating in incident response
+- OOTB (out-of-the-box) Runbooks for Incident Lifecycle Events
+- Support for Organizations and Teaming
+- Validation support for Incident CRUD ops
+- Timelines in Slack for Incident Updates
+- Reminder/notification functionality for open incidents
+- History/context support in Incident Update Modals
+- Slack thread support in Incident Channel for comment additions & other updates
+- Integration support for Zoom
