@@ -28,7 +28,7 @@ export async function fetcher<TResponse = unknown, TQueryParams = never, TBody =
 
   const headersObj: Record<string, string> = {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(headers ? headers : {})
   };
 

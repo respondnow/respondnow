@@ -18,7 +18,7 @@ const PasswordResetController = (): React.ReactElement => {
       onError: err => showError(err.message),
       onSuccess: async data => {
         showSuccess(data.message);
-        const accessToken = data.data?.token?.split(' ')[1] || '';
+        const accessToken = data.data?.token || '';
         const isInitialLogin = !data.data?.lastLoginAt;
 
         updateLocalStorage('accessToken', accessToken);
