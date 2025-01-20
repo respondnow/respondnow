@@ -7,7 +7,6 @@ __pycache__/
 **/build/
 **/coverage/
 
-main
 out/
 vendor/
 bin/

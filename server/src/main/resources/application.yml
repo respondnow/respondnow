@@ -1,0 +1,27 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://127.0.0.1:27018,127.0.0.1:27019,127.0.0.1:27020/respondnow
+      database: respondnow
+      core:
+        MongoTemplate: DEBUG
+  server:
+    port: 8080
+jwt:
+  secret: mySecretKeyUsedToEncodeJWTForAuthenticationPurpose
+  expiration: 86400000  # Token expiration time in milliseconds (e.g., 1 hour)
+slack:
+  botToken: xoxb-308118791127-7519744353431-GNsJXGbPxzGPA4N6mwHFh8Qi
+  appToken: xapp-1-A07GCU6M25N-7610989407845-5955ed2c09821eece28f31ef037aa478c80eb2c5f90296e56176c976210f1dcf
+  signingSecret: e9cc18fb5f9eb9b705c315d9bb58a832
+  incidentChannelID: C089Z1TPEHE
+hierarchy:
+  defaultAccount:
+    id: default_account_id
+    name: "Default Account"
+  defaultOrg:
+    id: default_org_id
+    name: "Default Org"
+  defaultProject:
+    id: default_project_id
+    name: "Default Project"
