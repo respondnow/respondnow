@@ -35,6 +35,7 @@ import com.slack.api.model.view.ViewState;
 import com.slack.api.model.view.ViewTitle;
 import com.slack.api.model.view.Views;
 import com.slack.api.socket_mode.SocketModeClient;
+import io.respondnow.dto.incident.CreateRequest;
 import io.respondnow.model.incident.*;
 import io.respondnow.model.user.UserDetails;
 import io.respondnow.service.incident.IncidentService;
@@ -876,25 +877,30 @@ public class SlackServiceImpl implements SlackService {
           channels.add(channel1);
 
           // Create incident record in the database
-          Incident newIncident = new Incident();
-          newIncident.setAccountIdentifier(defaultAccountId);
-          newIncident.setOrgIdentifier(defaultOrgId);
-          newIncident.setProjectIdentifier(defaultProjectId);
-          newIncident.setIdentifier(incidentId);
-          newIncident.setName(name);
-          newIncident.setType(Type.valueOf(incidentType));
-          newIncident.setStatus(Status.STARTED);
-          newIncident.setRoles(roles);
-          newIncident.setSeverity(Severity.valueOf(severity));
-          newIncident.setSummary(summary);
-          newIncident.setIncidentChannel(incidentChannel);
-          newIncident.setChannels(channels);
-          //          newIncident.
+          CreateRequest createRequest = new CreateRequest();
+          //          createRequest.setAccountIdentifier(defaultAccountId);
+          //          createRequest.setOrgIdentifier(defaultOrgId);
+          //          createRequest.setProjectIdentifier(defaultProjectId);
+          createRequest.setIdentifier(incidentId);
+          createRequest.setName(name);
+          createRequest.setType(Type.valueOf(incidentType));
+          createRequest.setStatus(Status.STARTED);
+          createRequest.setRoles(roles);
+          createRequest.setSeverity(Severity.valueOf(severity));
+          createRequest.setSummary(summary);
+          createRequest.setIncidentChannel(incidentChannel);
+          createRequest.setChannels(channels);
 
-          Incident incident = incidentService.createIncident(newIncident);
+          UserDetails userDetails = new UserDetails();
+          userDetails.setName(payload.getPayload().getUser().getName());
+          userDetails.setUserName(payload.getPayload().getUser().getUsername());
+          userDetails.setUserId(payload.getPayload().getUser().getId());
+          //          userDetails.setEmail(payload.getPayload().getUser().get);
+          userDetails.setSource(ChannelSource.SLACK);
+          Incident incident = incidentService.createIncident(createRequest, userDetails);
 
           // Post messages in Slack
-          postIncidentCreationResponse(responseChannel, channelId, newIncident);
+          postIncidentCreationResponse(responseChannel, channelId, incident);
 
         } catch (SlackApiException | IOException e) {
           throw new RuntimeException(e);
@@ -1196,7 +1202,7 @@ public class SlackServiceImpl implements SlackService {
       options.add(
           OptionObject.builder()
               .text(new PlainTextObject(type.name(), false))
-              .value(type.name().toLowerCase())
+              .value(type.name())
               .build());
     }
 
@@ -1241,7 +1247,7 @@ public class SlackServiceImpl implements SlackService {
                   new PlainTextObject(
                       role.name().replace("_", " "),
                       false)) // Converting enum name to human-readable text
-              .value(role.name().toLowerCase()) // Using name of the enum as value
+              .value(role.name()) // Using name of the enum as value
               .build());
     }
 

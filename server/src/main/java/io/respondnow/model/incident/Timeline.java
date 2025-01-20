@@ -1,17 +1,14 @@
 package io.respondnow.model.incident;
 
-import javax.validation.constraints.NotNull;
-
 import io.respondnow.model.user.UserDetails;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import javax.validation.constraints.NotNull;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
 public class Timeline {
 
   private String id;

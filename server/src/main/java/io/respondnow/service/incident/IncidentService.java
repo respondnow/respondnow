@@ -1,11 +1,13 @@
 package io.respondnow.service.incident;
 
+import io.respondnow.dto.incident.CreateRequest;
 import io.respondnow.model.incident.*;
+import io.respondnow.model.user.UserDetails;
 import java.util.List;
 import org.springframework.data.mongodb.core.query.Query;
 
 public interface IncidentService {
-  Incident createIncident(Incident incident);
+  Incident createIncident(CreateRequest request, UserDetails currentUser);
 
   Incident getIncidentById(String id);
 

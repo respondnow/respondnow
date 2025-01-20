@@ -1,6 +1,7 @@
 package io.respondnow.model.incident;
 
-import io.respondnow.model.user.User;
+import io.respondnow.model.user.UserDetails;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
@@ -50,8 +51,31 @@ public class Incident {
   private List<Attachment> attachments;
   private Long createdAt;
   private Long updatedAt;
-  private User createdBy;
-  private User updatedBy;
+  private UserDetails createdBy;
+  private UserDetails updatedBy;
   private Long removedAt;
   private Boolean removed;
+
+  /**
+   * Adds a Timeline entry to the Incident's timeline history.
+   *
+   * @param timeline The Timeline object to be added.
+   */
+  public void addTimeline(Timeline timeline) {
+    if (this.timelines == null) {
+      this.timelines = new ArrayList<>();
+    }
+    this.timelines.add(timeline);
+  }
+
+  /**
+   * Optionally, you can add a method to remove a Timeline entry.
+   *
+   * @param timeline The Timeline object to be removed.
+   */
+  public void removeTimeline(Timeline timeline) {
+    if (this.timelines != null) {
+      this.timelines.remove(timeline);
+    }
+  }
 }
