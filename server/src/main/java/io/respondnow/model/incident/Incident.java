@@ -48,9 +48,9 @@ public class Incident {
   private List<Timeline> timelines;
   private List<Stage> stages;
   private List<Channel> channels;
-//  private IncidentChannel incidentChannel;
-//  private List<Conference> conferenceDetails;
-//  private List<Attachment> attachments;
+  private IncidentChannel incidentChannel;
+  private List<Conference> conferenceDetails;
+  private List<Attachment> attachments;
   private Long createdAt;
   private Long updatedAt;
   private UserDetails createdBy;
