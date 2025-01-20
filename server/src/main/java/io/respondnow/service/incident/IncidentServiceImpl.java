@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -24,18 +25,33 @@ public class IncidentServiceImpl implements IncidentService {
   @Autowired private IncidentRepository incidentRepository;
   @Autowired private MongoTemplate mongoTemplate;
 
+  @Value("${hierarchy.defaultAccount.id:default_account_id}")
+  private String defaultAccountId;
+
+  @Value("${hierarchy.defaultOrg.id:default_org_id}")
+  private String defaultOrgId;
+
+  @Value("${hierarchy.defaultProject.id:default_project_id}")
+  private String defaultProjectId;
+
   public Incident createIncident(CreateRequest request, UserDetails currentUser) {
     long createdAt = Instant.now().getEpochSecond();
     String incidentId = generateIncidentIdentifier(createdAt);
 
     // Set default status if not provided
     if (request.getStatus() == null) {
-      request.setStatus(Status.STARTED);
+      request.setStatus(Status.Started);
     }
 
     // Initialize new Incident object
     Incident newIncident = new Incident();
+    newIncident.setAccountIdentifier(defaultAccountId);
+    newIncident.setOrgIdentifier(defaultOrgId);
+    newIncident.setProjectIdentifier(defaultProjectId);
     newIncident.setIdentifier(incidentId);
+    newIncident.setName(request.getName());
+    newIncident.setDescription(request.getDescription());
+    newIncident.setType(request.getType());
     newIncident.setSummary(request.getSummary());
     newIncident.setStatus(request.getStatus());
     newIncident.setSeverity(request.getSeverity());
@@ -53,7 +69,7 @@ public class IncidentServiceImpl implements IncidentService {
 
     // Create the INCIDENT_CREATED timeline entry
     Timeline incidentCreatedTimeline = new Timeline();
-    incidentCreatedTimeline.setType(ChangeType.INCIDENT_CREATED);
+    incidentCreatedTimeline.setType(ChangeType.Incident_Created);
     incidentCreatedTimeline.setCreatedAt(createdAt);
     incidentCreatedTimeline.setUpdatedAt(createdAt);
     incidentCreatedTimeline.setPreviousState(null); // No previous state for creation
@@ -72,6 +88,9 @@ public class IncidentServiceImpl implements IncidentService {
       newIncident.addTimeline(slackChannelTimeline);
     }
 
+    System.out.println(
+        "get incident call --------- " + getIncidentById("678e5018aa997b556b1f78ba"));
+
     // Save and return the new Incident
     return incidentRepository.save(newIncident);
   }
@@ -79,16 +98,36 @@ public class IncidentServiceImpl implements IncidentService {
   @NotNull
   private static Timeline getTimeline(
       CreateRequest request, UserDetails currentUser, long createdAt) {
+
+    // Check if channels are available and not empty
+    if (request.getChannels() == null || request.getChannels().isEmpty()) {
+      throw new IllegalArgumentException("No channels provided in the request.");
+    }
+
+    // Get the first channel from the list (you can adjust this logic if multiple channels should be
+    // handled differently)
+    Channel slackChannel = request.getChannels().get(0);
+
+    // Create a new timeline entry for the Slack channel creation
     Timeline slackChannelTimeline = new Timeline();
-    slackChannelTimeline.setType(ChangeType.SLACK_CHANNEL_CREATED);
+    slackChannelTimeline.setType(ChangeType.Slack_Channel_Created);
     slackChannelTimeline.setCreatedAt(createdAt);
     slackChannelTimeline.setUpdatedAt(createdAt);
     slackChannelTimeline.setPreviousState(null); // No previous state since it's already created
-    slackChannelTimeline.setCurrentState(request.getIncidentChannel().getSlack().getChannelId());
-    slackChannelTimeline.setSlack(request.getIncidentChannel().getSlack());
-    slackChannelTimeline.setUserDetails(currentUser);
+    slackChannelTimeline.setCurrentState(
+        slackChannel.getId()); // Use the channel ID as the current state
+
+    io.respondnow.model.incident.Slack slack = new io.respondnow.model.incident.Slack();
+    slack.setChannelId(slackChannel.getId());
+    slack.setChannelName(slackChannel.getName());
+    slack.setChannelStatus(slackChannel.getStatus());
+    slack.setTeamId(slackChannel.getTeamId());
+    slackChannelTimeline.setSlack(slack); // Set the full Slack channel object
+    slackChannelTimeline.setUserDetails(
+        currentUser); // Set the user details associated with the request
     slackChannelTimeline.setMessage("Slack channel associated with the incident");
     slackChannelTimeline.setAdditionalDetails(null); // Add any additional details if necessary
+
     return slackChannelTimeline;
   }
 
@@ -208,11 +247,11 @@ public class IncidentServiceImpl implements IncidentService {
   }
 
   public List<Type> getIncidentTypes() {
-    return List.of(Type.AVAILABILITY, Type.LATENCY, Type.SECURITY, Type.OTHER);
+    return List.of(Type.Availability, Type.Latency, Type.Security, Type.Other);
   }
 
   public List<AttachmentType> getIncidentAttachmentTypes() {
-    return List.of(AttachmentType.LINK);
+    return List.of(AttachmentType.Link);
   }
 
   public List<Severity> getIncidentSeverities() {
@@ -221,12 +260,12 @@ public class IncidentServiceImpl implements IncidentService {
 
   public List<Status> getIncidentStatuses() {
     return List.of(
-        Status.STARTED,
-        Status.ACKNOWLEDGED,
-        Status.INVESTIGATING,
-        Status.IDENTIFIED,
-        Status.MITIGATED,
-        Status.RESOLVED);
+        Status.Started,
+        Status.Acknowledged,
+        Status.Investigating,
+        Status.Identified,
+        Status.Mitigated,
+        Status.Resolved);
   }
 
   public String generateIncidentIdentifier(long createdAt) {

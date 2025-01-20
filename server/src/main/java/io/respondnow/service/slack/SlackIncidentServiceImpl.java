@@ -558,7 +558,7 @@
 //                  ViewTitle.builder()
 //                      .type("plain_text")
 //                      .text(
-//                          status == SlackIncidentType.OPEN ? "Open Incidents" : "Closed
+//                          status == SlackIncidentType.Open ? "Open Incidents" : "Closed
 // Incidents")
 //                      .build())
 //              .blocks(List.of(/* Add your incident list blocks here */ ))

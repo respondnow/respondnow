@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ChannelSource {
-  SLACK("Slack");
+  Slack("Slack");
 
   // Getter method to retrieve the value
   private final String value; // Declare the 'value' field

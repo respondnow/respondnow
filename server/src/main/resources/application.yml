@@ -11,10 +11,10 @@ jwt:
   secret: mySecretKeyUsedToEncodeJWTForAuthenticationPurpose
   expiration: 86400000  # Token expiration time in milliseconds (e.g., 1 hour)
 slack:
-  botToken: xoxb-308118791127-7519744353431-GNsJXGbPxzGPA4N6mwHFh8Qi
-  appToken: xapp-1-A07GCU6M25N-7610989407845-5955ed2c09821eece28f31ef037aa478c80eb2c5f90296e56176c976210f1dcf
-  signingSecret: e9cc18fb5f9eb9b705c315d9bb58a832
-  incidentChannelID: C089Z1TPEHE
+  botToken: xoxb-308118791127-8313951448102-eTXa8hTCjeptO1ZBhgtyF3So
+  appToken: xapp-1-A08A3AMAVFS-8306018852311-033eccdb039b32927fc6cdae6c7d8d76f28cc982086a7e88fc27967683c53889
+  signingSecret: 7d3a4befb2b60e2b8e6f37eef15a7f66
+  incidentChannelID: C089H2Q0BPE
 hierarchy:
   defaultAccount:
     id: default_account_id

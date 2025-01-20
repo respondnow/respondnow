@@ -1,12 +1,10 @@
 package io.respondnow.model.incident;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class Slack {
@@ -18,5 +16,5 @@ public class Slack {
   private String channelName;
   private String channelReference;
   private String channelDescription;
-  private String channelStatus;
+  private ChannelStatus channelStatus;
 }

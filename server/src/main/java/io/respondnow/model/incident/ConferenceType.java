@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ConferenceType {
-  ZOOM("Zoom");
+  Zoom("Zoom");
 
   private final String value; // Declare the 'value' field
 

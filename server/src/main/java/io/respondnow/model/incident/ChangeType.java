@@ -4,13 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum ChangeType {
-  SEVERITY("Severity"),
-  STATUS("Status"),
-  COMMENT("Comment"),
-  SUMMARY("Summary"),
-  ROLES("Roles"),
-  SLACK_CHANNEL_CREATED("Slack Channel Created"),
-  INCIDENT_CREATED("Incident Created");
+  Severity("Severity"),
+  Status("Status"),
+  Comment("Comment"),
+  Summary("Summary"),
+  Roles("Roles"),
+  Slack_Channel_Created("Slack_Channel_Created"),
+  Incident_Created("Incident_Created");
 
   // Getter method to retrieve the value
   private final String value; // Declare the 'value' field

@@ -4,12 +4,12 @@ import lombok.Getter;
 
 @Getter
 public enum Status {
-  STARTED("Started"),
-  ACKNOWLEDGED("Acknowledged"),
-  INVESTIGATING("Investigating"),
-  IDENTIFIED("Identified"),
-  MITIGATED("Mitigated"),
-  RESOLVED("Resolved");
+  Started("Started"),
+  Acknowledged("Acknowledged"),
+  Investigating("Investigating"),
+  Identified("Identified"),
+  Mitigated("Mitigated"),
+  Resolved("Resolved");
 
   // Getter method to retrieve the value
   private final String value; // Declare the 'value' field

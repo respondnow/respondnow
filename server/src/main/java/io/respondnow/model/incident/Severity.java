@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum Severity {
-  SEV0("SEV0 - Critical, High Impact"),
-  SEV1("SEV1 - Major, Significant Impact"),
-  SEV2("SEV2 - Minor, Low Impact");
+  SEV0("SEV0"),
+  SEV1("SEV1"),
+  SEV2("SEV2");
 
   private final String description;
 

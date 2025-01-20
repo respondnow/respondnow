@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum SlackIncidentType {
-  CLOSED("Closed"),
-  OPEN("Open");
+  Closed("Closed"),
+  Open("Open");
 
   // Getter method to retrieve the value
   private final String value; // Declare the 'value' field

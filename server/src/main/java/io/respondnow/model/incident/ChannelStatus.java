@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ChannelStatus {
-  OPERATIONAL("Operational");
+  Operational("Operational");
 
   // Getter method to retrieve the value
   private final String value; // Declare the 'value' field

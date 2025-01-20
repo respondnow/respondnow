@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum RoleType {
-  INCIDENT_COMMANDER("Incident Commander"),
-  COMMUNICATIONS_LEAD("Communications Lead");
+  Incident_Commander("Incident_Commander"),
+  Communications_Lead("Communications_Lead");
 
   // Getter method to retrieve the value
   private final String value; // Declare the 'value' field

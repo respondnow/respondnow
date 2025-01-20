@@ -1,6 +1,6 @@
 package io.respondnow.service.slack;
 
-import static io.respondnow.model.incident.ChannelStatus.OPERATIONAL;
+import static io.respondnow.model.incident.ChannelStatus.Operational;
 
 import com.slack.api.Slack;
 import com.slack.api.app_backend.views.payload.ViewSubmissionPayload;
@@ -62,15 +62,6 @@ public class SlackServiceImpl implements SlackService {
   private final ExecutorService executorService;
   private String botUserId;
   private static final Logger logger = LoggerFactory.getLogger(SlackServiceImpl.class);
-
-  @Value("${hierarchy.defaultAccount.id:default_account_id}")
-  private String defaultAccountId;
-
-  @Value("${hierarchy.defaultOrg.id:default_org_id}")
-  private String defaultOrgId;
-
-  @Value("${hierarchy.defaultProject.id:default_project_id}")
-  private String defaultProjectId;
 
   @Value("${slack.botToken}")
   private String botToken;
@@ -276,7 +267,7 @@ public class SlackServiceImpl implements SlackService {
           ctx.logger.info("Shortcut received: {}", req.getPayload());
 
           try {
-            listIncidents(ctx, SlackIncidentType.CLOSED);
+            listIncidents(ctx, SlackIncidentType.Closed);
             return ctx.ack();
           } catch (Exception e) {
             ctx.logger.error("Error listing closed incidents: {}", e.getMessage(), e);
@@ -296,7 +287,7 @@ public class SlackServiceImpl implements SlackService {
           ctx.logger.info("Shortcut list_open_incidents_modal received: {}", req.getPayload());
 
           try {
-            listIncidents(ctx, SlackIncidentType.OPEN);
+            listIncidents(ctx, SlackIncidentType.Open);
             return ctx.ack();
           } catch (Exception e) {
             ctx.logger.error("Error listing open incidents: {}", e.getMessage(), e);
@@ -772,7 +763,7 @@ public class SlackServiceImpl implements SlackService {
                                       payload.getPayload().getUser().getId(),
                                       payload.getPayload().getUser().getName(),
                                       "",
-                                      ChannelSource.SLACK);
+                                      ChannelSource.Slack);
 
                               // Create Role object
                               return new Role(roleType, userDetails);
@@ -859,7 +850,7 @@ public class SlackServiceImpl implements SlackService {
           slack.setTeamDomain(payload.getPayload().getTeam().getDomain());
           slack.setTeamId(payload.getPayload().getTeam().getId());
           //          slack.setTeamName(payload.getPayload().getTeam().get);
-          incidentChannel.setType(IncidentChannelType.SLACK);
+          incidentChannel.setType(IncidentChannelType.Slack);
           incidentChannel.setSlack(slack);
 
           // set channels
@@ -869,11 +860,11 @@ public class SlackServiceImpl implements SlackService {
                   channelId,
                   payload.getPayload().getTeam().getId(),
                   createChannelResponse.getChannel().getName(),
-                  ChannelSource.SLACK,
+                  ChannelSource.Slack,
                   String.format(
                       "https://%s.slack.com/archives/%s",
                       payload.getPayload().getTeam().getId(), channelId),
-                  OPERATIONAL);
+                      Operational);
           channels.add(channel1);
 
           // Create incident record in the database
@@ -884,7 +875,7 @@ public class SlackServiceImpl implements SlackService {
           createRequest.setIdentifier(incidentId);
           createRequest.setName(name);
           createRequest.setType(Type.valueOf(incidentType));
-          createRequest.setStatus(Status.STARTED);
+          createRequest.setStatus(Status.Started);
           createRequest.setRoles(roles);
           createRequest.setSeverity(Severity.valueOf(severity));
           createRequest.setSummary(summary);
@@ -896,7 +887,7 @@ public class SlackServiceImpl implements SlackService {
           userDetails.setUserName(payload.getPayload().getUser().getUsername());
           userDetails.setUserId(payload.getPayload().getUser().getId());
           //          userDetails.setEmail(payload.getPayload().getUser().get);
-          userDetails.setSource(ChannelSource.SLACK);
+          userDetails.setSource(ChannelSource.Slack);
           Incident incident = incidentService.createIncident(createRequest, userDetails);
 
           // Post messages in Slack
@@ -918,13 +909,13 @@ public class SlackServiceImpl implements SlackService {
   private UserDetails fetchUserDetails(
       String userId, String userName, String userEmail, ChannelSource source) {
     UserDetails userDetails = new UserDetails();
-    if (userId.isEmpty()) {
+    if (!userId.isEmpty()) {
       userDetails.setUserId(userId);
     }
-    if (userName.isEmpty()) {
+    if (!userName.isEmpty()) {
       userDetails.setUserName(userName);
     }
-    if (userEmail.isEmpty()) {
+    if (!userEmail.isEmpty()) {
       userDetails.setEmail(userEmail);
     }
     if (source != null) {
@@ -1271,7 +1262,7 @@ public class SlackServiceImpl implements SlackService {
                   ViewTitle.builder()
                       .type("plain_text")
                       .text(
-                          status == SlackIncidentType.OPEN ? "Open Incidents" : "Closed Incidents")
+                          status == SlackIncidentType.Open ? "Open Incidents" : "Closed Incidents")
                       .build())
               .blocks(List.of(/* Add your incident list blocks here */ ))
               .build();

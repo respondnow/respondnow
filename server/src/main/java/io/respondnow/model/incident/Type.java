@@ -4,10 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum Type {
-  AVAILABILITY("Availability"),
-  LATENCY("Latency"),
-  SECURITY("Security"),
-  OTHER("Other");
+  Availability("Availability"),
+  Latency("Latency"),
+  Security("Security"),
+  Other("Other");
 
   // Getter method to retrieve the value
   private final String value; // Declare the 'value' field
