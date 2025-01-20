@@ -1,0 +1,5 @@
+apiVersion: v2
+name: respondnow
+description: A Spring Boot application for RespondNow
+version: 0.1.0
+appVersion: "1.0.0"

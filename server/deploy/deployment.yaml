@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: respondnow
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: respondnow
+  template:
+    metadata:
+      labels:
+        app: respondnow
+    spec:
+      containers:
+        - name: respondnow
+          image: sagarnewdocker/respondnow:latest
+          ports:
+            - containerPort: 8080
