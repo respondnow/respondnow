@@ -20,10 +20,16 @@ import com.slack.api.methods.response.conversations.ConversationsInviteResponse;
 import com.slack.api.methods.response.users.UsersInfoResponse;
 import com.slack.api.methods.response.views.ViewsOpenResponse;
 import com.slack.api.model.Conversation;
-import com.slack.api.model.block.*;
+
+import com.slack.api.model.block.Blocks;
+import com.slack.api.model.block.DividerBlock;
+import com.slack.api.model.block.InputBlock;
+import com.slack.api.model.block.LayoutBlock;
+import com.slack.api.model.block.SectionBlock;
 import com.slack.api.model.block.composition.MarkdownTextObject;
 import com.slack.api.model.block.composition.OptionObject;
 import com.slack.api.model.block.composition.PlainTextObject;
+import com.slack.api.model.block.composition.TextObject;
 import com.slack.api.model.block.element.BlockElements;
 import com.slack.api.model.block.element.ButtonElement;
 import com.slack.api.model.event.AppHomeOpenedEvent;
@@ -48,6 +54,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -869,6 +877,7 @@ public class SlackServiceImpl implements SlackService {
           channels.add(channel1);
 
           // Create incident record in the database
+//<<<<<<< Updated upstream
           CreateRequest createRequest = new CreateRequest();
           createRequest.setIdentifier(incidentId);
           createRequest.setName(name);
@@ -879,7 +888,13 @@ public class SlackServiceImpl implements SlackService {
           createRequest.setSummary(summary);
           createRequest.setIncidentChannel(incidentChannel);
           createRequest.setChannels(channels);
-          Incident incident = incidentService.createIncident(createRequest, finalUserDetails);
+
+          userDetails.setName(payload.getPayload().getUser().getName());
+          userDetails.setUserName(payload.getPayload().getUser().getUsername());
+          userDetails.setUserId(payload.getPayload().getUser().getId());
+          //          userDetails.setEmail(payload.getPayload().getUser().get);
+          userDetails.setSource(ChannelSource.Slack);
+          Incident incident = incidentService.createIncident(createRequest, userDetails);
 
           // Post messages in Slack
           sendCreateIncidentResponseMsg(
@@ -1545,31 +1560,107 @@ public class SlackServiceImpl implements SlackService {
     return response;
   }
 
-  public void listIncidents(GlobalShortcutContext ctx, SlackIncidentType status) throws Exception {
+  public void listIncidents(GlobalShortcutContext ctx, SlackIncidentType slackIncidentType) throws Exception {
     try {
-      // Build and send the list of incidents as a modal or message
-      View modalView =
-          View.builder()
+      // Fetch incidents from your service based on slackIncidentType
+      Criteria criteria = Criteria.where("status").is("Started");
+      Query query = new Query(criteria);
+      List<Incident> listIncidents = incidentService.listIncidents(query);
+
+      // Build blocks to display in the modal
+      List<LayoutBlock> blocks = new ArrayList<>();
+
+      if (listIncidents.isEmpty()) {
+        // No incidents
+        String text = ":information_source: No incidents found.";
+        blocks.add(createSectionBlock(text));
+      } else {
+        // Incident found, adding details
+        for (Incident incident : listIncidents) {
+          String commander = getCommander(incident);
+          String text = String.format(
+                  ":writing_hand: *Name:* %s\n:vertical_traffic_light: *Severity:* %s\n:firefighter: *Commander:* %s\n:eyes: *Current Status:* %s\n\n",
+                  incident.getName(), incident.getSeverity(), commander, incident.getStatus()
+          );
+
+          SectionBlock sectionBlock = createSectionBlockWithButton(text, incident.getIdentifier());
+          blocks.add(sectionBlock);
+          blocks.add(new DividerBlock());
+        }
+      }
+
+      // Build the modal view
+      View modalView = View.builder()
               .type("modal")
               .callbackId("incident_list_modal")
-              .title(
-                  ViewTitle.builder()
+              .title(ViewTitle.builder()
                       .type("plain_text")
-                      .text(
-                          status == SlackIncidentType.Open ? "Open Incidents" : "Closed Incidents")
+                      .text("📋 Incident List")
                       .build())
-              .blocks(List.of(/* Add your incident list blocks here */ ))
+              .blocks(blocks)
               .build();
 
       // Open the modal
-      ViewsOpenResponse response =
-          ctx.client().viewsOpen(r -> r.triggerId(ctx.getTriggerId()).view(modalView));
+      ViewsOpenResponse response = ctx.client().viewsOpen(r -> r.triggerId(ctx.getTriggerId()).view(modalView));
 
-      logger.info("ListIncidents view opened successfully: {}", response.isOk());
+      if (response.isOk()) {
+        logger.info("ListIncidents view opened successfully.");
+      } else {
+        logger.error("Failed to open the list of incidents: {}", response.getError());
+      }
+
       ctx.ack();
     } catch (Exception e) {
       logger.error("Failed to open list incidents view modal: {}", e.getMessage(), e);
-      ctx.ackWithJson(errorResponse());
+//      ctx.ackWithJson(errorResponse("some error occurred"));
     }
+  }
+
+  private List<Incident> getIncidentsForSlackView(SlackIncidentType slackIncidentType) {
+    // This method should fetch the incidents based on the slackIncidentType
+    // For now, returning an empty list or mocked data as an example
+    return new ArrayList<>();
+  }
+
+  private String getCommander(Incident incident) {
+    // Extract the incident commander from the incident roles
+    for (Role role : incident.getRoles()) {
+      if (role.getRoleType().equals(RoleType.Incident_Commander)) {
+        return "<@" + role.getUserDetails().getEmail() + ">";
+      }
+    }
+    return "N/A";
+  }
+
+  private SectionBlock createSectionBlock(String text) {
+    MarkdownTextObject markdownText = MarkdownTextObject.builder()
+            .text(text)
+            .build();
+    return SectionBlock.builder()
+            .text(markdownText)
+            .build();
+  }
+
+  private SectionBlock createSectionBlockWithButton(String text, String incidentId) {
+    MarkdownTextObject markdownText = MarkdownTextObject.builder()
+            .text(text)
+            .build();
+
+    PlainTextObject buttonText = PlainTextObject.builder()
+            .text("🔍 View Details")
+            .emoji(true)
+            .build();
+
+
+    ButtonElement buttonElement = ButtonElement.builder()
+            .actionId("view_incident_" + incidentId)
+            .text(buttonText)
+            .value(incidentId)
+            .build();
+
+    return SectionBlock.builder()
+            .text(markdownText)
+            .accessory(buttonElement)
+            .build();
   }
 }

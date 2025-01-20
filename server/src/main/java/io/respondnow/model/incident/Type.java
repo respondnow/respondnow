@@ -9,11 +9,9 @@ public enum Type {
   Security("Security"),
   Other("Other");
 
-  // Getter method to retrieve the value
-  private final String value; // Declare the 'value' field
+  private final String name;
 
-  // Constructor to set the 'value' field
   Type(String value) {
-    this.value = value;
+    this.name = value;
   }
 }

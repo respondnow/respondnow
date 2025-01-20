@@ -1,5 +1,6 @@
 package io.respondnow.model.incident;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.respondnow.model.user.UserDetails;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 @Document(collection = "incidents")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Incident {
 
   @Id private String id;
@@ -27,7 +29,7 @@ public class Incident {
   private String identifier;
   private String description;
   private List<String> tags;
-  @NotNull private Type type;
+  private Type type;
 
   @NotNull private Severity severity;
 
@@ -46,9 +48,9 @@ public class Incident {
   private List<Timeline> timelines;
   private List<Stage> stages;
   private List<Channel> channels;
-  private IncidentChannel incidentChannel;
-  private List<Conference> conferenceDetails;
-  private List<Attachment> attachments;
+//  private IncidentChannel incidentChannel;
+//  private List<Conference> conferenceDetails;
+//  private List<Attachment> attachments;
   private Long createdAt;
   private Long updatedAt;
   private UserDetails createdBy;

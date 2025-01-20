@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://127.0.0.1:27018,127.0.0.1:27019,127.0.0.1:27020/respondnow
+      uri: mongodb://127.0.0.1:27017/respondnow
       database: respondnow
       core:
         MongoTemplate: DEBUG
