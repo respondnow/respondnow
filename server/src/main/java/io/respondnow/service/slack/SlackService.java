@@ -5,9 +5,12 @@ import com.slack.api.bolt.App;
 import com.slack.api.bolt.context.builtin.GlobalShortcutContext;
 import com.slack.api.bolt.request.builtin.GlobalShortcutRequest;
 import com.slack.api.bolt.request.builtin.ViewSubmissionRequest;
+import com.slack.api.methods.SlackApiException;
 import com.slack.api.model.Conversation;
 import com.slack.api.model.event.AppHomeOpenedEvent;
 import io.respondnow.model.incident.SlackIncidentType;
+
+import java.io.IOException;
 import java.util.List;
 
 public interface SlackService {
@@ -45,7 +48,7 @@ public interface SlackService {
 
   void createIncident(ViewSubmissionRequest viewSubmission);
 
-  void handleIncidentSummaryViewSubmission(ViewSubmissionRequest viewSubmission);
+  void handleIncidentSummaryViewSubmission(ViewSubmissionRequest viewSubmission) throws SlackApiException, IOException;
 
   void handleIncidentCommentViewSubmission(ViewSubmissionRequest viewSubmission);
 

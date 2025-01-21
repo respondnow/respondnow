@@ -7,6 +7,7 @@ import io.respondnow.model.user.UserDetails;
 import io.respondnow.repository.IncidentRepository;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
@@ -131,21 +132,22 @@ public class IncidentServiceImpl implements IncidentService {
   public Incident updateSummary(String incidentID, String newSummary, UserDetails currentUser)
       throws Exception {
     // Step 1: Retrieve the existing incident by its ID
-    Incident existingIncident = getIncidentById(incidentID);
-    if (existingIncident == null) {
+    Optional<Incident> existingIncident = incidentRepository.findByIdentifier(incidentID);
+    if (existingIncident.isEmpty()) {
       throw new Exception("Incident not found with ID: " + incidentID);
     }
 
+    Incident incident = existingIncident.get();
     // Step 2: Get the old summary and prepare the new timeline entry
-    String oldSummary = existingIncident.getSummary();
+    String oldSummary = incident.getSummary();
 
     // Get the current timestamp (in Unix time)
     long ts = Instant.now().getEpochSecond();
 
     // Update the audit details with the current user and timestamp
-    existingIncident.setUpdatedBy(currentUser);
-    existingIncident.setUpdatedAt(ts);
-    existingIncident.setUpdatedAt(ts);
+    incident.setUpdatedBy(currentUser);
+    incident.setUpdatedAt(ts);
+    incident.setUpdatedAt(ts);
 
     // Step 3: Create a new timeline entry for the change
     Timeline timeline = new Timeline();
@@ -158,19 +160,19 @@ public class IncidentServiceImpl implements IncidentService {
     timeline.setCurrentState(newSummary);
 
     // Add the timeline entry to the incident's timeline
-    existingIncident.getTimelines().add(timeline);
+    incident.getTimelines().add(timeline);
 
     // Step 4: Update the incident's summary and description
-    existingIncident.setSummary(newSummary);
-    existingIncident.setDescription(newSummary);
+    incident.setSummary(newSummary);
+    incident.setDescription(newSummary);
 
     // Step 5: Update the incident in the database
-    Incident updatedIncident = updateIncidentById(existingIncident.getId(), existingIncident);
-    if (updatedIncident == null) {
+    Incident updated = updateIncidentById(incident.getId(), incident);
+    if (updated == null) {
       throw new Exception("Failed to update incident summary.");
     }
 
-    return updatedIncident;
+    return updated;
   }
 
   public Incident getIncidentById(String id) {
@@ -213,9 +215,11 @@ public class IncidentServiceImpl implements IncidentService {
             .set("channels", incident.getChannels())
             .set("conferenceDetails", incident.getConferenceDetails())
             .set("attachments", incident.getAttachments())
-            .set("updatedAt", now);
+            .set("updatedAt", now)
+            .set("updatedBy", incident.getUpdatedBy());
 
     mongoTemplate.updateFirst(query, update, Incident.class);
+
     return getIncidentById(id);
   }
 

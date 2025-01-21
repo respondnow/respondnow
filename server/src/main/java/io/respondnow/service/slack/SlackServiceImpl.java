@@ -34,10 +34,7 @@ import com.slack.api.model.block.element.ButtonElement;
 import com.slack.api.model.event.AppHomeOpenedEvent;
 import com.slack.api.model.event.AppMentionEvent;
 import com.slack.api.model.event.MemberJoinedChannelEvent;
-import com.slack.api.model.view.View;
-import com.slack.api.model.view.ViewState;
-import com.slack.api.model.view.ViewTitle;
-import com.slack.api.model.view.Views;
+import com.slack.api.model.view.*;
 import com.slack.api.socket_mode.SocketModeClient;
 import io.respondnow.dto.incident.CreateRequest;
 import io.respondnow.model.incident.*;
@@ -185,7 +182,7 @@ public class SlackServiceImpl implements SlackService {
 
   public void handleIncidentSummaryViewSubmission() {
     slackApp.viewSubmission(
-        "update_incident_summary",
+        "incident_summary_modal",
         (payload, ctx) -> {
           logger.debug("Update summary received: {}", payload);
           handleIncidentSummaryViewSubmission(payload);
@@ -280,29 +277,54 @@ public class SlackServiceImpl implements SlackService {
         (req, ctx) -> {
           System.out.println("Displaying modal for incident summary");
 
-          //          View modalRequest =
-          //              View.builder()
-          //                  .type("modal")
-          //                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
-          //                  .callbackId("incident_summary_modal")
-          //                  .title(PlainTextObject.builder().text("Update Incident
-          // Summary").build())
-          //                  .blocks(
-          //                      BlockSet.builder()
-          //                          .block(
-          //                              SectionBlock.builder()
-          //                                  .text(PlainTextObject.builder().text("Summary
-          // Block").build())
-          //                                  .build())
-          //                          .build())
-          //                  .submit(PlainTextObject.builder().text("Submit").build())
-          //                  .build();
-          //
-          //          ctx.client().viewsOpen(req.getTriggerId(), modalRequest);
+          // Build the modal
+          View modalRequest =
+              View.builder()
+                  .type("modal")
+                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
+                  .callbackId("incident_summary_modal")
+                  .title(
+                      ViewTitle.builder()
+                          .type("plain_text")
+                          .text("Update Incident Summary")
+                          .build())
+                  //                  .blocks(
+                  //                      Collections.singletonList(
+                  //                          SectionBlock.builder()
+                  //                              .text(PlainTextObject.builder().text("Summary
+                  // Block").build())
+                  //                              .build()))
+                  .blocks(
+                      Collections.singletonList(
+                          getSummaryBlock(
+                              "create_incident_modal_summary",
+                              "create_incident_modal_set_summary")))
+                  .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
+                  .build();
+
+          // Open the modal
+          ctx.client()
+              .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
 
           return ctx.ack();
         });
   }
+
+  //  // Method to create a summary block similar to the Go code
+  //  private static InputBlock getSummaryBlock() {
+  //    return InputBlock.builder()
+  //        .blockId("create_incident_modal_summary")
+  //        .label(PlainTextObject.builder().text(":memo: Summary").build())
+  //        .element(
+  //            PlainTextInputElement.builder()
+  //                .actionId("create_incident_modal_set_summary")
+  //                .multiline(true)
+  //                .placeholder(
+  //                    PlainTextObject.builder().text("A brief description of the
+  // problem.").build())
+  //                .build())
+  //        .build();
+  //  }
 
   private void registerUpdateIncidentCommentButton() {
     slackApp.blockAction(
@@ -1398,7 +1420,8 @@ public class SlackServiceImpl implements SlackService {
         .build();
   }
 
-  public void handleIncidentSummaryViewSubmission(ViewSubmissionRequest payload) {
+  public void handleIncidentSummaryViewSubmission(ViewSubmissionRequest payload)
+      throws SlackApiException, IOException {
     String incidentIdentifier = payload.getPayload().getView().getPrivateMetadata();
     String updatedSummary =
         payload
@@ -1415,12 +1438,7 @@ public class SlackServiceImpl implements SlackService {
     updateIncidentSummary(
         incidentIdentifier,
         updatedSummary,
-        new UserDetails(
-            payload.getPayload().getUser().getId(),
-            payload.getPayload().getUser().getUsername(),
-            "",
-            payload.getPayload().getUser().getName(),
-            ChannelSource.Slack));
+        fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
   }
 
   private void updateIncidentSummary(
@@ -1450,6 +1468,13 @@ public class SlackServiceImpl implements SlackService {
       // Fetch user info from Slack using userId
       UsersInfoResponse slackUserInfo =
           getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
+      if (slackUserInfo == null || slackUserInfo.getUser() == null) {
+        logger.error(
+            "Failed to fetch Slack user info for userId: {}",
+            updatedIncident.getUpdatedBy().getUserId());
+        throw new IllegalStateException("Unable to fetch Slack user info");
+      }
+
       // Get the Slack handle (username)
       String slackHandle = slackUserInfo.getUser().getName();
 
@@ -1460,10 +1485,27 @@ public class SlackServiceImpl implements SlackService {
               slackHandle, newSummary);
 
       // Send the update summary response message back to the Slack channel
-      slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
+      ChatPostMessageResponse response =
+          slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
+
+      if (!response.isOk()) {
+        String errorMessage = "Failed to send message: " + response.getError();
+        logger.error(errorMessage);
+        throw new RuntimeException(errorMessage);
+      }
+
       logger.info("Summary update confirmation successfully posted to channel: {}", channelID);
-    } catch (IOException | SlackApiException e) {
-      logger.error("Failed to send summary update response message: {}", e.getMessage(), e);
+    } catch (IOException e) {
+      logger.error("IOException occurred while posting message to Slack: {}", e.getMessage(), e);
+      // Optionally, add a retry mechanism or send a failure notification to users
+    } catch (SlackApiException e) {
+      logger.error("Slack API error occurred while posting message: {}", e.getMessage(), e);
+      // Handle specific Slack API exceptions if needed (e.g., retry on rate limit errors)
+    } catch (IllegalStateException e) {
+      logger.error("Error in fetching Slack user info: {}", e.getMessage(), e);
+    } catch (Exception e) {
+      logger.error("Unexpected error occurred: {}", e.getMessage(), e);
+      // Optionally, send a failure notification or alert to a monitoring system
     }
   }
 
@@ -1547,7 +1589,8 @@ public class SlackServiceImpl implements SlackService {
               .build());
       blocks.add(getNameBlock());
       blocks.add(getTypeBlock());
-      blocks.add(getSummaryBlock());
+      blocks.add(
+          getSummaryBlock("create_incident_modal_summary", "create_incident_modal_set_summary"));
       blocks.add(getSeverityBlock());
       blocks.add(getRoleBlock());
       blocks.add(getChannelSelectBlock());
@@ -1603,15 +1646,15 @@ public class SlackServiceImpl implements SlackService {
                                 .options(options))));
   }
 
-  private InputBlock getSummaryBlock() {
+  private InputBlock getSummaryBlock(String blockId, String actionId) {
     return Blocks.input(
         i ->
-            i.blockId("create_incident_modal_summary")
+            i.blockId(blockId)
                 .label(new PlainTextObject(":memo: Summary", true))
                 .element(
                     BlockElements.plainTextInput(
                         pt ->
-                            pt.actionId("create_incident_modal_set_summary")
+                            pt.actionId(actionId)
                                 .multiline(true)
                                 .placeholder(
                                     new PlainTextObject(
