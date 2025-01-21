@@ -3,8 +3,7 @@
 // Please do not modify this code directly.
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
-import type { IncidentListResponseDto } from '../schemas/IncidentListResponseDto';
-import type { UtilsDefaultResponseDto } from '../schemas/UtilsDefaultResponseDto';
+import type { ListResponseDto } from '../schemas/ListResponseDto';
 import { fetcher, FetcherOptions } from '@services/fetcher';
 
 export interface ListIncidentsQueryQueryParams {
@@ -12,20 +11,28 @@ export interface ListIncidentsQueryQueryParams {
   orgIdentifier?: string;
   projectIdentifier?: string;
   type?: 'Availability' | 'Latency' | 'Other' | 'Security';
-  severity?: 'SEV0 - Critical, High Impact' | 'SEV1 - Major, Significant Impact' | 'SEV2 - Minor, Low Impact';
+  severity?: 'SEV0' | 'SEV1' | 'SEV2';
   status?: 'Acknowledged' | 'Identified' | 'Investigating' | 'Mitigated' | 'Resolved' | 'Started';
   active?: boolean;
-  incidentChannelType?: 'slack';
+  incidentChannelType?: string;
   search?: string;
+  /**
+   * @format int32
+   * @default 0
+   */
   page?: number;
+  /**
+   * @format int32
+   * @default 10
+   */
   limit?: number;
-  correlationId?: string;
   all?: boolean;
+  correlationId?: string;
 }
 
-export type ListIncidentsOkResponse = IncidentListResponseDto;
+export type ListIncidentsOkResponse = ListResponseDto;
 
-export type ListIncidentsErrorResponse = UtilsDefaultResponseDto;
+export type ListIncidentsErrorResponse = unknown;
 
 export interface ListIncidentsProps extends Omit<FetcherOptions<ListIncidentsQueryQueryParams, unknown>, 'url'> {
   queryParams: ListIncidentsQueryQueryParams;
@@ -40,14 +47,14 @@ export function listIncidents(props: ListIncidentsProps): Promise<ListIncidentsO
 }
 
 /**
- * List incidents
+ * List all incidents with optional filters
  */
 export function useListIncidentsQuery(
   props: ListIncidentsProps,
   options?: Omit<UseQueryOptions<ListIncidentsOkResponse, ListIncidentsErrorResponse>, 'queryKey' | 'queryFn'>
 ) {
   return useQuery<ListIncidentsOkResponse, ListIncidentsErrorResponse>(
-    ['ListIncidents', props.queryParams],
+    ['listIncidents', props.queryParams],
     ({ signal }) => listIncidents({ ...props, signal }),
     options
   );

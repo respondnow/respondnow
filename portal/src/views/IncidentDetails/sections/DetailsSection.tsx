@@ -6,13 +6,13 @@ import { Fallback } from '@errors';
 import { useStrings } from '@strings';
 import SeverityBadge from '@components/SeverityBadge';
 import StatusBadge from '@components/StatusBadge';
-import { IncidentIncident } from '@services/server';
+import { Incident } from '@services/server';
 import Duration from '@components/Duration';
 import SlackIcon from '@images/slack.svg';
 import css from '../IncidentDetails.module.scss';
 
 interface DetailsSectionProps {
-  incidentData: IncidentIncident | undefined;
+  incidentData: Incident | undefined;
 }
 
 const DetailsSection: React.FC<DetailsSectionProps> = props => {

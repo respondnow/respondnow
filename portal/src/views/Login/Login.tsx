@@ -8,12 +8,12 @@ import { withErrorBoundary } from 'react-error-boundary';
 import mainLogo from '@images/respondNow.svg';
 import { useStrings } from '@strings';
 import PasswordInput from '@components/PasswordInput';
-import { UserLoginResponseDto, UtilsDefaultResponseDto, LoginMutationProps } from '@services/server';
+import { LoginMutationProps, LoginResponseDto } from '@services/server';
 import { Fallback } from '@errors';
 import css from './Login.module.scss';
 
 interface LoginViewProps {
-  mutation: UseMutateFunction<UserLoginResponseDto, UtilsDefaultResponseDto, LoginMutationProps<never>, unknown>;
+  mutation: UseMutateFunction<LoginResponseDto, LoginResponseDto, LoginMutationProps<never>, unknown>;
   loading: boolean;
 }
 

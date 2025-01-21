@@ -4,7 +4,7 @@ import { TableV2 } from '@harnessio/uicore';
 import { Column } from 'react-table';
 import cx from 'classnames';
 import { IncidentsTableProps } from '@interfaces';
-import { IncidentIncident } from '@services/server';
+import { Incident } from '@services/server';
 import { useStrings } from '@strings';
 import * as CellRenderer from './CellRenderer';
 import css from '../CommonTableStyles.module.scss';
@@ -13,7 +13,7 @@ const IncidentListTable: React.FC<IncidentsTableProps> = props => {
   const { content } = props;
   const { getString } = useStrings();
 
-  const columns: Column<IncidentIncident>[] = React.useMemo(() => {
+  const columns: Column<Incident>[] = React.useMemo(() => {
     return [
       {
         Header: getString('incident'),
@@ -49,7 +49,7 @@ const IncidentListTable: React.FC<IncidentsTableProps> = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <TableV2<IncidentIncident> columns={columns} data={content} className={cx(css.paginationFix)} />;
+  return <TableV2<Incident> columns={columns} data={content} className={cx(css.paginationFix)} />;
 };
 
 const MemoisedIncidentListTable = React.memo(IncidentListTable, (prev, current) => {

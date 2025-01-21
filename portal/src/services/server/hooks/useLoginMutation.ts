@@ -3,28 +3,22 @@
 // Please do not modify this code directly.
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
-import type { UserLoginResponseDto } from '../schemas/UserLoginResponseDto';
-import type { UtilsDefaultResponseDto } from '../schemas/UtilsDefaultResponseDto';
-import type { UserLoginUserInput } from '../schemas/UserLoginUserInput';
+import type { LoginResponseDto } from '../schemas/LoginResponseDto';
+import type { LoginUserInput } from '../schemas/LoginUserInput';
 import { fetcher, FetcherOptions } from '@services/fetcher';
 
-export interface LoginMutationQueryParams {
-  correlationId?: string;
-}
+export type LoginRequestBody = LoginUserInput;
 
-export type LoginRequestBody = UserLoginUserInput;
+export type LoginOkResponse = LoginResponseDto;
 
-export type LoginOkResponse = UserLoginResponseDto;
+export type LoginErrorResponse = LoginResponseDto;
 
-export type LoginErrorResponse = UtilsDefaultResponseDto;
-
-export interface LoginProps extends Omit<FetcherOptions<LoginMutationQueryParams, LoginRequestBody>, 'url'> {
-  queryParams: LoginMutationQueryParams;
+export interface LoginProps extends Omit<FetcherOptions<unknown, LoginRequestBody>, 'url'> {
   body: LoginRequestBody;
 }
 
 export function login(props: LoginProps): Promise<LoginOkResponse> {
-  return fetcher<LoginOkResponse, LoginMutationQueryParams, LoginRequestBody>({
+  return fetcher<LoginOkResponse, unknown, LoginRequestBody>({
     url: `/api/auth/login`,
     method: 'POST',
     ...props
@@ -34,7 +28,7 @@ export function login(props: LoginProps): Promise<LoginOkResponse> {
 export type LoginMutationProps<T extends keyof LoginProps> = Omit<LoginProps, T> & Partial<Pick<LoginProps, T>>;
 
 /**
- * Login to RespondNow
+ * User login
  */
 export function useLoginMutation<T extends keyof LoginProps>(
   props: Pick<Partial<LoginProps>, T>,

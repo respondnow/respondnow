@@ -1,9 +1,9 @@
 import { PaginationProps } from '@harnessio/uicore';
 import React from 'react';
-import { IncidentIncident } from '@services/server';
+import { Incident } from '@services/server';
 
 export interface IncidentsTableProps {
-  content: IncidentIncident[];
+  content: Incident[];
   pagination?: PaginationProps;
   isLoading?: boolean;
 }

@@ -3,29 +3,22 @@
 // Please do not modify this code directly.
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
-import type { UserChangePasswordResponseDto } from '../schemas/UserChangePasswordResponseDto';
-import type { UtilsDefaultResponseDto } from '../schemas/UtilsDefaultResponseDto';
-import type { UserChangeUserPasswordInput } from '../schemas/UserChangeUserPasswordInput';
+import type { ChangePasswordResponseDto } from '../schemas/ChangePasswordResponseDto';
+import type { ChangePasswordInput } from '../schemas/ChangePasswordInput';
 import { fetcher, FetcherOptions } from '@services/fetcher';
 
-export interface ChangePasswordMutationQueryParams {
-  correlationId?: string;
-}
+export type ChangePasswordRequestBody = ChangePasswordInput;
 
-export type ChangePasswordRequestBody = UserChangeUserPasswordInput;
+export type ChangePasswordOkResponse = ChangePasswordResponseDto;
 
-export type ChangePasswordOkResponse = UserChangePasswordResponseDto;
+export type ChangePasswordErrorResponse = ChangePasswordResponseDto;
 
-export type ChangePasswordErrorResponse = UtilsDefaultResponseDto;
-
-export interface ChangePasswordProps
-  extends Omit<FetcherOptions<ChangePasswordMutationQueryParams, ChangePasswordRequestBody>, 'url'> {
-  queryParams: ChangePasswordMutationQueryParams;
+export interface ChangePasswordProps extends Omit<FetcherOptions<unknown, ChangePasswordRequestBody>, 'url'> {
   body: ChangePasswordRequestBody;
 }
 
 export function changePassword(props: ChangePasswordProps): Promise<ChangePasswordOkResponse> {
-  return fetcher<ChangePasswordOkResponse, ChangePasswordMutationQueryParams, ChangePasswordRequestBody>({
+  return fetcher<ChangePasswordOkResponse, unknown, ChangePasswordRequestBody>({
     url: `/api/auth/changePassword`,
     method: 'POST',
     ...props
@@ -36,7 +29,7 @@ export type ChangePasswordMutationProps<T extends keyof ChangePasswordProps> = O
   Partial<Pick<ChangePasswordProps, T>>;
 
 /**
- * ChangePassword of RespondNow
+ * Change user password
  */
 export function useChangePasswordMutation<T extends keyof ChangePasswordProps>(
   props: Pick<Partial<ChangePasswordProps>, T>,

@@ -5,12 +5,12 @@ import { Color, FontVariation } from '@harnessio/design-system';
 import cx from 'classnames';
 import { Fallback } from '@errors';
 import { useStrings } from '@strings';
-import { IncidentIncident } from '@services/server';
+import { Incident } from '@services/server';
 import IncidentTimeline from '@components/IncidentTimeline';
 import css from '../IncidentDetails.module.scss';
 
 interface TimelineSectionProps {
-  incidentData: IncidentIncident | undefined;
+  incidentData: Incident | undefined;
 }
 
 const TimelineSection: React.FC<TimelineSectionProps> = props => {

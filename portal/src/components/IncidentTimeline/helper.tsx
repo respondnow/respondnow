@@ -3,17 +3,17 @@ import { Icon } from '@harnessio/icons';
 import { Color, FontVariation } from '@harnessio/design-system';
 import { Avatar, Button, Layout, Text } from '@harnessio/uicore';
 import { TimelineUtilReturn } from '@interfaces';
-import { IncidentIncident, IncidentSeverity, IncidentStatus, IncidentTimeline } from '@services/server';
 import { useStrings } from '@strings';
 import SlackIcon from '@images/slack.svg';
 import { generateSlackChannelLink } from '@utils';
 import SeverityBadge from '@components/SeverityBadge';
 import StatusBadge from '@components/StatusBadge';
+import { Incident, Timeline } from '@services/server';
 import css from './IncidentTimeline.module.scss';
 
 interface IncidentTimelineHelperProps {
-  incident: IncidentIncident | undefined;
-  timeline: IncidentTimeline;
+  incident: Incident | undefined;
+  timeline: Timeline;
 }
 
 export function getTimelinePropsBasedOnIncidentData(
@@ -36,7 +36,7 @@ export function getTimelinePropsBasedOnIncidentData(
   );
 
   switch (timeline.type) {
-    case 'incidentCreated':
+    case 'Incident_Created':
       return {
         icon: SlackIconRenderer,
         headerContent: (
@@ -82,7 +82,7 @@ export function getTimelinePropsBasedOnIncidentData(
           </Layout.Vertical>
         )
       };
-    case 'slackChannelCreated':
+    case 'Slack_Channel_Created':
       return {
         icon: SlackIconRenderer,
         headerContent: (
@@ -129,7 +129,7 @@ export function getTimelinePropsBasedOnIncidentData(
           </Layout.Vertical>
         )
       };
-    case 'comment':
+    case 'Comment':
       return {
         icon: SlackIconRenderer,
         headerContent: (
@@ -151,7 +151,7 @@ export function getTimelinePropsBasedOnIncidentData(
           </Text>
         )
       };
-    case 'severity':
+    case 'Severity':
       return {
         icon: SlackIconRenderer,
         headerContent: (
@@ -169,13 +169,13 @@ export function getTimelinePropsBasedOnIncidentData(
         ),
         bodyContent: (
           <Layout.Horizontal flex={{ align: 'center-center', justifyContent: 'flex-start' }} style={{ gap: '0.25rem' }}>
-            <SeverityBadge severity={timeline.previousState as IncidentSeverity} />
+            <SeverityBadge severity={timeline.previousState as Incident['severity']} />
             <Icon name="arrow-right" size={13} color={Color.GREY_500} />
-            <SeverityBadge severity={timeline.currentState as IncidentSeverity} />
+            <SeverityBadge severity={timeline.currentState as Incident['severity']} />
           </Layout.Horizontal>
         )
       };
-    case 'status':
+    case 'Status':
       return {
         icon: SlackIconRenderer,
         headerContent: (
@@ -193,13 +193,13 @@ export function getTimelinePropsBasedOnIncidentData(
         ),
         bodyContent: (
           <Layout.Horizontal flex={{ align: 'center-center', justifyContent: 'flex-start' }} style={{ gap: '0.25rem' }}>
-            <StatusBadge status={timeline.previousState as IncidentStatus} />
+            <StatusBadge status={timeline.previousState as Incident['status']} />
             <Icon name="arrow-right" size={13} color={Color.GREY_500} />
-            <StatusBadge status={timeline.currentState as IncidentStatus} />
+            <StatusBadge status={timeline.currentState as Incident['status']} />
           </Layout.Horizontal>
         )
       };
-    case 'summary':
+    case 'Summary':
       return {
         icon: SlackIconRenderer,
         headerContent: (
@@ -242,7 +242,7 @@ export function getTimelinePropsBasedOnIncidentData(
           </Layout.Vertical>
         )
       };
-    case 'roles':
+    case 'Roles':
       return {
         icon: SlackIconRenderer,
         headerContent: (

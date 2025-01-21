@@ -4,14 +4,14 @@ import { Button, ButtonVariation, Layout } from '@harnessio/uicore';
 import { Color } from '@harnessio/design-system';
 import { Fallback } from '@errors';
 import { DefaultLayout } from '@layouts';
-import { IncidentIncident } from '@services/server';
+import { Incident } from '@services/server';
 import { generateSlackChannelLink } from '@utils';
 import SlackIcon from '@images/slack-mono.svg';
 import DetailsSection from './sections/DetailsSection';
 import TimelineSection from './sections/Timeline';
 
 interface IncidentDetailsViewProps {
-  incidentData: IncidentIncident | undefined;
+  incidentData: Incident | undefined;
   incidentDataLoading: boolean;
 }
 

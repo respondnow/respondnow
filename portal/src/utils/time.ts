@@ -1,11 +1,11 @@
 import moment from 'moment';
-import { IncidentStatus } from '@services/server';
+import { Incident } from '@services/server';
 
 export function getDetailedTime(time: string | number, gethours?: boolean): string {
   return moment(time).format(gethours ? 'D MMM YYYY, HH:mm' : 'D MMM YYYY');
 }
 
-export function getDurationBasedOnStatus(startTime: number, endTime: number, status: IncidentStatus): string {
+export function getDurationBasedOnStatus(startTime: number, endTime: number, status: Incident['status']): string {
   const currentTime = new Date().getTime();
 
   switch (status) {
