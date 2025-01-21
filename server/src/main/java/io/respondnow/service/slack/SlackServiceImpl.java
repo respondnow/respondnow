@@ -29,7 +29,6 @@ import com.slack.api.model.block.SectionBlock;
 import com.slack.api.model.block.composition.MarkdownTextObject;
 import com.slack.api.model.block.composition.OptionObject;
 import com.slack.api.model.block.composition.PlainTextObject;
-import com.slack.api.model.block.composition.TextObject;
 import com.slack.api.model.block.element.BlockElements;
 import com.slack.api.model.block.element.ButtonElement;
 import com.slack.api.model.event.AppHomeOpenedEvent;
@@ -186,7 +185,7 @@ public class SlackServiceImpl implements SlackService {
 
   public void handleIncidentSummaryViewSubmission() {
     slackApp.viewSubmission(
-        "update_incident_summary_button",
+        "update_incident_summary",
         (payload, ctx) -> {
           logger.debug("Update summary received: {}", payload);
           handleIncidentSummaryViewSubmission(payload);
@@ -235,33 +234,191 @@ public class SlackServiceImpl implements SlackService {
   }
 
   /** Register all block action handlers for the Slack app. */
-  private void registerBlockActionHandlers() throws RuntimeException {
+  private void registerBlockActionHandlers() {
     try {
-      registerBlockActionChannelJoinButton();
+      registerCreateIncidentChannelJoinButton();
+      registerCreateIncidentModal();
+      registerUpdateIncidentSummaryButton();
+      registerUpdateIncidentCommentButton();
+      registerUpdateIncidentAssignRolesButton();
+      registerUpdateIncidentStatusButton();
+      registerUpdateIncidentSeverityButton();
     } catch (RuntimeException e) {
       throw new RuntimeException(e);
     }
   }
 
-  private void registerBlockActionChannelJoinButton() throws RuntimeException {
-    // Handle "create_incident_channel_join_channel_button" action
+  private void registerCreateIncidentChannelJoinButton() {
     slackApp.blockAction(
         "create_incident_channel_join_channel_button",
         (req, ctx) -> {
-          // Log that the block action is being handled
           System.out.println("Inside block action handler");
 
-          // Retrieve the value from the block action
-          String value = req.getPayload().getActions().get(0).getValue(); // The button's value
+          String value = req.getPayload().getActions().get(0).getValue();
           System.out.println("Button value: " + value);
 
-          // Check if the response URL is available
           if (req.getPayload().getResponseUrl() != null) {
-            // Respond back to the user
             ctx.respond(r -> r.text("You've sent \"" + value + "\" by clicking the button!"));
           }
 
-          // Acknowledge the action (important to avoid timeouts)
+          return ctx.ack();
+        });
+  }
+
+  private void registerCreateIncidentModal() {
+    slackApp.blockAction(
+        "create_incident_modal",
+        (req, ctx) -> {
+          // Logic for creating incident modal
+          return ctx.ack();
+        });
+  }
+
+  private void registerUpdateIncidentSummaryButton() {
+    slackApp.blockAction(
+        "update_incident_summary_button",
+        (req, ctx) -> {
+          System.out.println("Displaying modal for incident summary");
+
+          //          View modalRequest =
+          //              View.builder()
+          //                  .type("modal")
+          //                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
+          //                  .callbackId("incident_summary_modal")
+          //                  .title(PlainTextObject.builder().text("Update Incident
+          // Summary").build())
+          //                  .blocks(
+          //                      BlockSet.builder()
+          //                          .block(
+          //                              SectionBlock.builder()
+          //                                  .text(PlainTextObject.builder().text("Summary
+          // Block").build())
+          //                                  .build())
+          //                          .build())
+          //                  .submit(PlainTextObject.builder().text("Submit").build())
+          //                  .build();
+          //
+          //          ctx.client().viewsOpen(req.getTriggerId(), modalRequest);
+
+          return ctx.ack();
+        });
+  }
+
+  private void registerUpdateIncidentCommentButton() {
+    slackApp.blockAction(
+        "update_incident_comment_button",
+        (req, ctx) -> {
+          System.out.println("Displaying modal for incident comment");
+
+          //          View modalRequest =
+          //              View.builder()
+          //                  .type("modal")
+          //                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
+          //                  .callbackId("incident_comment_modal")
+          //                  .title(PlainTextObject.builder().text("Add Comment").build())
+          //                  .blocks(
+          //                      BlockSet.builder()
+          //                          .block(
+          //                              SectionBlock.builder()
+          //                                  .text(PlainTextObject.builder().text("Comment
+          // Block").build())
+          //                                  .build())
+          //                          .build())
+          //                  .submit(PlainTextObject.builder().text("Submit").build())
+          //                  .build();
+          //
+          //          ctx.client().viewsOpen(req.getTriggerId(), modalRequest);
+
+          return ctx.ack();
+        });
+  }
+
+  private void registerUpdateIncidentAssignRolesButton() {
+    slackApp.blockAction(
+        "update_incident_assign_roles_button",
+        (req, ctx) -> {
+          System.out.println("Displaying modal for assigning roles");
+
+          //          View modalRequest =
+          //              View.builder()
+          //                  .type("modal")
+          //                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
+          //                  .callbackId("incident_roles_modal")
+          //                  .title(PlainTextObject.builder().text("Assign Incident
+          // Roles").build())
+          //                  .blocks(
+          //                      BlockSet.builder()
+          //                          .block(
+          //                              SectionBlock.builder()
+          //                                  .text(PlainTextObject.builder().text("Roles
+          // Block").build())
+          //                                  .build())
+          //                          .build())
+          //                  .submit(PlainTextObject.builder().text("Submit").build())
+          //                  .build();
+          //
+          //          ctx.client().viewsOpen(req.getTriggerId(), modalRequest);
+
+          return ctx.ack();
+        });
+  }
+
+  private void registerUpdateIncidentStatusButton() {
+    slackApp.blockAction(
+        "update_incident_status_button",
+        (req, ctx) -> {
+          System.out.println("Displaying modal for incident status selection");
+          //
+          //          View modalRequest =
+          //              View.builder()
+          //                  .type("modal")
+          //                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
+          //                  .callbackId("incident_status_modal")
+          //                  .title(PlainTextObject.builder().text("Update Incident
+          // Status").build())
+          //                  .blocks(
+          //                      BlockSet.builder()
+          //                          .block(
+          //                              SectionBlock.builder()
+          //                                  .text(PlainTextObject.builder().text("Status
+          // Block").build())
+          //                                  .build())
+          //                          .build())
+          //                  .submit(PlainTextObject.builder().text("Submit").build())
+          //                  .build();
+          //
+          //          ctx.client().viewsOpen(req.getTriggerId(), modalRequest);
+
+          return ctx.ack();
+        });
+  }
+
+  private void registerUpdateIncidentSeverityButton() {
+    slackApp.blockAction(
+        "update_incident_severity_button",
+        (req, ctx) -> {
+          System.out.println("Displaying modal for incident severity selection");
+
+          //          View modalRequest =
+          //              View.builder()
+          //                  .type("modal")
+          //                  .callbackId("incident_severity_modal")
+          //                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
+          //                  .title(PlainTextObject.builder().text("Update Incident
+          // Severity").build())
+          //                  .blocks(
+          //                      BlockSet.builder()
+          //                          .block(
+          //                              SectionBlock.builder()
+          //                                  .text(PlainTextObject.builder().text("Severity
+          // Block").build())
+          //                                  .build())
+          //                          .build())
+          //                  .submit(PlainTextObject.builder().text("Submit").build())
+          //                  .build();
+          //
+          //          ctx.client().viewsOpen(req.getTriggerId(), modalRequest);
+
           return ctx.ack();
         });
   }
@@ -877,7 +1034,7 @@ public class SlackServiceImpl implements SlackService {
           channels.add(channel1);
 
           // Create incident record in the database
-//<<<<<<< Updated upstream
+          // <<<<<<< Updated upstream
           CreateRequest createRequest = new CreateRequest();
           createRequest.setIdentifier(incidentId);
           createRequest.setName(name);
@@ -889,22 +1046,22 @@ public class SlackServiceImpl implements SlackService {
           createRequest.setIncidentChannel(incidentChannel);
           createRequest.setChannels(channels);
           Incident incident = incidentService.createIncident(createRequest, finalUserDetails);
-//=======
-//          Incident newIncident = new Incident();
-//          newIncident.setAccountIdentifier(defaultAccountId);
-//          newIncident.setOrgIdentifier(defaultOrgId);
-//          newIncident.setProjectIdentifier(defaultProjectId);
-//          newIncident.setIdentifier(incidentId);
-//          newIncident.setName(name);
-//          newIncident.setType(Type.valueOf(incidentType));
-//          newIncident.setStatus(Status.STARTED);
-//          newIncident.setRoles(roles);
-//          newIncident.setSeverity(Severity.valueOf(severity));
-//          newIncident.setSummary(summary);
-//          newIncident.setIncidentChannel(incidentChannel);
-//          newIncident.setChannels(channels);
-//          //          newIncident.
-//>>>>>>> Stashed changes
+          // =======
+          //          Incident newIncident = new Incident();
+          //          newIncident.setAccountIdentifier(defaultAccountId);
+          //          newIncident.setOrgIdentifier(defaultOrgId);
+          //          newIncident.setProjectIdentifier(defaultProjectId);
+          //          newIncident.setIdentifier(incidentId);
+          //          newIncident.setName(name);
+          //          newIncident.setType(Type.valueOf(incidentType));
+          //          newIncident.setStatus(Status.STARTED);
+          //          newIncident.setRoles(roles);
+          //          newIncident.setSeverity(Severity.valueOf(severity));
+          //          newIncident.setSummary(summary);
+          //          newIncident.setIncidentChannel(incidentChannel);
+          //          newIncident.setChannels(channels);
+          //          //          newIncident.
+          // >>>>>>> Stashed changes
 
           userDetails.setName(payload.getPayload().getUser().getName());
           userDetails.setUserName(payload.getPayload().getUser().getUsername());
@@ -1576,7 +1733,8 @@ public class SlackServiceImpl implements SlackService {
     return response;
   }
 
-  public void listIncidents(GlobalShortcutContext ctx, SlackIncidentType slackIncidentType) throws Exception {
+  public void listIncidents(GlobalShortcutContext ctx, SlackIncidentType slackIncidentType)
+      throws Exception {
     try {
       // Fetch incidents from your service based on slackIncidentType
       Criteria criteria = Criteria.where("status").is("Started");
@@ -1594,10 +1752,10 @@ public class SlackServiceImpl implements SlackService {
         // Incident found, adding details
         for (Incident incident : listIncidents) {
           String commander = getCommander(incident);
-          String text = String.format(
+          String text =
+              String.format(
                   ":writing_hand: *Name:* %s\n:vertical_traffic_light: *Severity:* %s\n:firefighter: *Commander:* %s\n:eyes: *Current Status:* %s\n\n",
-                  incident.getName(), incident.getSeverity(), commander, incident.getStatus()
-          );
+                  incident.getName(), incident.getSeverity(), commander, incident.getStatus());
 
           SectionBlock sectionBlock = createSectionBlockWithButton(text, incident.getIdentifier());
           blocks.add(sectionBlock);
@@ -1606,18 +1764,17 @@ public class SlackServiceImpl implements SlackService {
       }
 
       // Build the modal view
-      View modalView = View.builder()
+      View modalView =
+          View.builder()
               .type("modal")
               .callbackId("incident_list_modal")
-              .title(ViewTitle.builder()
-                      .type("plain_text")
-                      .text("📋 Incident List")
-                      .build())
+              .title(ViewTitle.builder().type("plain_text").text("📋 Incident List").build())
               .blocks(blocks)
               .build();
 
       // Open the modal
-      ViewsOpenResponse response = ctx.client().viewsOpen(r -> r.triggerId(ctx.getTriggerId()).view(modalView));
+      ViewsOpenResponse response =
+          ctx.client().viewsOpen(r -> r.triggerId(ctx.getTriggerId()).view(modalView));
 
       if (response.isOk()) {
         logger.info("ListIncidents view opened successfully.");
@@ -1628,7 +1785,7 @@ public class SlackServiceImpl implements SlackService {
       ctx.ack();
     } catch (Exception e) {
       logger.error("Failed to open list incidents view modal: {}", e.getMessage(), e);
-//      ctx.ackWithJson(errorResponse("some error occurred"));
+      //      ctx.ackWithJson(errorResponse("some error occurred"));
     }
   }
 
@@ -1649,34 +1806,23 @@ public class SlackServiceImpl implements SlackService {
   }
 
   private SectionBlock createSectionBlock(String text) {
-    MarkdownTextObject markdownText = MarkdownTextObject.builder()
-            .text(text)
-            .build();
-    return SectionBlock.builder()
-            .text(markdownText)
-            .build();
+    MarkdownTextObject markdownText = MarkdownTextObject.builder().text(text).build();
+    return SectionBlock.builder().text(markdownText).build();
   }
 
   private SectionBlock createSectionBlockWithButton(String text, String incidentId) {
-    MarkdownTextObject markdownText = MarkdownTextObject.builder()
-            .text(text)
-            .build();
+    MarkdownTextObject markdownText = MarkdownTextObject.builder().text(text).build();
 
-    PlainTextObject buttonText = PlainTextObject.builder()
-            .text("🔍 View Details")
-            .emoji(true)
-            .build();
+    PlainTextObject buttonText =
+        PlainTextObject.builder().text("🔍 View Details").emoji(true).build();
 
-
-    ButtonElement buttonElement = ButtonElement.builder()
+    ButtonElement buttonElement =
+        ButtonElement.builder()
             .actionId("view_incident_" + incidentId)
             .text(buttonText)
             .value(incidentId)
             .build();
 
-    return SectionBlock.builder()
-            .text(markdownText)
-            .accessory(buttonElement)
-            .build();
+    return SectionBlock.builder().text(markdownText).accessory(buttonElement).build();
   }
 }
