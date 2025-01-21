@@ -88,9 +88,6 @@ public class IncidentServiceImpl implements IncidentService {
       newIncident.addTimeline(slackChannelTimeline);
     }
 
-    System.out.println(
-        "get incident call --------- " + getIncidentById("678e5018aa997b556b1f78ba"));
-
     // Save and return the new Incident
     return incidentRepository.save(newIncident);
   }

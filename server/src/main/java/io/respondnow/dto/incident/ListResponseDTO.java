@@ -6,12 +6,15 @@ import io.respondnow.dto.DefaultResponseDTO;
 import io.respondnow.model.api.Pagination;
 import io.respondnow.model.incident.Incident;
 import java.util.List;
+
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder
 public class ListResponseDTO extends DefaultResponseDTO {
 
   @JsonProperty("data")
@@ -20,6 +23,7 @@ public class ListResponseDTO extends DefaultResponseDTO {
   @Getter
   @Setter
   @JsonInclude(JsonInclude.Include.NON_NULL)
+  @Builder
   public static class ListResponse {
     private List<Incident> content;
     private Pagination pagination;
