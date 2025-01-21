@@ -50,7 +50,7 @@ public interface SlackService {
 
   void handleIncidentSummaryViewSubmission(ViewSubmissionRequest viewSubmission) throws SlackApiException, IOException;
 
-  void handleIncidentCommentViewSubmission(ViewSubmissionRequest viewSubmission);
+  void handleIncidentCommentViewSubmission(ViewSubmissionRequest viewSubmission) throws SlackApiException, IOException;
 
   void handleIncidentRolesViewSubmission(ViewSubmissionRequest viewSubmission);
 

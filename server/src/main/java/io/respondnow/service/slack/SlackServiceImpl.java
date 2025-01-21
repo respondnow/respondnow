@@ -194,7 +194,7 @@ public class SlackServiceImpl implements SlackService {
     slackApp.viewSubmission(
         "incident_comment_modal",
         (payload, ctx) -> {
-          logger.debug("Update comment received: {}", payload);
+          logger.debug("A new comment received: {}", payload);
           handleIncidentCommentViewSubmission(payload);
           return ctx.ack();
         });
@@ -288,12 +288,6 @@ public class SlackServiceImpl implements SlackService {
                           .type("plain_text")
                           .text("Update Incident Summary")
                           .build())
-                  //                  .blocks(
-                  //                      Collections.singletonList(
-                  //                          SectionBlock.builder()
-                  //                              .text(PlainTextObject.builder().text("Summary
-                  // Block").build())
-                  //                              .build()))
                   .blocks(
                       Collections.singletonList(
                           getSummaryBlock(
@@ -310,46 +304,34 @@ public class SlackServiceImpl implements SlackService {
         });
   }
 
-  //  // Method to create a summary block similar to the Go code
-  //  private static InputBlock getSummaryBlock() {
-  //    return InputBlock.builder()
-  //        .blockId("create_incident_modal_summary")
-  //        .label(PlainTextObject.builder().text(":memo: Summary").build())
-  //        .element(
-  //            PlainTextInputElement.builder()
-  //                .actionId("create_incident_modal_set_summary")
-  //                .multiline(true)
-  //                .placeholder(
-  //                    PlainTextObject.builder().text("A brief description of the
-  // problem.").build())
-  //                .build())
-  //        .build();
-  //  }
-
   private void registerUpdateIncidentCommentButton() {
     slackApp.blockAction(
         "update_incident_comment_button",
         (req, ctx) -> {
           System.out.println("Displaying modal for incident comment");
 
-          //          View modalRequest =
-          //              View.builder()
-          //                  .type("modal")
-          //                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
-          //                  .callbackId("incident_comment_modal")
-          //                  .title(PlainTextObject.builder().text("Add Comment").build())
-          //                  .blocks(
-          //                      BlockSet.builder()
-          //                          .block(
-          //                              SectionBlock.builder()
-          //                                  .text(PlainTextObject.builder().text("Comment
-          // Block").build())
-          //                                  .build())
-          //                          .build())
-          //                  .submit(PlainTextObject.builder().text("Submit").build())
-          //                  .build();
-          //
-          //          ctx.client().viewsOpen(req.getTriggerId(), modalRequest);
+          // Build the modal
+          View modalRequest =
+              View.builder()
+                  .type("modal")
+                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
+                  .callbackId("incident_comment_modal")
+                  .title(
+                      ViewTitle.builder()
+                          .type("plain_text")
+                          .text("Update Incident Comment")
+                          .build())
+                  .blocks(
+                      Collections.singletonList(
+                          getCommentBlock(
+                              "update_incident_modal_comment",
+                              "update_incident_modal_set_comment")))
+                  .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
+                  .build();
+
+          // Open the modal
+          ctx.client()
+              .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
 
           return ctx.ack();
         });
@@ -1456,10 +1438,70 @@ public class SlackServiceImpl implements SlackService {
     }
   }
 
+  private void updateIncidentComment(String incidentIdentifier, String comment, UserDetails user) {
+    // Simulate a service call to add a new incident comment
+    try {
+      Incident updatedIncident = incidentService.addComment(incidentIdentifier, comment, user);
+
+      // Send confirmation message to Slack
+      sendAddCommentResponseMsg(
+          updatedIncident.getChannels().get(0).getId(), updatedIncident, comment);
+    } catch (Exception e) {
+      logger.error("Failed to add a new incident comment: {}", e.getMessage(), e);
+    }
+  }
+
   private UsersInfoResponse getSlackUserDetails(String userId)
       throws SlackApiException, IOException {
     // Fetch user info from Slack using userId
     return slackApp.client().usersInfo(r -> r.user(userId));
+  }
+
+  private void sendAddCommentResponseMsg(
+      String channelID, Incident updatedIncident, String newComment) {
+    try {
+      // Fetch user info from Slack using userId
+      UsersInfoResponse slackUserInfo =
+          getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
+      if (slackUserInfo == null || slackUserInfo.getUser() == null) {
+        logger.error(
+            "Add comment: failed to fetch Slack user info for userId: {}",
+            updatedIncident.getUpdatedBy().getUserId());
+        throw new IllegalStateException("Unable to fetch Slack user info");
+      }
+
+      // Get the Slack handle (username)
+      String slackHandle = slackUserInfo.getUser().getName();
+
+      // Prepare the message text
+      String messageText =
+          String.format(
+              ":memo: *Comment Added*\n <@%s> added a new comment:\n> _%s_",
+              slackHandle, newComment);
+
+      // Send the added comment response message back to the Slack channel
+      ChatPostMessageResponse response =
+          slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
+
+      if (!response.isOk()) {
+        String errorMessage = "Failed to send add comment error message: " + response.getError();
+        logger.error(errorMessage);
+        throw new RuntimeException(errorMessage);
+      }
+
+      logger.info("Comment addition confirmation successfully posted to channel: {}", channelID);
+    } catch (IOException e) {
+      logger.error("IOException occurred while posting message to Slack: {}", e.getMessage(), e);
+      // Optionally, add a retry mechanism or send a failure notification to users
+    } catch (SlackApiException e) {
+      logger.error("Slack API error occurred while posting message: {}", e.getMessage(), e);
+      // Handle specific Slack API exceptions if needed (e.g., retry on rate limit errors)
+    } catch (IllegalStateException e) {
+      logger.error("Error in fetching Slack user info: {}", e.getMessage(), e);
+    } catch (Exception e) {
+      logger.error("Unexpected error occurred: {}", e.getMessage(), e);
+      // Optionally, send a failure notification or alert to a monitoring system
+    }
   }
 
   private void sendUpdateSummaryResponseMsg(
@@ -1509,7 +1551,8 @@ public class SlackServiceImpl implements SlackService {
     }
   }
 
-  public void handleIncidentCommentViewSubmission(ViewSubmissionRequest payload) {
+  public void handleIncidentCommentViewSubmission(ViewSubmissionRequest payload)
+      throws SlackApiException, IOException {
     String incidentIdentifier = payload.getPayload().getView().getPrivateMetadata();
     String updatedComment =
         payload
@@ -1517,10 +1560,16 @@ public class SlackServiceImpl implements SlackService {
             .getView()
             .getState()
             .getValues()
-            .get("create_incident_modal_comment")
-            .get("create_incident_modal_set_comment")
+            .get("update_incident_modal_comment")
+            .get("update_incident_modal_set_comment")
             .getValue();
     logger.info("Incident Identifier: {}, Updated Comment: {}", incidentIdentifier, updatedComment);
+
+    // Create and call the service to add a incident comment
+    updateIncidentComment(
+        incidentIdentifier,
+        updatedComment,
+        fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
   }
 
   public void handleIncidentRolesViewSubmission(ViewSubmissionRequest payload) {
@@ -1659,6 +1708,19 @@ public class SlackServiceImpl implements SlackService {
                                 .placeholder(
                                     new PlainTextObject(
                                         "A brief description of the problem.", false)))));
+  }
+
+  private InputBlock getCommentBlock(String blockId, String actionId) {
+    return Blocks.input(
+        i ->
+            i.blockId(blockId)
+                .label(new PlainTextObject(":speech_balloon: Comment", true))
+                .element(
+                    BlockElements.plainTextInput(
+                        pt ->
+                            pt.actionId(actionId)
+                                .multiline(true)
+                                .placeholder(new PlainTextObject("Add a comment", false)))));
   }
 
   private InputBlock getSeverityBlock() {

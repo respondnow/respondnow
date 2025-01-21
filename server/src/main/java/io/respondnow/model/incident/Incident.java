@@ -37,7 +37,7 @@ public class Incident {
 
   @NotNull private String summary;
 
-  @NotNull private String comment;
+  @NotNull private List<String> comment;
 
   @NotNull private Boolean active;
 

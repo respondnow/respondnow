@@ -6,6 +6,7 @@ import io.respondnow.model.incident.*;
 import io.respondnow.model.user.UserDetails;
 import io.respondnow.repository.IncidentRepository;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -170,6 +171,55 @@ public class IncidentServiceImpl implements IncidentService {
     Incident updated = updateIncidentById(incident.getId(), incident);
     if (updated == null) {
       throw new Exception("Failed to update incident summary.");
+    }
+
+    return updated;
+  }
+
+  public Incident addComment(String incidentID, String comment, UserDetails currentUser)
+      throws Exception {
+    // Step 1: Retrieve the existing incident by its ID
+    Optional<Incident> existingIncident = incidentRepository.findByIdentifier(incidentID);
+    if (existingIncident.isEmpty()) {
+      throw new Exception("Incident not found with ID: " + incidentID);
+    }
+
+    Incident incident = existingIncident.get();
+    // Step 2: Get the old comment and prepare the new timeline entry
+    List<String> comments = incident.getComment();
+    if (comments == null) {
+      comments = new ArrayList<>();
+    }
+
+    // Get the current timestamp (in Unix time)
+    long ts = Instant.now().getEpochSecond();
+
+    // Update the audit details with the current user and timestamp
+    incident.setUpdatedBy(currentUser);
+    incident.setUpdatedAt(ts);
+    incident.setUpdatedAt(ts);
+
+    // Step 3: Create a new timeline entry for the change
+    Timeline timeline = new Timeline();
+    timeline.setId(String.valueOf(ts));
+    timeline.setType(ChangeType.Comment);
+    timeline.setCreatedAt(ts);
+    timeline.setUpdatedAt(ts);
+    timeline.setUserDetails(currentUser);
+    timeline.setPreviousState(null);
+    timeline.setCurrentState(comment);
+
+    // Add the timeline entry to the incident's timeline
+    incident.getTimelines().add(timeline);
+
+    // Step 4: Update the incident's summary and description
+    comments.add(comment);
+    incident.setComment(comments);
+
+    // Step 5: Update the incident in the database
+    Incident updated = updateIncidentById(incident.getId(), incident);
+    if (updated == null) {
+      throw new Exception("Failed to add a new incident comment.");
     }
 
     return updated;

@@ -33,4 +33,6 @@ public interface IncidentService {
 
   Incident updateSummary(String incidentID, String newSummary, UserDetails currentUser)
       throws Exception;
+
+  Incident addComment(String incidentID, String comment, UserDetails currentUser) throws Exception;
 }
