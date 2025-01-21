@@ -436,13 +436,54 @@ public class SlackServiceImpl implements SlackService {
         slackApp.blockAction(
                 pattern,
                 (req, ctx) -> {
+
                     String actionId = req.getPayload().getActions().get(0).getActionId();
                     System.out.println("Action ID: " + actionId);
                     String[] parts = actionId.split("_");
                     String incidentIdentifier = parts[2];
                     Incident incident = incidentService.getIncidentByIdentifier(incidentIdentifier);
+                    View modalRequest =
+                            View.builder()
+                                    .type("modal")
+                                    .privateMetadata(req.getPayload().getActions().get(0).getValue())
+                                    .callbackId("incident_details_modal")
+                                    .title(
+                                            ViewTitle.builder()
+                                                    .type("plain_text")
+                                                    .text("Incident Details")
+                                                    .emoji(false)
+                                                    .build())
+                                    .blocks(getViewDetailLayoutBlock(incident))
+                                    .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
+                                    .close(ViewClose.builder().type("plain_text").text("Close").build())
+                                    .build();
+
+                    System.out.println("view open response for list detail");
+                    System.out.println(ctx.client()
+                            .viewsPush(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest)));
                     return ctx.ack();
                 });
+    }
+
+    private List<LayoutBlock> getViewDetailLayoutBlock(Incident incident) {
+        List<LayoutBlock> layoutBlocks =
+                Arrays.asList(SlackBlockFactory.createSectionBlock("*Incident Details*", ""),
+                        SlackBlockFactory.createSectionBlock(String.format(":writing_hand: *Name:* %s", incident.getName()), ""),
+                        SlackBlockFactory.createSectionBlock(String.format(":vertical_traffic_light: *Severity:* %s", incident.getSeverity()), ""),
+                        SlackBlockFactory.createSectionBlock(String.format(":eyes: *Current Status:* %s", incident.getStatus()), ""),
+                        SlackBlockFactory.createSectionBlock(String.format(":firefighter: *Commander:* " /*add commander */), ""),
+                        SlackBlockFactory.createSectionBlock(String.format(":phone: *Communications Lead:* " /*add communications lead */), ""),
+                        SlackBlockFactory.createSectionBlock(String.format(":open_book: *Summary:* %s", incident.getSummary()), ""),
+                        SlackBlockFactory.createSectionBlock(String.format(":clock1: *Started At:* %s", incident.getCreatedAt()), "")
+                );
+
+        if ((incident.getStatus() == Status.Resolved) && (incident.getUpdatedAt() != null)) {
+            Long completedAt = incident.getUpdatedAt();
+            layoutBlocks.add(
+                    SlackBlockFactory.createSectionBlock(String.format(":checkered_flag: *Completed At:* %s", completedAt), "")
+            );
+        }
+        return layoutBlocks;
     }
 
     private void registerListClosedIncidentsShortcut() throws RuntimeException {
