@@ -20,7 +20,7 @@ import com.slack.api.methods.response.conversations.ConversationsInviteResponse;
 import com.slack.api.methods.response.users.UsersInfoResponse;
 import com.slack.api.methods.response.views.ViewsOpenResponse;
 import com.slack.api.model.Conversation;
-
+import com.slack.api.model.block.*;
 import com.slack.api.model.block.Blocks;
 import com.slack.api.model.block.DividerBlock;
 import com.slack.api.model.block.InputBlock;
@@ -888,13 +888,29 @@ public class SlackServiceImpl implements SlackService {
           createRequest.setSummary(summary);
           createRequest.setIncidentChannel(incidentChannel);
           createRequest.setChannels(channels);
+          Incident incident = incidentService.createIncident(createRequest, finalUserDetails);
+//=======
+//          Incident newIncident = new Incident();
+//          newIncident.setAccountIdentifier(defaultAccountId);
+//          newIncident.setOrgIdentifier(defaultOrgId);
+//          newIncident.setProjectIdentifier(defaultProjectId);
+//          newIncident.setIdentifier(incidentId);
+//          newIncident.setName(name);
+//          newIncident.setType(Type.valueOf(incidentType));
+//          newIncident.setStatus(Status.STARTED);
+//          newIncident.setRoles(roles);
+//          newIncident.setSeverity(Severity.valueOf(severity));
+//          newIncident.setSummary(summary);
+//          newIncident.setIncidentChannel(incidentChannel);
+//          newIncident.setChannels(channels);
+//          //          newIncident.
+//>>>>>>> Stashed changes
 
           userDetails.setName(payload.getPayload().getUser().getName());
           userDetails.setUserName(payload.getPayload().getUser().getUsername());
           userDetails.setUserId(payload.getPayload().getUser().getId());
           //          userDetails.setEmail(payload.getPayload().getUser().get);
           userDetails.setSource(ChannelSource.Slack);
-          Incident incident = incidentService.createIncident(createRequest, userDetails);
 
           // Post messages in Slack
           sendCreateIncidentResponseMsg(
@@ -1563,12 +1579,11 @@ public class SlackServiceImpl implements SlackService {
   public void listIncidents(GlobalShortcutContext ctx, SlackIncidentType slackIncidentType) throws Exception {
     try {
       // Fetch incidents from your service based on slackIncidentType
-        Criteria criteria = Criteria.where("status").ne("Resolved");
-        Query query = new Query(criteria);
-        List<Incident> listIncidents = incidentService.listIncidents(query);
+      Criteria criteria = Criteria.where("status").is("Started");
+      Query query = new Query(criteria);
+      List<Incident> listIncidents = incidentService.listIncidents(query);
 
-
-        // Build blocks to display in the modal
+      // Build blocks to display in the modal
       List<LayoutBlock> blocks = new ArrayList<>();
 
       if (listIncidents.isEmpty()) {
