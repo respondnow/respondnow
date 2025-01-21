@@ -442,6 +442,7 @@ public class SlackServiceImpl implements SlackService {
                     String[] parts = actionId.split("_");
                     String incidentIdentifier = parts[2];
                     Incident incident = incidentService.getIncidentByIdentifier(incidentIdentifier);
+
                     View modalRequest =
                             View.builder()
                                     .type("modal")
@@ -450,7 +451,7 @@ public class SlackServiceImpl implements SlackService {
                                     .title(
                                             ViewTitle.builder()
                                                     .type("plain_text")
-                                                    .text("Incident Details")
+                                                    .text("🚨 Incident Details")
                                                     .emoji(false)
                                                     .build())
                                     .blocks(getViewDetailLayoutBlock(incident))
@@ -466,19 +467,41 @@ public class SlackServiceImpl implements SlackService {
     }
 
     private List<LayoutBlock> getViewDetailLayoutBlock(Incident incident) {
+        String incidentCommander =
+                incident.getRoles().stream()
+                        .filter(role -> role.getRoleType() == RoleType.Incident_Commander)
+                        .map(role -> role.getUserDetails().getUserId())
+                        .findFirst()
+                        .orElse("");
+        if (incidentCommander != "") {
+            incidentCommander = String.format("<@%s>", incidentCommander);
+        }
+
+        String communicationsLead =
+                incident.getRoles().stream()
+                        .filter(role -> role.getRoleType() == RoleType.Communications_Lead)
+                        .map(role -> role.getUserDetails().getUserId())
+                        .findFirst()
+                        .orElse("");
+
+        if (communicationsLead != "") {
+            communicationsLead = String.format("<@%s>", communicationsLead);
+        }
+
+        Date createdAt = new Date(incident.getCreatedAt() * 1000);
         List<LayoutBlock> layoutBlocks =
-                Arrays.asList(SlackBlockFactory.createSectionBlock("*Incident Details*", ""),
+                Arrays.asList(SlackBlockFactory.createSectionBlock(" *Incident Details*", ""),
                         SlackBlockFactory.createSectionBlock(String.format(":writing_hand: *Name:* %s", incident.getName()), ""),
                         SlackBlockFactory.createSectionBlock(String.format(":vertical_traffic_light: *Severity:* %s", incident.getSeverity()), ""),
                         SlackBlockFactory.createSectionBlock(String.format(":eyes: *Current Status:* %s", incident.getStatus()), ""),
-                        SlackBlockFactory.createSectionBlock(String.format(":firefighter: *Commander:* " /*add commander */), ""),
-                        SlackBlockFactory.createSectionBlock(String.format(":phone: *Communications Lead:* " /*add communications lead */), ""),
+                        SlackBlockFactory.createSectionBlock(String.format(":firefighter: *Commander:* %s", incidentCommander), ""),
+                        SlackBlockFactory.createSectionBlock(String.format(":phone: *Communications Lead:* %s", communicationsLead), ""),
                         SlackBlockFactory.createSectionBlock(String.format(":open_book: *Summary:* %s", incident.getSummary()), ""),
-                        SlackBlockFactory.createSectionBlock(String.format(":clock1: *Started At:* %s", incident.getCreatedAt()), "")
+                        SlackBlockFactory.createSectionBlock(String.format(":clock1: *Started At:* %s", createdAt), "")
                 );
 
         if ((incident.getStatus() == Status.Resolved) && (incident.getUpdatedAt() != null)) {
-            Long completedAt = incident.getUpdatedAt();
+            Date completedAt = new Date(incident.getUpdatedAt() * 1000);
             layoutBlocks.add(
                     SlackBlockFactory.createSectionBlock(String.format(":checkered_flag: *Completed At:* %s", completedAt), "")
             );
@@ -1968,7 +1991,7 @@ public class SlackServiceImpl implements SlackService {
     // Extract the incident commander from the incident roles
     for (Role role : incident.getRoles()) {
       if (role.getRoleType().equals(RoleType.Incident_Commander)) {
-        return "<@" + role.getUserDetails().getEmail() + ">";
+        return "<@" + role.getUserDetails().getUserId() + ">";
       }
     }
     return "N/A";
