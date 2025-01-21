@@ -29,8 +29,11 @@ import com.slack.api.model.block.SectionBlock;
 import com.slack.api.model.block.composition.MarkdownTextObject;
 import com.slack.api.model.block.composition.OptionObject;
 import com.slack.api.model.block.composition.PlainTextObject;
+import com.slack.api.model.block.composition.TextObject;
 import com.slack.api.model.block.element.BlockElements;
 import com.slack.api.model.block.element.ButtonElement;
+import com.slack.api.model.block.element.StaticSelectElement;
+import com.slack.api.model.block.element.UsersSelectElement;
 import com.slack.api.model.event.AppHomeOpenedEvent;
 import com.slack.api.model.event.AppMentionEvent;
 import com.slack.api.model.event.MemberJoinedChannelEvent;
@@ -345,26 +348,23 @@ public class SlackServiceImpl implements SlackService {
         (req, ctx) -> {
           System.out.println("Displaying modal for assigning roles");
 
-          //          View modalRequest =
-          //              View.builder()
-          //                  .type("modal")
-          //                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
-          //                  .callbackId("incident_roles_modal")
-          //                  .title(PlainTextObject.builder().text("Assign Incident
-          // Roles").build())
-          //                  .blocks(
-          //                      BlockSet.builder()
-          //                          .block(
-          //                              SectionBlock.builder()
-          //                                  .text(PlainTextObject.builder().text("Roles
-          // Block").build())
-          //                                  .build())
-          //                          .build())
-          //                  .submit(PlainTextObject.builder().text("Submit").build())
-          //                  .build();
-          //
-          //          ctx.client().viewsOpen(req.getTriggerId(), modalRequest);
+            View modalRequest =
+                    View.builder()
+                            .type("modal")
+                            .privateMetadata(req.getPayload().getActions().get(0).getValue())
+                            .callbackId("incident_role_modal")
+                            .title(
+                                    ViewTitle.builder()
+                                            .type("plain_text")
+                                            .text("Assign Incident Roles")
+                                            .build())
+                            .blocks(getUpdateRoleBlock())
+                            .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
+                            .close(ViewClose.builder().type("plain_text").text("Close").build())
+                            .build();
 
+            ctx.client()
+                    .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
           return ctx.ack();
         });
   }
@@ -374,26 +374,24 @@ public class SlackServiceImpl implements SlackService {
         "update_incident_status_button",
         (req, ctx) -> {
           System.out.println("Displaying modal for incident status selection");
-          //
-          //          View modalRequest =
-          //              View.builder()
-          //                  .type("modal")
-          //                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
-          //                  .callbackId("incident_status_modal")
-          //                  .title(PlainTextObject.builder().text("Update Incident
-          // Status").build())
-          //                  .blocks(
-          //                      BlockSet.builder()
-          //                          .block(
-          //                              SectionBlock.builder()
-          //                                  .text(PlainTextObject.builder().text("Status
-          // Block").build())
-          //                                  .build())
-          //                          .build())
-          //                  .submit(PlainTextObject.builder().text("Submit").build())
-          //                  .build();
-          //
-          //          ctx.client().viewsOpen(req.getTriggerId(), modalRequest);
+            View modalRequest =
+                    View.builder()
+                            .type("modal")
+                            .privateMetadata(req.getPayload().getActions().get(0).getValue())
+                            .callbackId("incident_status_update_modal")
+                            .title(
+                                    ViewTitle.builder()
+                                            .type("plain_text")
+                                            .text("Update Incident Status")
+                                            .build())
+                            .blocks(
+                                    Collections.singletonList(
+                                            updateStatus()))
+                            .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
+                            .build();
+
+            ctx.client()
+                    .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
 
           return ctx.ack();
         });
@@ -405,25 +403,24 @@ public class SlackServiceImpl implements SlackService {
         (req, ctx) -> {
           System.out.println("Displaying modal for incident severity selection");
 
-          //          View modalRequest =
-          //              View.builder()
-          //                  .type("modal")
-          //                  .callbackId("incident_severity_modal")
-          //                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
-          //                  .title(PlainTextObject.builder().text("Update Incident
-          // Severity").build())
-          //                  .blocks(
-          //                      BlockSet.builder()
-          //                          .block(
-          //                              SectionBlock.builder()
-          //                                  .text(PlainTextObject.builder().text("Severity
-          // Block").build())
-          //                                  .build())
-          //                          .build())
-          //                  .submit(PlainTextObject.builder().text("Submit").build())
-          //                  .build();
-          //
-          //          ctx.client().viewsOpen(req.getTriggerId(), modalRequest);
+            View modalRequest =
+                    View.builder()
+                            .type("modal")
+                            .privateMetadata(req.getPayload().getActions().get(0).getValue())
+                            .callbackId("incident_comment_modal")
+                            .title(
+                                    ViewTitle.builder()
+                                            .type("plain_text")
+                                            .text("Update Incident Comment")
+                                            .build())
+                            .blocks(
+                                    Collections.singletonList(
+                                            getSeverityBlock()))
+                            .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
+                            .build();
+
+            ctx.client()
+                    .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
 
           return ctx.ack();
         });
@@ -1647,7 +1644,6 @@ public class SlackServiceImpl implements SlackService {
             .getValue();
     logger.info("Incident Identifier: {}, Updated Comment: {}", incidentIdentifier, updatedComment);
 
-    // Create and call the service to add a incident comment
     updateIncidentComment(
         incidentIdentifier,
         updatedComment,
@@ -1705,7 +1701,6 @@ public class SlackServiceImpl implements SlackService {
 
   public void createIncident(GlobalShortcutRequest req, GlobalShortcutContext ctx) {
     try {
-      // Blocks for the modal
       List<LayoutBlock> blocks = new ArrayList<>();
       blocks.add(
           SectionBlock.builder()
@@ -1726,7 +1721,6 @@ public class SlackServiceImpl implements SlackService {
       blocks.add(getRoleBlock());
       blocks.add(getChannelSelectBlock());
 
-      // Build the modal view
       View modalView =
           Views.view(
               v ->
@@ -1738,7 +1732,6 @@ public class SlackServiceImpl implements SlackService {
                       .blocks(blocks)
                       .submit(Views.viewSubmit(submit -> submit.type("plain_text").text("Start"))));
 
-      // Open the modal
       ViewsOpenResponse response =
           ctx.client().viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalView));
 
@@ -1836,7 +1829,76 @@ public class SlackServiceImpl implements SlackService {
                                 .options(options))));
   }
 
-  private InputBlock getChannelSelectBlock() {
+    private List<LayoutBlock> getUpdateRoleBlock() {
+        List<LayoutBlock> blocks = new ArrayList<>();
+        for(RoleType role: RoleType.values()) {
+            TextObject roleText = PlainTextObject.builder()
+                    .text(role.getDisplayValue())
+                    .emoji(true)
+                    .build();
+
+            UsersSelectElement userSelect = BlockElements.usersSelect(r -> r
+                    .placeholder(PlainTextObject.builder()
+                            .text("Select a user")
+                            .emoji(true)
+                            .build())
+                    .actionId("update_incident_modal_set_" + role)
+            );
+
+            SectionBlock section = SectionBlock.builder()
+                    .text(roleText)
+                    .accessory(userSelect)
+                    .build();
+
+            blocks.add(section);
+        }
+        return blocks;
+    }
+
+    public InputBlock updateStatus() {
+        List<Status> supportedIncidentStatuses = Arrays.asList(Status.values());
+
+        if (supportedIncidentStatuses.isEmpty()) {
+            throw new IllegalStateException("No incident statuses available.");
+        }
+        List<OptionObject> incidentStatusOptions = new ArrayList<>();
+
+        for (Status incidentStatus : supportedIncidentStatuses) {
+            OptionObject option = OptionObject.builder()
+                    .text(PlainTextObject.builder()
+                            .text(incidentStatus.getValue())
+                            .emoji(true)
+                            .build())
+                    .value(incidentStatus.getValue())
+                    .build();
+            incidentStatusOptions.add(option);
+        }
+
+        StaticSelectElement selectElement = StaticSelectElement.builder()
+                .actionId("create_incident_modal_set_incident_status")
+                .placeholder(PlainTextObject.builder()
+                        .text("Select status of the incident...")
+                        .emoji(true)
+                        .build())
+                .options(incidentStatusOptions)
+                .build();
+
+        PlainTextObject label = PlainTextObject.builder()
+                .text(":arrows_counterclockwise: Status")
+                .emoji(true)
+                .build();
+
+        InputBlock statusInputBlock = Blocks.input(block -> block
+                .blockId("incident_status")
+                .element(selectElement)
+                .label(label)
+        );
+
+        return statusInputBlock;
+    }
+
+
+    private InputBlock getChannelSelectBlock() {
     return Blocks.input(
         i ->
             i.blockId("create_incident_modal_conversation_select")
