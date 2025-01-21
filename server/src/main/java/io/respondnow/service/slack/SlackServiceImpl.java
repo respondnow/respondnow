@@ -14,14 +14,13 @@ import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.request.conversations.ConversationsCreateRequest;
 import com.slack.api.methods.request.conversations.ConversationsInviteRequest;
 import com.slack.api.methods.response.auth.AuthTestResponse;
+import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import com.slack.api.methods.response.conversations.ConversationsCreateResponse;
 import com.slack.api.methods.response.conversations.ConversationsInviteResponse;
+import com.slack.api.methods.response.users.UsersInfoResponse;
 import com.slack.api.methods.response.views.ViewsOpenResponse;
 import com.slack.api.model.Conversation;
-import com.slack.api.model.block.Blocks;
-import com.slack.api.model.block.InputBlock;
-import com.slack.api.model.block.LayoutBlock;
-import com.slack.api.model.block.SectionBlock;
+import com.slack.api.model.block.*;
 import com.slack.api.model.block.composition.MarkdownTextObject;
 import com.slack.api.model.block.composition.OptionObject;
 import com.slack.api.model.block.composition.PlainTextObject;
@@ -177,9 +176,9 @@ public class SlackServiceImpl implements SlackService {
     }
   }
 
-  private void handleIncidentSummaryViewSubmission() {
+  public void handleIncidentSummaryViewSubmission() {
     slackApp.viewSubmission(
-        "incident_summary_modal",
+        "update_incident_summary_button",
         (payload, ctx) -> {
           logger.debug("Update summary received: {}", payload);
           handleIncidentSummaryViewSubmission(payload);
@@ -740,6 +739,17 @@ public class SlackServiceImpl implements SlackService {
       logger.error("Response channel field is missing in view submission payload.");
     }
 
+    // Get user details (assume you have a method to fetch UserDetails by
+    // userId)
+    UserDetails userDetails = null;
+    try {
+      userDetails =
+          fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack);
+    } catch (SlackApiException | IOException e) {
+      throw new RuntimeException(e);
+    }
+
+    UserDetails finalUserDetails = userDetails;
     @NotNull
     List<Role> roles =
         Optional.ofNullable(stateValues.get("incident_role"))
@@ -756,17 +766,8 @@ public class SlackServiceImpl implements SlackService {
                               // Map string to RoleType enum
                               RoleType roleType = RoleType.valueOf(roleString);
 
-                              // Get user details (assume you have a method to fetch UserDetails by
-                              // userId)
-                              UserDetails userDetails =
-                                  fetchUserDetails(
-                                      payload.getPayload().getUser().getId(),
-                                      payload.getPayload().getUser().getName(),
-                                      "",
-                                      ChannelSource.Slack);
-
                               // Create Role object
-                              return new Role(roleType, userDetails);
+                              return new Role(roleType, finalUserDetails);
                             })
                         .collect(Collectors.toList())) // Collect the values into a List
             .orElse(Collections.emptyList()); // Return an empty list if no roles are found
@@ -864,14 +865,11 @@ public class SlackServiceImpl implements SlackService {
                   String.format(
                       "https://%s.slack.com/archives/%s",
                       payload.getPayload().getTeam().getId(), channelId),
-                      Operational);
+                  Operational);
           channels.add(channel1);
 
           // Create incident record in the database
           CreateRequest createRequest = new CreateRequest();
-          //          createRequest.setAccountIdentifier(defaultAccountId);
-          //          createRequest.setOrgIdentifier(defaultOrgId);
-          //          createRequest.setProjectIdentifier(defaultProjectId);
           createRequest.setIdentifier(incidentId);
           createRequest.setName(name);
           createRequest.setType(Type.valueOf(incidentType));
@@ -881,17 +879,15 @@ public class SlackServiceImpl implements SlackService {
           createRequest.setSummary(summary);
           createRequest.setIncidentChannel(incidentChannel);
           createRequest.setChannels(channels);
-
-          UserDetails userDetails = new UserDetails();
-          userDetails.setName(payload.getPayload().getUser().getName());
-          userDetails.setUserName(payload.getPayload().getUser().getUsername());
-          userDetails.setUserId(payload.getPayload().getUser().getId());
-          //          userDetails.setEmail(payload.getPayload().getUser().get);
-          userDetails.setSource(ChannelSource.Slack);
-          Incident incident = incidentService.createIncident(createRequest, userDetails);
+          Incident incident = incidentService.createIncident(createRequest, finalUserDetails);
 
           // Post messages in Slack
-          postIncidentCreationResponse(responseChannel, channelId, incident);
+          sendCreateIncidentResponseMsg(
+              payload.getPayload().getTeam().getDomain(),
+              responseChannel,
+              channelId,
+              sanitizedChannelName,
+              incident);
 
         } catch (SlackApiException | IOException e) {
           throw new RuntimeException(e);
@@ -906,22 +902,20 @@ public class SlackServiceImpl implements SlackService {
   }
 
   // Method to fetch user details (you'll need to implement this based on your data source)
-  private UserDetails fetchUserDetails(
-      String userId, String userName, String userEmail, ChannelSource source) {
+  private UserDetails fetchSlackUserDetails(String userId, ChannelSource source)
+      throws SlackApiException, IOException {
     UserDetails userDetails = new UserDetails();
-    if (!userId.isEmpty()) {
-      userDetails.setUserId(userId);
-    }
-    if (!userName.isEmpty()) {
-      userDetails.setUserName(userName);
-    }
-    if (!userEmail.isEmpty()) {
-      userDetails.setEmail(userEmail);
+    if (source == ChannelSource.Slack) {
+      UsersInfoResponse slackUser = getSlackUserDetails(userId);
+
+      userDetails.setUserId(slackUser.getUser().getId());
+      userDetails.setUserName(slackUser.getUser().getName());
+      userDetails.setName(slackUser.getUser().getProfile().getRealName());
+      userDetails.setEmail(slackUser.getUser().getProfile().getEmail());
     }
     if (source != null) {
       userDetails.setSource(source);
     }
-
     return userDetails;
   }
 
@@ -941,34 +935,279 @@ public class SlackServiceImpl implements SlackService {
     return sanitized;
   }
 
-  private void postIncidentCreationResponse(
-      String selectedChannelForResponse, String channelId, Incident newIncident)
-      throws SlackApiException, IOException {
-    slackApp
-        .client()
-        .chatPostMessage(
-            r -> r.channel(channelId).blocks(createIncidentMessageBlocks(newIncident)));
-
-    // Post another response in the incident channel
-    slackApp
-        .client()
-        .chatPostMessage(
-            r ->
-                r.channel(selectedChannelForResponse)
-                    .blocks(createIncidentMessageBlocks(newIncident)));
+  private SectionBlock createIncidentNameAndSeveritySection(Incident newIncident) {
+    return SectionBlock.builder()
+        .fields(
+            List.of(
+                buildMarkdownTextObject(newIncident.getName(), "Name", ":writing_hand:"),
+                buildMarkdownTextObject(
+                    newIncident.getSeverity().toString(), "Severity", ":vertical_traffic_light:")))
+        .build();
   }
 
-  private List<LayoutBlock> createIncidentMessageBlocks(Incident newIncident) {
-    // Creating Slack message blocks based on incident details
-    return Arrays.asList(
-        SlackBlockFactory.createHeaderBlock(":fire: New Incident", "new_incident_header"),
-        SlackBlockFactory.createSectionBlock(
-            ":writing_hand: *Name:* " + newIncident.getName(), "new_incident_name_section"),
-        SlackBlockFactory.createSectionBlock(
-            ":vertical_traffic_light: *Severity:* " + newIncident.getSeverity(),
-            "new_incident_severity_section"),
-        SlackBlockFactory.createSectionBlock(
-            ":open_book: *Summary:* " + newIncident.getSummary(), "new_incident_summary_section"));
+  private SectionBlock createIncidentStatusAndCommanderSection(
+      Incident newIncident, String incidentCommander) {
+    return SectionBlock.builder()
+        .fields(
+            List.of(
+                buildMarkdownTextObject(
+                    newIncident.getStatus().toString(), "Current Status", ":eyes:"),
+                buildMarkdownTextObject(
+                    "<@" + incidentCommander + ">", "Incident Commander", ":firefighter:")))
+        .build();
+  }
+
+  private MarkdownTextObject buildMarkdownTextObject(String value, String label, String emoji) {
+    return MarkdownTextObject.builder()
+        .text(String.format("%s *%s*\n _%s_", emoji, label, value))
+        .build();
+  }
+
+  public void sendCreateIncidentResponseMsg(
+      String teamDomain,
+      String channelID,
+      String joinChannelID,
+      String joinChannelName,
+      Incident newIncident) {
+    // Prepare blocks
+    List<LayoutBlock> blocks = new ArrayList<>();
+    try {
+      // Find the commander
+      String incidentCommander =
+          newIncident.getRoles().stream()
+              .filter(role -> role.getRoleType() == RoleType.Incident_Commander)
+              .map(role -> role.getUserDetails().getUserId())
+              .findFirst()
+              .orElse("");
+
+      // Find the communications lead
+      String communicationsLead =
+          newIncident.getRoles().stream()
+              .filter(role -> role.getRoleType() == RoleType.Communications_Lead)
+              .map(role -> role.getUserDetails().getUserId())
+              .findFirst()
+              .orElse("");
+
+      blocks.add(createHeaderBlock(":fire: :mega: New Incident"));
+
+      // Name, Severity Section
+      blocks.add(createIncidentNameAndSeveritySection(newIncident));
+
+      // Summary Section
+      blocks.add(createIncidentDetailsSection(newIncident.getSummary(), "Summary", ":open_book:"));
+
+      // Divider
+      blocks.add(new DividerBlock());
+
+      // Status and Commander
+      blocks.add(createIncidentStatusAndCommanderSection(newIncident, incidentCommander));
+
+      if (!communicationsLead.isEmpty()) {
+        blocks.add(
+            createIncidentDetailsSection(
+                "<@" + communicationsLead + ">", "Communications Lead", ":phone:"));
+      }
+
+      boolean shouldBePinned = true;
+
+      // Action Buttons
+      blocks.add(createActionButtons(newIncident.getIdentifier()));
+
+      // Created At Information
+      blocks.add(createCreatedAtBlock(newIncident));
+
+      // Send Message to newly created incident channel
+      ChatPostMessageResponse response =
+          slackApp.getClient().chatPostMessage(r -> r.channel(joinChannelID).blocks(blocks));
+
+      if (!response.isOk()) {
+        logger.error("Error sending message to Slack: {}", response.getError());
+      }
+
+      if (shouldBePinned) {
+        // Pin the message if required
+        slackApp
+            .getClient()
+            .pinsAdd(r -> r.channel(joinChannelID).timestamp(response.getMessage().getTs()));
+      }
+
+      if (joinChannelID != null
+          && !joinChannelID.isEmpty()
+          && joinChannelName != null
+          && !joinChannelName.isEmpty()) {
+        shouldBePinned = false;
+        blocks.add(createJoinChannelButton(teamDomain, joinChannelID, joinChannelName));
+      }
+      // Post another response in the incident channel
+      ChatPostMessageResponse incidentChannelResponse =
+          slackApp.client().chatPostMessage(r -> r.channel(channelID).blocks(blocks));
+      if (shouldBePinned) {
+        // Pin the message if required
+        slackApp
+            .getClient()
+            .pinsAdd(
+                r -> r.channel(channelID).timestamp(incidentChannelResponse.getMessage().getTs()));
+      }
+
+      // Notify users based on role
+      for (Role role : newIncident.getRoles()) {
+        String userId = role.getUserDetails().getUserId();
+
+        // Send notification to the user
+        sendRoleNotificationToUser(userId, role, teamDomain, joinChannelID);
+      }
+    } catch (IOException | SlackApiException e) {
+      logger.error("Failed to send incident response message: {}", e.getMessage(), e);
+    }
+  }
+
+  private void sendRoleNotificationToUser(
+      String userId, Role role, String teamDomain, String channelID) {
+    try {
+      // Create the notification blocks based on the role
+      List<LayoutBlock> blocks = getUserRoleNotificationBlocks(role, teamDomain, channelID);
+
+      // Send the notification message
+      ChatPostMessageResponse notificationResponse =
+          slackApp.getClient().chatPostMessage(r -> r.channel(userId).blocks(blocks));
+
+      if (!notificationResponse.isOk()) {
+        logger.error(
+            "Error sending notification to user {}: {}", userId, notificationResponse.getError());
+      }
+    } catch (SlackApiException | IOException e) {
+      logger.error("Failed to send role notification: {}", e.getMessage(), e);
+    }
+  }
+
+  private List<LayoutBlock> getUserRoleNotificationBlocks(
+      Role role, String teamDomain, String channelID) {
+    List<LayoutBlock> slackBlocks = new ArrayList<>();
+
+    // Header block with the role message
+    slackBlocks.add(
+        SectionBlock.builder()
+            .text(
+                MarkdownTextObject.builder()
+                    .text(
+                        String.format(
+                            ":wave: You have been elected as the *%s* for an incident.",
+                            role.getRoleType()))
+                    .build())
+            .blockId("user_role_notification_header")
+            .build());
+
+    // Role-specific description blocks
+    if (role.getRoleType() == RoleType.Incident_Commander) {
+      slackBlocks.add(
+          SectionBlock.builder()
+              .text(
+                  MarkdownTextObject.builder().text(getIncidentCommanderRoleDescription()).build())
+              .blockId("incident_commander_role_description")
+              .build());
+    } else if (role.getRoleType() == RoleType.Communications_Lead) {
+      slackBlocks.add(
+          SectionBlock.builder()
+              .text(
+                  MarkdownTextObject.builder().text(getCommunicationsLeadRoleDescription()).build())
+              .blockId("communications_lead_role_description")
+              .build());
+    }
+
+    // Divider and channel info
+    slackBlocks.add(DividerBlock.builder().build());
+    slackBlocks.add(
+        SectionBlock.builder()
+            .text(
+                MarkdownTextObject.builder()
+                    .text(String.format("Please join the channel here: <#%s>", channelID))
+                    .build())
+            .blockId("user_role_notification_channel")
+            .build());
+
+    return slackBlocks;
+  }
+
+  private String getIncidentCommanderRoleDescription() {
+    return "The Incident Commander is the decision maker during a major incident, delegating tasks and listening to input from subject matter experts in order to bring the incident to resolution. They become the highest ranking individual on any major incident call, regardless of their day-to-day rank. Their decisions made as commander are final.\n\nYour job as an Incident Commander is to listen to the call and to watch the incident Slack room in order to provide clear coordination, recruiting others to gather context and details. You should not be performing any actions or remediations, checking graphs, or investigating logs. Those tasks should be delegated.\n\nAn IC should also be considering next steps and backup plans at every opportunity, in an effort to avoid getting stuck without any clear options to proceed and to keep things moving towards resolution.\n\nMore information: https://response.pagerduty.com/training/incident_commander/";
+  }
+
+  private String getCommunicationsLeadRoleDescription() {
+    return "The purpose of the Communications Liaison is to be the primary individual in charge of notifying our customers of the current conditions, and informing the Incident Commander of any relevant feedback from customers as the incident progresses.\n\nIt's important for the rest of the command staff to be able to focus on the problem at hand, rather than worrying about crafting messages to customers.\n\nYour job as Communications Liaison is to listen to the call, watch the incident Slack room, and track incoming customer support requests, keeping track of what's going on and how far the incident is progressing (still investigating vs close to resolution).\n\nThe Incident Commander will instruct you to notify customers of the incident and keep them updated at various points throughout the call. You will be required to craft the message, gain approval from the IC, and then disseminate that message to customers.\n\nMore information: https://response.pagerduty.com/training/customer_liaison/";
+  }
+
+  private SectionBlock createIncidentDetailsSection(String value, String label, String emoji) {
+    return SectionBlock.builder()
+        .text(
+            MarkdownTextObject.builder()
+                .text(String.format("%s *%s*\n _%s_", emoji, label, value))
+                .build())
+        .build();
+  }
+
+  private HeaderBlock createHeaderBlock(String text) {
+    return HeaderBlock.builder()
+        .text(PlainTextObject.builder().text(text).build())
+        .blockId("create_incident_channel_resp_header")
+        .build();
+  }
+
+  private ActionsBlock createJoinChannelButton(
+      String teamDomain, String joinChannelID, String joinChannelName) {
+    return ActionsBlock.builder()
+        .elements(
+            List.of(
+                ButtonElement.builder()
+                    .text(
+                        PlainTextObject.builder()
+                            .text(String.format(":slack: Join %s", joinChannelName))
+                            .build())
+                    .url(
+                        String.format(
+                            "https://%s.slack.com/archives/%s", teamDomain, joinChannelID))
+                    .style("primary")
+                    .build()))
+        .blockId("create_incident_channel_join_channel")
+        .build();
+  }
+
+  private ActionsBlock createActionButtons(String incidentId) {
+    return ActionsBlock.builder()
+        .elements(
+            List.of(
+                createActionButton("Update Summary", "update_incident_summary_button", incidentId),
+                createActionButton("Add a comment", "update_incident_comment_button", incidentId),
+                createActionButton(
+                    "Assign Roles", "update_incident_assign_roles_button", incidentId),
+                createActionButton("Update Status", "update_incident_status_button", incidentId),
+                createActionButton(
+                    "Update Severity", "update_incident_severity_button", incidentId)))
+        .blockId("incident_action_buttons")
+        .build();
+  }
+
+  private ButtonElement createActionButton(String text, String actionId, String value) {
+    return ButtonElement.builder()
+        .text(PlainTextObject.builder().text(text).build())
+        .actionId(actionId)
+        .value(value)
+        .build();
+  }
+
+  private ContextBlock createCreatedAtBlock(Incident incident) {
+    return ContextBlock.builder()
+        .elements(
+            List.of(
+                PlainTextObject.builder()
+                    .text(String.format(":clock1: Started At: %s", incident.getCreatedAt()))
+                    .build(),
+                PlainTextObject.builder()
+                    .text(
+                        String.format(
+                            ":man: Started By: %s", incident.getCreatedBy().getUserName()))
+                    .build()))
+        .blockId("create_incident_channel_resp_createdAt")
+        .build();
   }
 
   public void handleIncidentSummaryViewSubmission(ViewSubmissionRequest payload) {
@@ -983,6 +1222,61 @@ public class SlackServiceImpl implements SlackService {
             .get("create_incident_modal_set_summary")
             .getValue();
     logger.info("Incident Identifier: {}, Updated Summary: {}", incidentIdentifier, updatedSummary);
+
+    // Create and call the service to update the incident summary
+    updateIncidentSummary(
+        incidentIdentifier,
+        updatedSummary,
+        new UserDetails(
+            payload.getPayload().getUser().getId(),
+            payload.getPayload().getUser().getUsername(),
+            "",
+            payload.getPayload().getUser().getName(),
+            ChannelSource.Slack));
+  }
+
+  private void updateIncidentSummary(
+      String incidentIdentifier, String updatedSummary, UserDetails user) {
+    // Simulate a service call to update the incident summary
+    try {
+      Incident updatedIncident =
+          incidentService.updateSummary(incidentIdentifier, updatedSummary, user);
+
+      // Send confirmation message to Slack
+      sendUpdateSummaryResponseMsg(
+          updatedIncident.getChannels().get(0).getId(), updatedIncident, updatedSummary);
+    } catch (Exception e) {
+      logger.error("Failed to update incident summary: {}", e.getMessage(), e);
+    }
+  }
+
+  private UsersInfoResponse getSlackUserDetails(String userId)
+      throws SlackApiException, IOException {
+    // Fetch user info from Slack using userId
+    return slackApp.client().usersInfo(r -> r.user(userId));
+  }
+
+  private void sendUpdateSummaryResponseMsg(
+      String channelID, Incident updatedIncident, String newSummary) {
+    try {
+      // Fetch user info from Slack using userId
+      UsersInfoResponse slackUserInfo =
+          getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
+      // Get the Slack handle (username)
+      String slackHandle = slackUserInfo.getUser().getName();
+
+      // Prepare the message text
+      String messageText =
+          String.format(
+              ":memo: *Summary Updated*\n <@%s> updated the summary:\n> _%s_",
+              slackHandle, newSummary);
+
+      // Send the update summary response message back to the Slack channel
+      slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
+      logger.info("Summary update confirmation successfully posted to channel: {}", channelID);
+    } catch (IOException | SlackApiException e) {
+      logger.error("Failed to send summary update response message: {}", e.getMessage(), e);
+    }
   }
 
   public void handleIncidentCommentViewSubmission(ViewSubmissionRequest payload) {

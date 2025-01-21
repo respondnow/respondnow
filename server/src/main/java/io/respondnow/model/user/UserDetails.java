@@ -1,13 +1,11 @@
 package io.respondnow.model.user;
 
 import io.respondnow.model.incident.ChannelSource;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class UserDetails {

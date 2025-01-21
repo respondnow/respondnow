@@ -131,6 +131,51 @@ public class IncidentServiceImpl implements IncidentService {
     return slackChannelTimeline;
   }
 
+  public Incident updateSummary(String incidentID, String newSummary, UserDetails currentUser)
+      throws Exception {
+    // Step 1: Retrieve the existing incident by its ID
+    Incident existingIncident = getIncidentById(incidentID);
+    if (existingIncident == null) {
+      throw new Exception("Incident not found with ID: " + incidentID);
+    }
+
+    // Step 2: Get the old summary and prepare the new timeline entry
+    String oldSummary = existingIncident.getSummary();
+
+    // Get the current timestamp (in Unix time)
+    long ts = Instant.now().getEpochSecond();
+
+    // Update the audit details with the current user and timestamp
+    existingIncident.setUpdatedBy(currentUser);
+    existingIncident.setUpdatedAt(ts);
+    existingIncident.setUpdatedAt(ts);
+
+    // Step 3: Create a new timeline entry for the change
+    Timeline timeline = new Timeline();
+    timeline.setId(String.valueOf(ts));
+    timeline.setType(ChangeType.Summary);
+    timeline.setCreatedAt(ts);
+    timeline.setUpdatedAt(ts);
+    timeline.setUserDetails(currentUser);
+    timeline.setPreviousState(oldSummary);
+    timeline.setCurrentState(newSummary);
+
+    // Add the timeline entry to the incident's timeline
+    existingIncident.getTimelines().add(timeline);
+
+    // Step 4: Update the incident's summary and description
+    existingIncident.setSummary(newSummary);
+    existingIncident.setDescription(newSummary);
+
+    // Step 5: Update the incident in the database
+    Incident updatedIncident = updateIncidentById(existingIncident.getId(), existingIncident);
+    if (updatedIncident == null) {
+      throw new Exception("Failed to update incident summary.");
+    }
+
+    return updatedIncident;
+  }
+
   public Incident getIncidentById(String id) {
     return incidentRepository
         .findById(String.valueOf(new ObjectId(id)))

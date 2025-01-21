@@ -30,4 +30,7 @@ public interface IncidentService {
   List<Status> getIncidentStatuses();
 
   String generateIncidentIdentifier(long createdAt);
+
+  Incident updateSummary(String incidentID, String newSummary, UserDetails currentUser)
+      throws Exception;
 }
