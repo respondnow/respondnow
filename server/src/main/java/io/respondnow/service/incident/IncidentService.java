@@ -10,6 +10,7 @@ public interface IncidentService {
   Incident createIncident(CreateRequest request, UserDetails currentUser);
 
   Incident getIncidentById(String id);
+  Incident getIncidentByIdentifier(String id);
 
   List<Incident> listIncidents(Query query);
 

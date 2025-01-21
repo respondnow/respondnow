@@ -231,6 +231,12 @@ public class IncidentServiceImpl implements IncidentService {
         .orElseThrow(() -> new InvalidIncidentException("Incident not found for ID: " + id));
   }
 
+  public Incident getIncidentByIdentifier(String identifier) {
+    Criteria criteria = Criteria.where("identifier").is(identifier);
+    Query query = new Query(criteria);
+    return mongoTemplate.findOne(query, Incident.class);
+  }
+
   public List<Incident> listIncidents(Query query) {
     return mongoTemplate.find(query, Incident.class);
   }

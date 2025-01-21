@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -240,6 +241,7 @@ public class SlackServiceImpl implements SlackService {
       registerUpdateIncidentAssignRolesButton();
       registerUpdateIncidentStatusButton();
       registerUpdateIncidentSeverityButton();
+      registerViewIncidentActionHandler();
     } catch (RuntimeException e) {
       throw new RuntimeException(e);
     }
@@ -427,7 +429,23 @@ public class SlackServiceImpl implements SlackService {
         });
   }
 
-  private void registerListClosedIncidentsShortcut() throws RuntimeException {
+    private void registerViewIncidentActionHandler() {
+        String regex = "^view_incident.*";
+        Pattern pattern = Pattern.compile(regex);
+
+        slackApp.blockAction(
+                pattern,
+                (req, ctx) -> {
+                    String actionId = req.getPayload().getActions().get(0).getActionId();
+                    System.out.println("Action ID: " + actionId);
+                    String[] parts = actionId.split("_");
+                    String incidentIdentifier = parts[2];
+                    Incident incident = incidentService.getIncidentByIdentifier(incidentIdentifier);
+                    return ctx.ack();
+                });
+    }
+
+    private void registerListClosedIncidentsShortcut() throws RuntimeException {
     // Handle the "list_closed_incidents_modal" shortcut
     slackApp.globalShortcut(
         "list_closed_incidents_modal",
