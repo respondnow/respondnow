@@ -352,7 +352,7 @@ public class SlackServiceImpl implements SlackService {
                     View.builder()
                             .type("modal")
                             .privateMetadata(req.getPayload().getActions().get(0).getValue())
-                            .callbackId("incident_role_modal")
+                            .callbackId("incident_roles_modal")
                             .title(
                                     ViewTitle.builder()
                                             .type("plain_text")
@@ -378,7 +378,7 @@ public class SlackServiceImpl implements SlackService {
                     View.builder()
                             .type("modal")
                             .privateMetadata(req.getPayload().getActions().get(0).getValue())
-                            .callbackId("incident_status_update_modal")
+                            .callbackId("incident_status_modal")
                             .title(
                                     ViewTitle.builder()
                                             .type("plain_text")
@@ -1517,6 +1517,20 @@ public class SlackServiceImpl implements SlackService {
     }
   }
 
+    private void updateIncidentStatus(String incidentIdentifier, String status, UserDetails user) {
+      Status updatedStatus = Status.valueOf(status);
+        // Simulate a service call to add a new incident comment
+        try {
+            Incident updatedIncident = incidentService.updateStatus(incidentIdentifier, updatedStatus, user);
+
+            // Send confirmation message to Slack
+            sendUpdateStatusResponseMsg(
+                    updatedIncident.getChannels().get(0).getId(), updatedIncident, status);
+        } catch (Exception e) {
+            logger.error("Failed to add a new incident comment: {}", e.getMessage(), e);
+        }
+    }
+
   private void updateIncidentComment(String incidentIdentifier, String comment, UserDetails user) {
     // Simulate a service call to add a new incident comment
     try {
@@ -1582,6 +1596,53 @@ public class SlackServiceImpl implements SlackService {
       // Optionally, send a failure notification or alert to a monitoring system
     }
   }
+
+    private void sendUpdateStatusResponseMsg(
+            String channelID, Incident updatedIncident, String newStatus) {
+        try {
+            // Fetch user info from Slack using userId
+            UsersInfoResponse slackUserInfo =
+                    getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
+            if (slackUserInfo == null || slackUserInfo.getUser() == null) {
+                logger.error(
+                        "Update status: failed to fetch Slack user info for userId: {}",
+                        updatedIncident.getUpdatedBy().getUserId());
+                throw new IllegalStateException("Unable to fetch Slack user info");
+            }
+
+            // Get the Slack handle (username)
+            String slackHandle = slackUserInfo.getUser().getName();
+
+            // Prepare the message text
+            String messageText =
+                    String.format(
+                            ":eyes: *Status Updated*\n <@%s> updated the status to: _%s_",
+                            slackHandle, newStatus);
+
+            // Send the added comment response message back to the Slack channel
+            ChatPostMessageResponse response =
+                    slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
+
+            if (!response.isOk()) {
+                String errorMessage = "Failed to send add comment error message: " + response.getError();
+                logger.error(errorMessage);
+                throw new RuntimeException(errorMessage);
+            }
+
+            logger.info("Comment addition confirmation successfully posted to channel: {}", channelID);
+        } catch (IOException e) {
+            logger.error("IOException occurred while posting message to Slack: {}", e.getMessage(), e);
+            // Optionally, add a retry mechanism or send a failure notification to users
+        } catch (SlackApiException e) {
+            logger.error("Slack API error occurred while posting message: {}", e.getMessage(), e);
+            // Handle specific Slack API exceptions if needed (e.g., retry on rate limit errors)
+        } catch (IllegalStateException e) {
+            logger.error("Error in fetching Slack user info: {}", e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred: {}", e.getMessage(), e);
+            // Optionally, send a failure notification or alert to a monitoring system
+        }
+    }
 
   private void sendUpdateSummaryResponseMsg(
       String channelID, Incident updatedIncident, String newSummary) {
@@ -1650,26 +1711,27 @@ public class SlackServiceImpl implements SlackService {
         fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
   }
 
-  public void handleIncidentRolesViewSubmission(ViewSubmissionRequest payload) {
+  public void handleIncidentRolesViewSubmission(ViewSubmissionRequest payload) throws SlackApiException, IOException {
     String incidentIdentifier = payload.getPayload().getView().getPrivateMetadata();
     ViewState state = payload.getPayload().getView().getState();
-    Map<String, Map<String, ViewState.Value>> rolesData = state.getValues();
-
-    // For example, iterate over predefined roles and assign users
-    for (String role : rolesData.keySet()) {
-      String roleKey = "create_incident_modal_set_" + role;
-      if (rolesData.containsKey(roleKey)) {
-        String userID = String.valueOf(rolesData.get(roleKey).get("selected_user"));
-        logger.info(
-            "Incident Identifier: {}, Role: {}, Assigned User: {}",
-            incidentIdentifier,
-            role,
-            userID);
-      }
+    Map<String, String> roleMapping = new HashMap<>();
+    Map<String, Map<String, ViewState.Value>> stateValues = state.getValues();
+    List<String> roles = Arrays.asList("create_incident_modal_set_Incident_Commander", "create_incident_modal_set_Communications_Lead");
+    Map<String, UserDetails> roleUserDetails = new HashMap<>();
+    for(String key: stateValues.keySet()) {
+        Map<String, ViewState.Value> viewState = stateValues.get(key);
+        for(String role: roles) {
+            ViewState.Value viewStateValue = viewState.get(role);
+            if(viewStateValue != null) {
+                String selectedUser = viewStateValue.getSelectedUser();
+                roleUserDetails.put(role, fetchSlackUserDetails(selectedUser, ChannelSource.Slack));
+            }
+        }
     }
+    logger.info("role user details");
   }
 
-  public void handleIncidentStatusViewSubmission(ViewSubmissionRequest payload) {
+  public void handleIncidentStatusViewSubmission(ViewSubmissionRequest payload) throws SlackApiException, IOException {
     String incidentIdentifier = payload.getPayload().getView().getPrivateMetadata();
     String status =
         payload
@@ -1681,6 +1743,7 @@ public class SlackServiceImpl implements SlackService {
             .get("create_incident_modal_set_incident_status")
             .getSelectedOption()
             .getValue();
+    updateIncidentStatus(incidentIdentifier, status, fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
     logger.info("Incident Identifier: {}, Updated Status: {}", incidentIdentifier, status);
   }
 
@@ -1842,7 +1905,7 @@ public class SlackServiceImpl implements SlackService {
                             .text("Select a user")
                             .emoji(true)
                             .build())
-                    .actionId("update_incident_modal_set_" + role)
+                    .actionId("create_incident_modal_set_" + role)
             );
 
             SectionBlock section = SectionBlock.builder()

@@ -225,6 +225,49 @@ public class IncidentServiceImpl implements IncidentService {
     return updated;
   }
 
+  public Incident updateStatus(String incidentID, Status newStatus, UserDetails currentUser)
+          throws Exception {
+    Optional<Incident> existingIncident = incidentRepository.findByIdentifier(incidentID);
+    if (existingIncident.isEmpty()) {
+      throw new Exception("Incident not found with ID: " + incidentID);
+    }
+
+    Incident incident = existingIncident.get();
+    Status oldStatus = incident.getStatus();
+
+    // Get the current timestamp (in Unix time)
+    long ts = Instant.now().getEpochSecond();
+
+    // Update the audit details with the current user and timestamp
+    incident.setUpdatedBy(currentUser);
+    incident.setUpdatedAt(ts);
+    incident.setUpdatedAt(ts);
+
+    // Step 3: Create a new timeline entry for the change
+    Timeline timeline = new Timeline();
+    timeline.setId(String.valueOf(ts));
+    timeline.setType(ChangeType.Status);
+    timeline.setCreatedAt(ts);
+    timeline.setUpdatedAt(ts);
+    timeline.setUserDetails(currentUser);
+    timeline.setPreviousState(oldStatus.toString());
+    timeline.setCurrentState(newStatus.toString());
+
+    // Add the timeline entry to the incident's timeline
+    incident.getTimelines().add(timeline);
+
+    // Step 4: Update the incident's summary and description
+    incident.setStatus(newStatus);
+
+    // Step 5: Update the incident in the database
+    Incident updated = updateIncidentById(incident.getId(), incident);
+    if (updated == null) {
+      throw new Exception("Failed to update incident summary.");
+    }
+
+    return updated;
+  }
+
   public Incident getIncidentById(String id) {
     return incidentRepository
         .findById(String.valueOf(new ObjectId(id)))
