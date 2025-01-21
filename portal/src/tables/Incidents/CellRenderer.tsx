@@ -19,7 +19,7 @@ type CellRendererType = Renderer<CellProps<Incident>>;
 
 export const IncidentsName: CellRendererType = ({ row }) => {
   const { getString } = useStrings();
-  const { name, severity, description, tags, identifier } = row.original;
+  const { name, severity, description, tags, id } = row.original;
   return (
     <Layout.Horizontal
       height={66}
@@ -31,7 +31,7 @@ export const IncidentsName: CellRendererType = ({ row }) => {
       <Container className={css.incidentsNameContainer}>
         <Link
           to={paths.toIncidentDetails({
-            incidentId: identifier || ''
+            incidentId: id || ''
           })}
           className={css.textLink}
         >

@@ -148,15 +148,15 @@ export const IncidentsSeverityFilter = ({ state, dispatch, resetPage }: FilterPr
   const dropdownItems: SelectOption[] = [
     {
       label: 'SEV0 - Critical, High Impact',
-      value: 'SEV0 - Critical, High Impact'
+      value: 'SEV0'
     },
     {
       label: 'SEV1 - Major, Significant Impact',
-      value: 'SEV1 - Major, Significant Impact'
+      value: 'SEV1'
     },
     {
       label: 'SEV2 - Minor, Low Impact',
-      value: 'SEV2 - Minor, Low Impact'
+      value: 'SEV2'
     }
   ];
 
