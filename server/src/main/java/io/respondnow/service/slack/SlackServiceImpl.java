@@ -1900,9 +1900,14 @@ public class SlackServiceImpl implements SlackService {
   public void listIncidents(GlobalShortcutContext ctx, SlackIncidentType slackIncidentType)
       throws Exception {
     try {
-      // Fetch incidents from your service based on slackIncidentType
-      Criteria criteria = Criteria.where("status").is("Started");
-      Query query = new Query(criteria);
+      Query query;
+      if (slackIncidentType.equals(SlackIncidentType.Open)) {
+          Criteria criteria = Criteria.where("status").ne("Resolved");
+          query = new Query(criteria);
+      } else {
+          Criteria criteria = Criteria.where("status").is("Resolved");
+          query = new Query(criteria);
+      }
       List<Incident> listIncidents = incidentService.listIncidents(query);
 
       // Build blocks to display in the modal
