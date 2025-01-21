@@ -1476,7 +1476,7 @@ public class SlackServiceImpl implements SlackService {
       // Prepare the message text
       String messageText =
           String.format(
-              ":memo: *Comment Added*\n <@%s> added a new comment:\n> _%s_",
+              ":speech_balloon: *Comment Added*\n <@%s> added a new comment:\n> _%s_",
               slackHandle, newComment);
 
       // Send the added comment response message back to the Slack channel
