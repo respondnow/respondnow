@@ -28,6 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/auth/login",
             "/signup",
             "/auth/signup",
+            "/status",
             "/auth/changePassword")
         .permitAll() // Allow public access to specific endpoints
         // Allow Swagger UI and API docs endpoint to be accessed without authentication

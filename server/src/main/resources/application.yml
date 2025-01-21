@@ -1,27 +1,29 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://127.0.0.1:27018,127.0.0.1:27019,127.0.0.1:27020/
-      database: respondnow
+      uri: ${MONGO_URI:mongodb://127.0.0.1:27018,127.0.0.1:27019,127.0.0.1:27020/}
+      database: ${MONGO_DATABASE:respondnow}
       core:
         MongoTemplate: DEBUG
   server:
-    port: 8080
+    port: ${SERVER_PORT:8080}
+
 jwt:
-  secret: mySecretKeyUsedToEncodeJWTForAuthenticationPurpose
-  expiration: 86400000  # Token expiration time in milliseconds (e.g., 1 hour)
+  secret: ${JWT_SECRET:mySecretKeyUsedToEncodeJWTForAuthenticationPurpose}
+  expiration: ${JWT_EXPIRATION:86400000}
+
 slack:
-  botToken: xoxb-308118791127-8313951448102-jGjqKmbZ4mrT0HrbgSwGs0XG
-  appToken: xapp-1-A08A3AMAVFS-8306018852311-033eccdb039b32927fc6cdae6c7d8d76f28cc982086a7e88fc27967683c53889
-  signingSecret: 7d3a4befb2b60e2b8e6f37eef15a7f66
-  incidentChannelID: C089H2Q0BPE
+  botToken: ${SLACK_BOT_TOKEN:botToken}
+  appToken: ${SLACK_APP_TOKEN:appToken}
+  incidentChannelID: ${SLACK_INCIDENT_CHANNEL_ID:slackIncidentChannelId}
+
 hierarchy:
   defaultAccount:
-    id: default_account_id
-    name: "Default Account"
+    id: ${DEFAULT_ACCOUNT_ID:default_account_id}
+    name: ${DEFAULT_ACCOUNT_NAME:"Default Account"}
   defaultOrg:
-    id: default_org_id
-    name: "Default Org"
+    id: ${DEFAULT_ORG_ID:default_org_id}
+    name: ${DEFAULT_ORG_NAME:"Default Org"}
   defaultProject:
-    id: default_project_id
-    name: "Default Project"
+    id: ${DEFAULT_PROJECT_ID:default_project_id}
+    name: ${DEFAULT_PROJECT_NAME:"Default Project"}
