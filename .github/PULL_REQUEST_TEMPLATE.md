@@ -1,27 +1,35 @@
-<!--  Thanks for sending a pull request!  -->
+<!-- Thank you for contributing to [Project Name]! Your efforts are greatly appreciated. -->
 
-## Proposed changes
+## 📌 Proposed Changes
 
-Summarize your changes here to communicate with the maintainers and make sure to put the link of that issue
+<!-- Summarize your changes to help maintainers understand the purpose of this PR. 
+     If applicable, link the relevant issue (e.g., Fixes #123). -->
 
-## Types of changes
+## 🔍 Types of Changes
 
-What types of changes does your code introduce to RespondNow? Put an `x` in the boxes that apply
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Bugfix (non-breaking change which fixes an issue)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation Update (if none of the other choices applies)
+Please check the box(es) that best describe your PR:
 
-## Checklist
+- [ ] 🚀 New Feature (adds new functionality)
+- [ ] 🐛 Bug Fix (resolves an existing issue)
+- [ ] 💥 Breaking Change (alters existing functionality in a way that may cause issues)
+- [ ] 📖 Documentation Update (improves or adds documentation)
+- [ ] 🔧 Code Refactor (improves code readability, structure, or performance)
 
-Put an `x` in the boxes that apply. You can also fill these out after creating the PR. If you're unsure about any of them, don't hesitate to ask. We're here to help! This is simply a reminder of what we are going to look for before merging your code.
-- [ ] I have read the [CONTRIBUTING](https://github.com/respondnow/respondnow/blob/main/CONTRIBUTING.md) doc
-- [ ] I have signed the commit for DCO to be passed.
-- [ ] Lint and unit tests pass locally with my changes
-- [ ] I have added tests that prove my fix is effective or that my feature works (if appropriate)
-- [ ] I have added necessary documentation (if appropriate)
+## ✅ Checklist
 
-## Dependency
-- Please add the links to the dependent PR need to be merged before this (if any).
+Before submitting your PR, please ensure that you have checked the following:
 
-## Special notes for your reviewer:
+- [ ] I have read and followed the [CONTRIBUTING GUIDELINES](https://github.com/respondnow/respondnow/blob/main-java/CONTRIBUTING.md).
+- [ ] I have tested my changes thoroughly.
+- [ ] I have added or updated necessary documentation (if applicable).
+- [ ] My PR includes tests to verify new functionality or bug fixes (if applicable).
+
+## 🔗 Dependencies
+
+<!-- List any PRs or issues that must be merged before this one (if applicable). -->
+
+- [ ] Depends on PR #______
+
+## 📌 Special Notes for Reviewers
+
+<!-- Provide any additional context or important information for the reviewers. -->
