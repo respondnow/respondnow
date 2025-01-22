@@ -1,9 +1,8 @@
-name: Build and Publish Multi-Arch Docker Image
+name: Build and Publish Docker Image
 
 on:
   push:
     branches:
-      - main-java
       - main
       - release-*
   release:
@@ -27,6 +26,7 @@ jobs:
           if [ "${{ github.event_name }}" == "release" ]; then
             IMAGE_TAG=${{ github.event.release.tag_name }}
           else
+            # Extract the branch name from GITHUB_REF and handle fallback for tags
             BRANCH_NAME=${GITHUB_REF#refs/heads/}
             if [ "$BRANCH_NAME" == "$GITHUB_REF" ]; then
               BRANCH_NAME=${GITHUB_REF#refs/tags/}
@@ -37,8 +37,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        with:
-          install: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -64,23 +62,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT }}
 
-      - name: Create and bootstrap multi-arch builder
+      - name: Build Docker image
         run: |
-          docker buildx create --use --name multi-arch-builder
-          docker buildx inspect --bootstrap
+          cd portal
+          docker build -t ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -f Dockerfile .
 
-      - name: Build and push multi-arch Docker image
+      - name: Push Docker image to GHCR
         if: |
-          github.ref == 'refs/heads/main-java' ||
+          github.ref == 'refs/heads/main' ||
           startsWith(github.ref, 'refs/heads/release-') ||
           github.event_name == 'release'
         run: |
-          cd portal
-          docker buildx build \
-            --platform linux/amd64,linux/arm64,linux/arm/v7 \
-            --push \
-            -t ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
-            -f Dockerfile .
+          docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
       - name: Post success message
-        run: echo "Multi-arch Docker image ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} successfully built and pushed to GitHub Container Registry"
+        run: echo "Docker image ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} successfully built and pushed to GitHub Container Registry"
