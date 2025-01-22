@@ -14,15 +14,12 @@ jobs:
   gitleaks:
     name: Run Gitleaks
     runs-on: ubuntu-22.04
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Gitleaks
-        run: |
-          curl -sSL -o gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64.tar.gz
-          tar -xvzf gitleaks.tar.gz
-          sudo mv gitleaks /usr/local/bin/
-
-      - name: Run Gitleaks
-        run: gitleaks detect --verbose --redact --exit-code 1
+      - name: Run Gitleaks Action
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          fail: true  # Fails workflow if secrets are detected
