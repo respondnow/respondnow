@@ -69,7 +69,7 @@ jobs:
 
       - name: Push Docker image to GHCR
         if: |
-          github.ref == 'refs/heads/main' ||
+          github.ref == 'refs/heads/main-java' ||
           startsWith(github.ref, 'refs/heads/release-') ||
           github.event_name == 'release'
         run: |
