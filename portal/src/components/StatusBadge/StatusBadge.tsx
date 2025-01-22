@@ -4,10 +4,10 @@ import { Icon, IconName } from '@harnessio/icons';
 import { Color, FontVariation } from '@harnessio/design-system';
 import { Layout, Text } from '@harnessio/uicore';
 import { Fallback } from '@errors';
-import { IncidentStatus } from '@services/server';
+import { Incident } from '@services/server';
 import css from './StatusBadge.module.scss';
 
-const StatusBadge: React.FC<{ status: IncidentStatus | undefined }> = ({ status }) => {
+const StatusBadge: React.FC<{ status: Incident['status'] | undefined }> = ({ status }) => {
   const getSeverityProps = (): {
     foregroundColor: string;
     icon: IconName;

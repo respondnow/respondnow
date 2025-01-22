@@ -9,15 +9,15 @@ import { Icon } from '@harnessio/icons';
 import mainLogo from '@images/respondNow.svg';
 import { useStrings } from '@strings';
 import PasswordInput from '@components/PasswordInput';
-import { ChangePasswordMutationProps, UserChangePasswordResponseDto, UtilsDefaultResponseDto } from '@services/server';
+import { ChangePasswordMutationProps, ChangePasswordResponseDto } from '@services/server';
 import { useAppStore } from '@hooks';
 import { Fallback } from '@errors';
 import css from './PasswordReset.module.scss';
 
 interface PasswordResetViewProps {
   updatePasswordMutation: UseMutateFunction<
-    UserChangePasswordResponseDto,
-    UtilsDefaultResponseDto,
+    ChangePasswordResponseDto,
+    ChangePasswordResponseDto,
     ChangePasswordMutationProps<never>,
     unknown
   >;

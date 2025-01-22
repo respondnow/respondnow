@@ -1,6 +1,6 @@
 import { defineConfig } from '@harnessio/oats-cli';
 import reactQueryPlugin from '@harnessio/oats-plugin-react-query';
-import { mapKeys, omit } from 'lodash-es';
+import { mapKeys } from 'lodash-es';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -26,13 +26,12 @@ export default defineConfig({
         reactQueryPlugin({
           customFetcher: '@services/fetcher',
           allowedOperationIds: [
-            'ChangePassword',
-            'Login',
-            'SignUp',
-            'CreateIncident',
-            'ListIncidents',
-            'GetIncident',
-            'GetUserMapping'
+            'changePassword',
+            'login',
+            'createIncident',
+            'listIncidents',
+            'getIncident',
+            'getUserMappings'
           ],
           overrides: {}
         })

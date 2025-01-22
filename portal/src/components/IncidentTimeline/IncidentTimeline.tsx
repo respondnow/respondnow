@@ -4,13 +4,13 @@ import { Container, Layout, Text } from '@harnessio/uicore';
 import { Color, FontVariation } from '@harnessio/design-system';
 import moment from 'moment';
 import { Fallback } from '@errors';
-import { IncidentIncident, IncidentTimeline } from '@services/server';
 import { useStrings } from '@strings';
+import { Incident } from '@services/server';
 import { getTimelinePropsBasedOnIncidentData } from './helper';
 import css from './IncidentTimeline.module.scss';
 
 interface IncidentTimelineProps {
-  incident: IncidentIncident | undefined;
+  incident: Incident | undefined;
   showCommentsOnly: boolean;
 }
 
@@ -19,7 +19,7 @@ const IncidentTimeline: React.FC<IncidentTimelineProps> = props => {
   const { getString } = useStrings();
 
   const incidentsToShow = showCommentsOnly
-    ? incident?.timelines?.filter(timeline => timeline.type === 'comment')
+    ? incident?.timelines?.filter(timeline => timeline.type === 'Comment')
     : incident?.timelines;
   const totalTimelines = incidentsToShow?.length ?? 0;
 

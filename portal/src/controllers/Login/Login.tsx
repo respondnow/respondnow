@@ -14,7 +14,7 @@ const LoginController: React.FC = () => {
     {},
     {
       onSuccess: async loginData => {
-        const accessToken = loginData.data?.token?.split(' ')[1] || '';
+        const accessToken = loginData.data?.token || '';
         const changePassword = loginData.data?.changeUserPassword;
         const isInitialLogin = !loginData.data?.lastLoginAt;
 

@@ -3,8 +3,7 @@
 // Please do not modify this code directly.
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
-import type { IncidentGetResponseDto } from '../schemas/IncidentGetResponseDto';
-import type { UtilsDefaultResponseDto } from '../schemas/UtilsDefaultResponseDto';
+import type { GetResponseDto } from '../schemas/GetResponseDto';
 import { fetcher, FetcherOptions } from '@services/fetcher';
 
 export interface GetIncidentQueryPathParams {
@@ -17,9 +16,9 @@ export interface GetIncidentQueryQueryParams {
   projectIdentifier?: string;
 }
 
-export type GetIncidentOkResponse = IncidentGetResponseDto;
+export type GetIncidentOkResponse = GetResponseDto;
 
-export type GetIncidentErrorResponse = UtilsDefaultResponseDto;
+export type GetIncidentErrorResponse = unknown;
 
 export interface GetIncidentProps
   extends GetIncidentQueryPathParams,
@@ -36,14 +35,14 @@ export function getIncident(props: GetIncidentProps): Promise<GetIncidentOkRespo
 }
 
 /**
- * Get incident
+ * Fetch a specific incident by its identifier
  */
 export function useGetIncidentQuery(
   props: GetIncidentProps,
   options?: Omit<UseQueryOptions<GetIncidentOkResponse, GetIncidentErrorResponse>, 'queryKey' | 'queryFn'>
 ) {
   return useQuery<GetIncidentOkResponse, GetIncidentErrorResponse>(
-    ['GetIncident', props.incidentIdentifier, props.queryParams],
+    ['getIncident', props.incidentIdentifier, props.queryParams],
     ({ signal }) => getIncident({ ...props, signal }),
     options
   );

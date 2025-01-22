@@ -21,7 +21,7 @@ import { Icon } from '@harnessio/icons';
 import { useStrings } from '@strings';
 import { IncidentsFilter, IncidentsFilterAction, IncidentsFilterActionKind } from 'hooks';
 import { IncidentsSortType } from 'models';
-import { IncidentSeverity, IncidentStatus } from '@services/server';
+import { Incident } from '@services/server';
 
 export interface FilterProps {
   state: IncidentsFilter;
@@ -120,7 +120,7 @@ export const IncidentsStatusFilter = ({ state, dispatch, resetPage }: FilterProp
     }
   ];
 
-  const handleChange = (incidentStatus: IncidentStatus): void => {
+  const handleChange = (incidentStatus: Incident['status']): void => {
     resetPage();
     dispatch({
       type: IncidentsFilterActionKind.CHANGE_INCIDENTS_STATUS,
@@ -135,7 +135,7 @@ export const IncidentsStatusFilter = ({ state, dispatch, resetPage }: FilterProp
       addClearBtn
       filterable={false}
       items={dropdownItems}
-      onChange={value => handleChange(String(value.value) as IncidentStatus)}
+      onChange={value => handleChange(String(value.value) as Incident['status'])}
       value={state.incidentStatus}
       placeholder={getString('status')}
       width={250}
@@ -148,19 +148,19 @@ export const IncidentsSeverityFilter = ({ state, dispatch, resetPage }: FilterPr
   const dropdownItems: SelectOption[] = [
     {
       label: 'SEV0 - Critical, High Impact',
-      value: 'SEV0 - Critical, High Impact'
+      value: 'SEV0'
     },
     {
       label: 'SEV1 - Major, Significant Impact',
-      value: 'SEV1 - Major, Significant Impact'
+      value: 'SEV1'
     },
     {
       label: 'SEV2 - Minor, Low Impact',
-      value: 'SEV2 - Minor, Low Impact'
+      value: 'SEV2'
     }
   ];
 
-  const handleChange = (incidentSeverity: IncidentSeverity): void => {
+  const handleChange = (incidentSeverity: Incident['severity']): void => {
     resetPage();
     dispatch({
       type: IncidentsFilterActionKind.CHANGE_INCIDENTS_SEVERITY,
@@ -175,7 +175,7 @@ export const IncidentsSeverityFilter = ({ state, dispatch, resetPage }: FilterPr
       addClearBtn
       filterable={false}
       items={dropdownItems}
-      onChange={value => handleChange(String(value.value) as IncidentSeverity)}
+      onChange={value => handleChange(String(value.value) as Incident['severity'])}
       value={state.incidentSeverity}
       placeholder={getString('severity')}
       width={250}

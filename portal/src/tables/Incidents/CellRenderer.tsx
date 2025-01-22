@@ -4,7 +4,7 @@ import { Avatar, Button, ButtonSize, ButtonVariation, Container, Layout, Text } 
 import { Link } from 'react-router-dom';
 import { Color, FontVariation } from '@harnessio/design-system';
 import { isEmpty } from 'lodash-es';
-import { IncidentIncident } from '@services/server';
+import { Incident } from '@services/server';
 import { useStrings } from '@strings';
 import SeverityBadge from '@components/SeverityBadge';
 import { paths } from '@routes/RouteDefinitions';
@@ -15,11 +15,11 @@ import SlackIconMono from '@images/slack-mono.svg';
 import Duration from '@components/Duration';
 import css from '../CommonTableStyles.module.scss';
 
-type CellRendererType = Renderer<CellProps<IncidentIncident>>;
+type CellRendererType = Renderer<CellProps<Incident>>;
 
 export const IncidentsName: CellRendererType = ({ row }) => {
   const { getString } = useStrings();
-  const { name, severity, description, tags, identifier } = row.original;
+  const { name, severity, description, tags, id } = row.original;
   return (
     <Layout.Horizontal
       height={66}
@@ -31,7 +31,7 @@ export const IncidentsName: CellRendererType = ({ row }) => {
       <Container className={css.incidentsNameContainer}>
         <Link
           to={paths.toIncidentDetails({
-            incidentId: identifier
+            incidentId: id || ''
           })}
           className={css.textLink}
         >

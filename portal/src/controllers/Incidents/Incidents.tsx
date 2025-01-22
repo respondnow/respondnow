@@ -3,9 +3,9 @@ import { useToaster } from '@harnessio/uicore';
 import { isEqual } from 'lodash-es';
 import IncidentsView from '@views/Incidents';
 import { getScope, scopeExists } from '@utils';
-import { useListIncidentsQuery } from '@services/server/hooks/useListIncidentsQuery';
 import { initialIncidenrsFilterState, useIncidentsFilter, usePagination } from '@hooks';
 import { IncidentsTableProps } from '@interfaces';
+import { useListIncidentsQuery } from '@services/server';
 import {
   FilterProps,
   IncidentsSearchBar,
@@ -44,7 +44,7 @@ const IncidentsController: React.FC = () => {
     },
     {
       onError: error => {
-        showError(error.message);
+        showError((error as any)?.message);
       },
       refetchInterval: 20000,
       enabled: scopeExists()

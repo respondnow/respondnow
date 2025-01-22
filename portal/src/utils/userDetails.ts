@@ -2,7 +2,7 @@ import jwtDecode from 'jwt-decode';
 import { pick } from 'lodash-es';
 import { DecodedTokenType } from 'models';
 import { AppStoreContextProps, Scope } from '@context';
-import { getUserMapping } from '@services/server';
+import { getUserMappings } from '@services/server';
 
 export function setUserDetails(
   updateAppStore: AppStoreContextProps['updateAppStore'],
@@ -34,7 +34,7 @@ export async function updateUserAndScopeFromAPI(
   accessToken: string,
   isInitialLogin?: boolean
 ): Promise<void> {
-  await getUserMapping({
+  await getUserMappings({
     queryParams: {
       userId: getUsername(accessToken)
     }

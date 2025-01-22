@@ -1,6 +1,6 @@
 import React, { Dispatch } from 'react';
 import { IncidentsSortType, SortInput } from 'models';
-import { IncidentSeverity, IncidentStatus } from '@services/server';
+import { Incident } from '@services/server';
 
 export enum IncidentsFilterActionKind {
   CHANGE_INCIDENTS_NAME = 'CHANGE_INCIDENTS_NAME',
@@ -13,12 +13,12 @@ export enum IncidentsFilterActionKind {
 }
 
 export interface IncidentsFilter {
-  incidentName?: string | undefined;
-  incidentStatus?: IncidentStatus;
-  incidentSeverity?: IncidentSeverity;
-  incidentTags?: string[] | undefined;
-  incidentTimeframe?: string | undefined;
-  sortType?: SortInput<IncidentsSortType> | undefined;
+  incidentName?: string;
+  incidentStatus?: Incident['status'];
+  incidentSeverity?: Incident['severity'];
+  incidentTags?: string[];
+  incidentTimeframe?: string;
+  sortType?: SortInput<IncidentsSortType>;
 }
 
 export interface IncidentsFilterAction {

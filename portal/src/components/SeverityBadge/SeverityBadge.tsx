@@ -4,26 +4,26 @@ import { Layout, Text, Utils } from '@harnessio/uicore';
 import { Color, FontVariation } from '@harnessio/design-system';
 import { Icon } from '@harnessio/icons';
 import { Fallback } from '@errors';
-import { IncidentSeverity } from '@services/server';
+import { Incident } from '@services/server';
 import css from './SeverityBadge.module.scss';
 
-const SeverityBadge: React.FC<{ severity: IncidentSeverity | undefined }> = ({ severity }) => {
+const SeverityBadge: React.FC<{ severity: Incident['severity'] | undefined }> = ({ severity }) => {
   const getSeverityProps = (): {
     foregroundColor: string;
     text: string;
   } => {
     switch (severity) {
-      case 'SEV0 - Critical, High Impact':
+      case 'SEV0':
         return {
           foregroundColor: Color.RED_700,
           text: 'SEV0'
         };
-      case 'SEV1 - Major, Significant Impact':
+      case 'SEV1':
         return {
           foregroundColor: Color.ORANGE_700,
           text: 'SEV1'
         };
-      case 'SEV2 - Minor, Low Impact':
+      case 'SEV2':
         return {
           foregroundColor: Color.GREEN_700,
           text: 'SEV2'
