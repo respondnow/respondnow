@@ -56,12 +56,14 @@ jobs:
 
       - name: Push Docker image to GitHub Container Registry
         if: |
-          github.ref == 'refs/heads/main' ||
+          github.ref == 'refs/heads/main-java' ||
           startsWith(github.ref, 'refs/heads/release/') ||
           github.ref == 'refs/heads/develop' ||
           github.event_name == 'release'
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker buildx build --platform linux/amd64,linux/arm64 \
+            -t ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+            --push . -f server/src/main/docker/Dockerfile
 
       - name: Post success message
         if: |
