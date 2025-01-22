@@ -49,7 +49,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.NotNull;
@@ -174,66 +173,140 @@ public class SlackServiceImpl implements SlackService {
     }
   }
 
-  private void handleCreateIncidentViewSubmission() throws RuntimeException {
-    try {
-      slackApp.viewSubmission(
-          "create_incident_modal",
-          (payload, ctx) -> {
-            logger.info("Received create incident view submission: {}", payload);
-            createIncident(payload);
-            return ctx.ack();
-          });
-    } catch (RuntimeException e) {
-      throw new RuntimeException(e);
-    }
+  /** Handles the submission of the "Create Incident" modal. */
+  private void handleCreateIncidentViewSubmission() {
+    slackApp.viewSubmission(
+        "create_incident_modal",
+        (payload, ctx) -> {
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  logger.info("Received create incident view submission: {}", payload);
+                  createIncident(payload);
+                  logger.info("Successfully created incident for payload: {}", payload);
+                } catch (Exception e) {
+                  logger.error("Error creating incident for payload: {}", payload, e);
+                  // Optionally, handle the error (e.g., notify the user)
+                }
+              });
+
+          // Acknowledge immediately
+          return ctx.ack();
+        });
   }
 
+  /** Handles the submission of the "Incident Summary" modal. */
   public void handleIncidentSummaryViewSubmission() {
     slackApp.viewSubmission(
         "incident_summary_modal",
         (payload, ctx) -> {
-          logger.debug("Update summary received: {}", payload);
-          handleIncidentSummaryViewSubmission(payload);
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  logger.debug("Update summary received: {}", payload);
+                  handleIncidentSummaryViewSubmission(payload);
+                  logger.debug("Successfully updated incident summary for payload: {}", payload);
+                } catch (Exception e) {
+                  logger.error("Error updating incident summary for payload: {}", payload, e);
+                  // Optionally, handle the error
+                }
+              });
+
+          // Acknowledge immediately
           return ctx.ack();
         });
   }
 
+  /** Handles the submission of the "Incident Comment" modal. */
   private void handleIncidentCommentViewSubmission() {
     slackApp.viewSubmission(
         "incident_comment_modal",
         (payload, ctx) -> {
-          logger.debug("A new comment received: {}", payload);
-          handleIncidentCommentViewSubmission(payload);
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  logger.debug("A new comment received: {}", payload);
+                  handleIncidentCommentViewSubmission(payload);
+                  logger.debug("Successfully processed incident comment for payload: {}", payload);
+                } catch (Exception e) {
+                  logger.error("Error processing incident comment for payload: {}", payload, e);
+                  // Optionally, handle the error
+                }
+              });
+
+          // Acknowledge immediately
           return ctx.ack();
         });
   }
 
+  /** Handles the submission of the "Incident Roles" modal. */
   private void handleIncidentRolesViewSubmission() {
     slackApp.viewSubmission(
         "incident_roles_modal",
         (payload, ctx) -> {
-          logger.debug("Incident roles modal received: {}", payload);
-          handleIncidentRolesViewSubmission(payload);
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  logger.debug("Incident roles modal received: {}", payload);
+                  handleIncidentRolesViewSubmission(payload);
+                  logger.debug("Successfully processed incident roles for payload: {}", payload);
+                } catch (Exception e) {
+                  logger.error("Error processing incident roles for payload: {}", payload, e);
+                  // Optionally, handle the error
+                }
+              });
+
+          // Acknowledge immediately
           return ctx.ack();
         });
   }
 
+  /** Handles the submission of the "Incident Status" modal. */
   private void handleIncidentStatusViewSubmission() {
     slackApp.viewSubmission(
         "incident_status_modal",
         (payload, ctx) -> {
-          logger.debug("Incident status modal received: {}", payload);
-          handleIncidentStatusViewSubmission(payload);
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  logger.debug("Incident status modal received: {}", payload);
+                  handleIncidentStatusViewSubmission(payload);
+                  logger.debug("Successfully processed incident status for payload: {}", payload);
+                } catch (Exception e) {
+                  logger.error("Error processing incident status for payload: {}", payload, e);
+                  // Optionally, handle the error
+                }
+              });
+
+          // Acknowledge immediately
           return ctx.ack();
         });
   }
 
+  /** Handles the submission of the "Incident Severity" modal. */
   private void handleIncidentSeverityViewSubmission() {
     slackApp.viewSubmission(
         "incident_severity_modal",
         (payload, ctx) -> {
-          logger.debug("Incident severity modal received: {}", payload);
-          handleIncidentSeverityViewSubmission(payload);
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  logger.debug("Incident severity modal received: {}", payload);
+                  handleIncidentSeverityViewSubmission(payload);
+                  logger.debug("Successfully processed incident severity for payload: {}", payload);
+                } catch (Exception e) {
+                  logger.error("Error processing incident severity for payload: {}", payload, e);
+                  // Optionally, handle the error
+                }
+              });
+
+          // Acknowledge immediately
           return ctx.ack();
         });
   }
@@ -242,7 +315,7 @@ public class SlackServiceImpl implements SlackService {
   private void registerBlockActionHandlers() {
     try {
       registerCreateIncidentChannelJoinButton();
-      registerCreateIncidentModal();
+      registerCreateIncidentButton();
       registerUpdateIncidentSummaryButton();
       registerUpdateIncidentCommentButton();
       registerUpdateIncidentAssignRolesButton();
@@ -258,21 +331,26 @@ public class SlackServiceImpl implements SlackService {
     slackApp.blockAction(
         "create_incident_channel_join_channel_button",
         (req, ctx) -> {
-          String value = req.getPayload().getActions().get(0).getValue();
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  String value = req.getPayload().getActions().get(0).getValue();
+                  logger.info("Button clicked with value: {}", value);
 
-          if (req.getPayload().getResponseUrl() != null) {
-            ctx.respond(r -> r.text("You've sent \"" + value + "\" by clicking the button!"));
-          }
+                  if (req.getPayload().getResponseUrl() != null) {
+                    ctx.respond(
+                        r -> r.text("You've sent \"" + value + "\" by clicking the button!"));
+                  }
 
-          return ctx.ack();
-        });
-  }
+                  // Additional processing logic can be added here
+                } catch (Exception e) {
+                  logger.error("Error handling create incident channel join button", e);
+                  // Optionally, handle the error (e.g., notify the user via Slack)
+                }
+              });
 
-  private void registerCreateIncidentModal() {
-    slackApp.blockAction(
-        "create_incident_modal",
-        (req, ctx) -> {
-          // Logic for creating incident modal
+          // Acknowledge immediately
           return ctx.ack();
         });
   }
@@ -281,27 +359,40 @@ public class SlackServiceImpl implements SlackService {
     slackApp.blockAction(
         "update_incident_summary_button",
         (req, ctx) -> {
-          // Build the modal
-          View modalRequest =
-              View.builder()
-                  .type("modal")
-                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
-                  .callbackId("incident_summary_modal")
-                  .title(
-                      ViewTitle.builder()
-                          .type("plain_text")
-                          .text("Update Incident Summary")
-                          .build())
-                  .blocks(
-                      Collections.singletonList(
-                          getSummaryBlock(
-                              "create_incident_modal_summary",
-                              "create_incident_modal_set_summary")))
-                  .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
-                  .build();
-          ctx.client()
-              .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  // Build the modal
+                  View modalRequest =
+                      View.builder()
+                          .type("modal")
+                          .privateMetadata(req.getPayload().getActions().get(0).getValue())
+                          .callbackId("incident_summary_modal")
+                          .title(
+                              ViewTitle.builder()
+                                  .type("plain_text")
+                                  .text("Update Incident Summary")
+                                  .build())
+                          .blocks(
+                              Collections.singletonList(
+                                  getSummaryBlock(
+                                      "create_incident_modal_summary",
+                                      "create_incident_modal_set_summary")))
+                          .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
+                          .build();
+                  ctx.client()
+                      .viewsOpen(
+                          r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
 
+                  logger.info("Opened Incident Summary modal for payload: {}", req.getPayload());
+                } catch (Exception e) {
+                  logger.error("Error opening Incident Summary modal", e);
+                  // Optionally, handle the error
+                }
+              });
+
+          // Acknowledge immediately
           return ctx.ack();
         });
   }
@@ -310,26 +401,40 @@ public class SlackServiceImpl implements SlackService {
     slackApp.blockAction(
         "update_incident_comment_button",
         (req, ctx) -> {
-            View modalRequest =
-              View.builder()
-                  .type("modal")
-                  .privateMetadata(req.getPayload().getActions().get(0).getValue())
-                  .callbackId("incident_comment_modal")
-                  .title(
-                      ViewTitle.builder()
-                          .type("plain_text")
-                          .text("Update Incident Comment")
-                          .build())
-                  .blocks(
-                      Collections.singletonList(
-                          getCommentBlock(
-                              "update_incident_modal_comment",
-                              "update_incident_modal_set_comment")))
-                  .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
-                  .build();
-            ctx.client()
-              .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
-            return ctx.ack();
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  View modalRequest =
+                      View.builder()
+                          .type("modal")
+                          .privateMetadata(req.getPayload().getActions().get(0).getValue())
+                          .callbackId("incident_comment_modal")
+                          .title(
+                              ViewTitle.builder()
+                                  .type("plain_text")
+                                  .text("Update Incident Comment")
+                                  .build())
+                          .blocks(
+                              Collections.singletonList(
+                                  getCommentBlock(
+                                      "update_incident_modal_comment",
+                                      "update_incident_modal_set_comment")))
+                          .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
+                          .build();
+                  ctx.client()
+                      .viewsOpen(
+                          r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
+
+                  logger.info("Opened Incident Comment modal for payload: {}", req.getPayload());
+                } catch (Exception e) {
+                  logger.error("Error opening Incident Comment modal", e);
+                  // Optionally, handle the error
+                }
+              });
+
+          // Acknowledge immediately
+          return ctx.ack();
         });
   }
 
@@ -337,23 +442,37 @@ public class SlackServiceImpl implements SlackService {
     slackApp.blockAction(
         "update_incident_assign_roles_button",
         (req, ctx) -> {
-            View modalRequest =
-                    View.builder()
-                            .type("modal")
-                            .privateMetadata(req.getPayload().getActions().get(0).getValue())
-                            .callbackId("incident_roles_modal")
-                            .title(
-                                    ViewTitle.builder()
-                                            .type("plain_text")
-                                            .text("Assign Incident Roles")
-                                            .build())
-                            .blocks(getUpdateRoleBlock())
-                            .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
-                            .close(ViewClose.builder().type("plain_text").text("Close").build())
-                            .build();
-            ctx.client()
-                    .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
-            return ctx.ack();
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  View modalRequest =
+                      View.builder()
+                          .type("modal")
+                          .privateMetadata(req.getPayload().getActions().get(0).getValue())
+                          .callbackId("incident_roles_modal")
+                          .title(
+                              ViewTitle.builder()
+                                  .type("plain_text")
+                                  .text("Assign Incident Roles")
+                                  .build())
+                          .blocks(getUpdateRoleBlock())
+                          .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
+                          .close(ViewClose.builder().type("plain_text").text("Close").build())
+                          .build();
+                  ctx.client()
+                      .viewsOpen(
+                          r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
+
+                  logger.info("Opened Incident Roles modal for payload: {}", req.getPayload());
+                } catch (Exception e) {
+                  logger.error("Error opening Incident Roles modal", e);
+                  // Optionally, handle the error
+                }
+              });
+
+          // Acknowledge immediately
+          return ctx.ack();
         });
   }
 
@@ -361,24 +480,35 @@ public class SlackServiceImpl implements SlackService {
     slackApp.blockAction(
         "update_incident_status_button",
         (req, ctx) -> {
-            View modalRequest =
-                    View.builder()
-                            .type("modal")
-                            .privateMetadata(req.getPayload().getActions().get(0).getValue())
-                            .callbackId("incident_status_modal")
-                            .title(
-                                    ViewTitle.builder()
-                                            .type("plain_text")
-                                            .text("Update Incident Status")
-                                            .build())
-                            .blocks(
-                                    Collections.singletonList(
-                                            updateStatus()))
-                            .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
-                            .build();
-            ctx.client()
-                    .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  View modalRequest =
+                      View.builder()
+                          .type("modal")
+                          .privateMetadata(req.getPayload().getActions().get(0).getValue())
+                          .callbackId("incident_status_modal")
+                          .title(
+                              ViewTitle.builder()
+                                  .type("plain_text")
+                                  .text("Update Incident Status")
+                                  .build())
+                          .blocks(Collections.singletonList(updateStatus()))
+                          .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
+                          .build();
+                  ctx.client()
+                      .viewsOpen(
+                          r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
 
+                  logger.info("Opened Incident Status modal for payload: {}", req.getPayload());
+                } catch (Exception e) {
+                  logger.error("Error opening Incident Status modal", e);
+                  // Optionally, handle the error
+                }
+              });
+
+          // Acknowledge immediately
           return ctx.ack();
         });
   }
@@ -387,107 +517,234 @@ public class SlackServiceImpl implements SlackService {
     slackApp.blockAction(
         "update_incident_severity_button",
         (req, ctx) -> {
-            View modalRequest =
-                    View.builder()
-                            .type("modal")
-                            .privateMetadata(req.getPayload().getActions().get(0).getValue())
-                            .callbackId("incident_severity_modal")
-                            .title(
-                                    ViewTitle.builder()
-                                            .type("plain_text")
-                                            .text("Update Incident Comment")
-                                            .build())
-                            .blocks(
-                                    Collections.singletonList(
-                                            getSeverityBlock()))
-                            .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
-                            .build();
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  View modalRequest =
+                      View.builder()
+                          .type("modal")
+                          .privateMetadata(req.getPayload().getActions().get(0).getValue())
+                          .callbackId("incident_severity_modal")
+                          .title(
+                              ViewTitle.builder()
+                                  .type("plain_text")
+                                  .text("Update Incident Severity")
+                                  .build())
+                          .blocks(Collections.singletonList(getSeverityBlock()))
+                          .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
+                          .build();
 
-            ctx.client()
-                    .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
+                  ctx.client()
+                      .viewsOpen(
+                          r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
 
+                  logger.info("Opened Incident Severity modal for payload: {}", req.getPayload());
+                } catch (Exception e) {
+                  logger.error("Error opening Incident Severity modal", e);
+                  // Optionally, handle the error
+                }
+              });
+
+          // Acknowledge immediately
           return ctx.ack();
         });
   }
 
-    private void registerViewIncidentActionHandler() {
-        String regex = "^view_incident.*";
-        Pattern pattern = Pattern.compile(regex);
+  private void registerViewIncidentActionHandler() {
+    String regex = "^view_incident.*";
+    Pattern pattern = Pattern.compile(regex);
 
-        slackApp.blockAction(
-                pattern,
-                (req, ctx) -> {
+    slackApp.blockAction(
+        pattern,
+        (req, ctx) -> {
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  String actionId = req.getPayload().getActions().get(0).getActionId();
+                  String[] parts = actionId.split("_");
+                  if (parts.length < 3) {
+                    logger.warn("Invalid actionId format: {}", actionId);
+                    return;
+                  }
+                  String incidentIdentifier = parts[2];
+                  Incident incident = incidentService.getIncidentByIdentifier(incidentIdentifier);
 
-                    String actionId = req.getPayload().getActions().get(0).getActionId();
-                    String[] parts = actionId.split("_");
-                    String incidentIdentifier = parts[2];
-                    Incident incident = incidentService.getIncidentByIdentifier(incidentIdentifier);
+                  if (incident == null) {
+                    logger.warn("Incident not found with identifier: {}", incidentIdentifier);
+                    // Optionally, notify the user via Slack
+                    return;
+                  }
 
-                    View modalRequest =
-                            View.builder()
-                                    .type("modal")
-                                    .privateMetadata(req.getPayload().getActions().get(0).getValue())
-                                    .callbackId("incident_details_modal")
-                                    .title(
-                                            ViewTitle.builder()
-                                                    .type("plain_text")
-                                                    .text("🚨 Incident Details")
-                                                    .emoji(false)
-                                                    .build())
-                                    .blocks(getViewDetailLayoutBlock(incident))
-                                    .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
-                                    .close(ViewClose.builder().type("plain_text").text("Close").build())
-                                    .build();
-                    ctx.client()
-                            .viewsPush(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
-                    return ctx.ack();
-                });
+                  View modalRequest =
+                      View.builder()
+                          .type("modal")
+                          .privateMetadata(req.getPayload().getActions().get(0).getValue())
+                          .callbackId("incident_details_modal")
+                          .title(
+                              ViewTitle.builder()
+                                  .type("plain_text")
+                                  .text("🚨 Incident Details")
+                                  .emoji(false)
+                                  .build())
+                          .blocks(getViewDetailLayoutBlock(incident))
+                          .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
+                          .close(ViewClose.builder().type("plain_text").text("Close").build())
+                          .build();
+                  ctx.client()
+                      .viewsPush(
+                          r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
+
+                  logger.info("Opened Incident Details modal for incident: {}", incidentIdentifier);
+                } catch (Exception e) {
+                  logger.error("Error opening Incident Details modal", e);
+                  // Optionally, handle the error
+                }
+              });
+
+          // Acknowledge immediately
+          return ctx.ack();
+        });
+  }
+
+  /**
+   * Generates a list of LayoutBlocks detailing the incident information.
+   *
+   * @param incident The incident object containing details.
+   * @return A list of LayoutBlocks representing the incident details.
+   */
+  private List<LayoutBlock> getViewDetailLayoutBlock(Incident incident) {
+    // Validate the incident object
+    if (incident == null) {
+      logger.error("Incident object is null.");
+      throw new IllegalArgumentException("Incident cannot be null.");
     }
 
-    private List<LayoutBlock> getViewDetailLayoutBlock(Incident incident) {
-        String incidentCommander =
-                incident.getRoles().stream()
-                        .filter(role -> role.getRoleType() == RoleType.Incident_Commander)
-                        .map(role -> role.getUserDetails().getUserId())
-                        .findFirst()
-                        .orElse("");
-        if (incidentCommander != "") {
-            incidentCommander = String.format("<@%s>", incidentCommander);
-        }
+    List<LayoutBlock> layoutBlocks = new ArrayList<>();
 
-        String communicationsLead =
-                incident.getRoles().stream()
-                        .filter(role -> role.getRoleType() == RoleType.Communications_Lead)
-                        .map(role -> role.getUserDetails().getUserId())
-                        .findFirst()
-                        .orElse("");
+    try {
+      // Header
+      layoutBlocks.add(SlackBlockFactory.createSectionBlock("*Incident Details*", ""));
 
-        if (communicationsLead != "") {
-            communicationsLead = String.format("<@%s>", communicationsLead);
-        }
+      // Name
+      String nameText =
+          String.format(
+              ":writing_hand: *Name:* %s", Optional.ofNullable(incident.getName()).orElse("N/A"));
+      layoutBlocks.add(SlackBlockFactory.createSectionBlock(nameText, ""));
 
-        Date createdAt = new Date(incident.getCreatedAt() * 1000);
-        List<LayoutBlock> layoutBlocks =
-                Arrays.asList(SlackBlockFactory.createSectionBlock(" *Incident Details*", ""),
-                        SlackBlockFactory.createSectionBlock(String.format(":writing_hand: *Name:* %s", incident.getName()), ""),
-                        SlackBlockFactory.createSectionBlock(String.format(":vertical_traffic_light: *Severity:* %s", incident.getSeverity()), ""),
-                        SlackBlockFactory.createSectionBlock(String.format(":eyes: *Current Status:* %s", incident.getStatus()), ""),
-                        SlackBlockFactory.createSectionBlock(String.format(":firefighter: *Commander:* %s", incidentCommander), ""),
-                        SlackBlockFactory.createSectionBlock(String.format(":phone: *Communications Lead:* %s", communicationsLead), ""),
-                        SlackBlockFactory.createSectionBlock(String.format(":open_book: *Summary:* %s", incident.getSummary()), ""),
-                        SlackBlockFactory.createSectionBlock(String.format(":clock1: *Started At:* %s", createdAt), "")
-                );
+      // Severity
+      String severityText =
+          String.format(
+              ":vertical_traffic_light: *Severity:* %s",
+              Optional.ofNullable(incident.getSeverity())
+                  .orElse(Severity.valueOf(String.valueOf(Severity.SEV2))));
+      layoutBlocks.add(SlackBlockFactory.createSectionBlock(severityText, ""));
 
-        if ((incident.getStatus() == Status.Resolved) && (incident.getUpdatedAt() != null)) {
-            Date completedAt = new Date(incident.getUpdatedAt() * 1000);
-            layoutBlocks.add(
-                    SlackBlockFactory.createSectionBlock(String.format(":checkered_flag: *Completed At:* %s", completedAt), "")
-            );
-        }
-        return layoutBlocks;
+      // Current Status
+      String statusText =
+          String.format(
+              ":eyes: *Current Status:* %s",
+              Optional.ofNullable(incident.getStatus())
+                  .map(Enum::name)
+                  .orElse(String.valueOf(Status.Started)));
+      layoutBlocks.add(SlackBlockFactory.createSectionBlock(statusText, ""));
+
+      // Incident Commander
+      String incidentCommander = extractUserMention(incident, RoleType.Incident_Commander);
+      String commanderText =
+          String.format(
+              ":firefighter: *Commander:* %s",
+              incidentCommander.isEmpty() ? "N/A" : incidentCommander);
+      layoutBlocks.add(SlackBlockFactory.createSectionBlock(commanderText, ""));
+
+      // Communications Lead
+      String communicationsLead = extractUserMention(incident, RoleType.Communications_Lead);
+      String communicationsLeadText =
+          String.format(
+              ":phone: *Communications Lead:* %s",
+              communicationsLead.isEmpty() ? "N/A" : communicationsLead);
+      layoutBlocks.add(SlackBlockFactory.createSectionBlock(communicationsLeadText, ""));
+
+      // Summary
+      String summaryText =
+          String.format(
+              ":open_book: *Summary:* %s",
+              Optional.ofNullable(incident.getSummary()).orElse("N/A"));
+      layoutBlocks.add(SlackBlockFactory.createSectionBlock(summaryText, ""));
+
+      // Started At
+      String startedAtText =
+          String.format(":clock1: *Started At:* %s", formatUnixTimestamp(incident.getCreatedAt()));
+      layoutBlocks.add(SlackBlockFactory.createSectionBlock(startedAtText, ""));
+
+      // Completed At (if resolved)
+      if (incident.getStatus() == Status.Resolved && incident.getUpdatedAt() != null) {
+        String completedAtText =
+            String.format(
+                ":checkered_flag: *Completed At:* %s",
+                formatUnixTimestamp(incident.getUpdatedAt()));
+        layoutBlocks.add(SlackBlockFactory.createSectionBlock(completedAtText, ""));
+      }
+
+    } catch (Exception e) {
+      logger.error("Error while building layout blocks for incident: {}", incident, e);
+      // Depending on your application's needs, you might want to rethrow or handle differently
+      throw new RuntimeException("Failed to build incident details layout.", e);
     }
 
-    private void registerListClosedIncidentsShortcut() throws RuntimeException {
+    return layoutBlocks;
+  }
+
+  /**
+   * Extracts and formats the user mention for a given role type.
+   *
+   * @param incident The incident containing roles.
+   * @param roleType The role type to extract.
+   * @return The formatted user mention or empty string if not found.
+   */
+  private String extractUserMention(Incident incident, RoleType roleType) {
+    if (incident.getRoles() == null || incident.getRoles().isEmpty()) {
+      logger.warn("Incident roles are null or empty.");
+      return "";
+    }
+
+    Optional<Role> roleOpt =
+        incident.getRoles().stream()
+            .filter(role -> roleType.equals(role.getRoleType()))
+            .findFirst();
+
+    if (roleOpt.isPresent()) {
+      String userId =
+          Optional.ofNullable(roleOpt.get().getUserDetails())
+              .map(UserDetails::getUserId)
+              .orElse("");
+      if (!userId.isEmpty()) {
+        return String.format("<@%s>", userId);
+      }
+    }
+
+    logger.info("Role '{}' not found or userId is empty.", roleType);
+    return "";
+  }
+
+  /**
+   * Formats a Unix timestamp (in seconds) to a human-readable date string.
+   *
+   * @param unixTimestamp The Unix timestamp in seconds.
+   * @return The formatted date string or "Invalid Date" if timestamp is invalid.
+   */
+  private String formatUnixTimestamp(long unixTimestamp) {
+    try {
+      Date date = new Date(unixTimestamp * 1000L);
+      return date.toString(); // Customize the format as needed
+    } catch (Exception e) {
+      logger.error("Invalid Unix timestamp: {}", unixTimestamp, e);
+      return "Invalid Date";
+    }
+  }
+
+  private void registerListClosedIncidentsShortcut() throws RuntimeException {
     // Handle the "list_closed_incidents_modal" shortcut
     slackApp.globalShortcut(
         "list_closed_incidents_modal",
@@ -1098,7 +1355,6 @@ public class SlackServiceImpl implements SlackService {
           channels.add(channel1);
 
           // Create incident record in the database
-          // <<<<<<< Updated upstream
           CreateRequest createRequest = new CreateRequest();
           createRequest.setIdentifier(incidentId);
           createRequest.setName(name);
@@ -1110,28 +1366,6 @@ public class SlackServiceImpl implements SlackService {
           createRequest.setIncidentChannel(incidentChannel);
           createRequest.setChannels(channels);
           Incident incident = incidentService.createIncident(createRequest, finalUserDetails);
-          // =======
-          //          Incident newIncident = new Incident();
-          //          newIncident.setAccountIdentifier(defaultAccountId);
-          //          newIncident.setOrgIdentifier(defaultOrgId);
-          //          newIncident.setProjectIdentifier(defaultProjectId);
-          //          newIncident.setIdentifier(incidentId);
-          //          newIncident.setName(name);
-          //          newIncident.setType(Type.valueOf(incidentType));
-          //          newIncident.setStatus(Status.STARTED);
-          //          newIncident.setRoles(roles);
-          //          newIncident.setSeverity(Severity.valueOf(severity));
-          //          newIncident.setSummary(summary);
-          //          newIncident.setIncidentChannel(incidentChannel);
-          //          newIncident.setChannels(channels);
-          //          //          newIncident.
-          // >>>>>>> Stashed changes
-
-          userDetails.setName(payload.getPayload().getUser().getName());
-          userDetails.setUserName(payload.getPayload().getUser().getUsername());
-          userDetails.setUserId(payload.getPayload().getUser().getId());
-          //          userDetails.setEmail(payload.getPayload().getUser().get);
-          userDetails.setSource(ChannelSource.Slack);
 
           // Post messages in Slack
           sendCreateIncidentResponseMsg(
@@ -1199,14 +1433,15 @@ public class SlackServiceImpl implements SlackService {
 
   private SectionBlock createIncidentStatusAndCommanderSection(
       Incident newIncident, String incidentCommander) {
-    return SectionBlock.builder()
-        .fields(
-            List.of(
-                buildMarkdownTextObject(
-                    newIncident.getStatus().toString(), "Current Status", ":eyes:"),
-                buildMarkdownTextObject(
-                    "<@" + incidentCommander + ">", "Incident Commander", ":firefighter:")))
-        .build();
+    List<TextObject> blocks = new ArrayList<TextObject>();
+    blocks.add(
+        buildMarkdownTextObject(newIncident.getStatus().toString(), "Current Status", ":eyes:"));
+    if (!incidentCommander.isEmpty()) {
+      blocks.add(
+          buildMarkdownTextObject(
+              "<@" + incidentCommander + ">", "Incident Commander", ":firefighter:"));
+    }
+    return SectionBlock.builder().fields(blocks).build();
   }
 
   private MarkdownTextObject buildMarkdownTextObject(String value, String label, String emoji) {
@@ -1483,14 +1718,17 @@ public class SlackServiceImpl implements SlackService {
         fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
   }
 
-    private void updateIncidentRoles(String incidentIdentifier, List<Role> roles, UserDetails userDetails) {
-        try {
-            Incident updatedIncident = incidentService.updateIncidentRoles(incidentIdentifier, roles, userDetails);
-            sendUpdateRoleResponseMsg(updatedIncident.getChannels().get(0).getId(), updatedIncident, roles);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+  private void updateIncidentRoles(
+      String incidentIdentifier, List<Role> roles, UserDetails userDetails) {
+    try {
+      Incident updatedIncident =
+          incidentService.updateIncidentRoles(incidentIdentifier, roles, userDetails);
+      sendUpdateRoleResponseMsg(
+          updatedIncident.getChannels().get(0).getId(), updatedIncident, roles);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
+  }
 
   private void updateIncidentSummary(
       String incidentIdentifier, String updatedSummary, UserDetails user) {
@@ -1507,31 +1745,34 @@ public class SlackServiceImpl implements SlackService {
     }
   }
 
-  private void updateIncidentSeverity(String incidentIdentifier, String severity, UserDetails user) {
-      Severity newSeverity = Severity.valueOf(severity);
-      try {
-          Incident updatedIncident = incidentService.updateIncidentSeverity(incidentIdentifier, newSeverity, user);
+  private void updateIncidentSeverity(
+      String incidentIdentifier, String severity, UserDetails user) {
+    Severity newSeverity = Severity.valueOf(severity);
+    try {
+      Incident updatedIncident =
+          incidentService.updateIncidentSeverity(incidentIdentifier, newSeverity, user);
 
-          sendUpdateSeverityResponseMsg(
-                  updatedIncident.getChannels().get(0).getId(), updatedIncident, severity);
-      } catch (Exception e) {
-          throw new RuntimeException(e);
-      }
+      sendUpdateSeverityResponseMsg(
+          updatedIncident.getChannels().get(0).getId(), updatedIncident, severity);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
-    private void updateIncidentStatus(String incidentIdentifier, String status, UserDetails user) {
-      Status updatedStatus = Status.valueOf(status);
-        // Simulate a service call to add a new incident comment
-        try {
-            Incident updatedIncident = incidentService.updateStatus(incidentIdentifier, updatedStatus, user);
+  private void updateIncidentStatus(String incidentIdentifier, String status, UserDetails user) {
+    Status updatedStatus = Status.valueOf(status);
+    // Simulate a service call to add a new incident comment
+    try {
+      Incident updatedIncident =
+          incidentService.updateStatus(incidentIdentifier, updatedStatus, user);
 
-            // Send confirmation message to Slack
-            sendUpdateStatusResponseMsg(
-                    updatedIncident.getChannels().get(0).getId(), updatedIncident, status);
-        } catch (Exception e) {
-            logger.error("Failed to add a new incident comment: {}", e.getMessage(), e);
-        }
+      // Send confirmation message to Slack
+      sendUpdateStatusResponseMsg(
+          updatedIncident.getChannels().get(0).getId(), updatedIncident, status);
+    } catch (Exception e) {
+      logger.error("Failed to add a new incident comment: {}", e.getMessage(), e);
     }
+  }
 
   private void updateIncidentComment(String incidentIdentifier, String comment, UserDetails user) {
     // Simulate a service call to add a new incident comment
@@ -1552,59 +1793,59 @@ public class SlackServiceImpl implements SlackService {
     return slackApp.client().usersInfo(r -> r.user(userId));
   }
 
-    private void sendUpdateRoleResponseMsg(
-            String channelID, Incident updatedIncident, List<Role> newRoles) {
-        try {
-            // Fetch user info from Slack using userId
-            UsersInfoResponse slackUserInfo =
-                    getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
-            if (slackUserInfo == null || slackUserInfo.getUser() == null) {
-                logger.error(
-                        "Add comment: failed to fetch Slack user info for userId: {}",
-                        updatedIncident.getUpdatedBy().getUserId());
-                throw new IllegalStateException("Unable to fetch Slack user info");
-            }
+  private void sendUpdateRoleResponseMsg(
+      String channelID, Incident updatedIncident, List<Role> newRoles) {
+    try {
+      // Fetch user info from Slack using userId
+      UsersInfoResponse slackUserInfo =
+          getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
+      if (slackUserInfo == null || slackUserInfo.getUser() == null) {
+        logger.error(
+            "Add comment: failed to fetch Slack user info for userId: {}",
+            updatedIncident.getUpdatedBy().getUserId());
+        throw new IllegalStateException("Unable to fetch Slack user info");
+      }
 
-            // Get the Slack handle (username)
-            List<String> roleUpdates = new ArrayList<>();
-            for(Role newRole: newRoles) {
-                if(newRole.getUserDetails().getUserId() != null) {
-                    roleUpdates.add(String.format("*%s*: <@%s>", newRole.getRoleType().getDisplayValue(),
-                            newRole.getUserDetails().getUserId()));
-                }
-            }
-
-
-
-            String messageText =
-                    String.format(
-                            ":firefighter: *Roles Updated*\nThe following roles have been updated:\n%s",
-                            Strings.join(roleUpdates, '\n'));
-
-            // Send the added comment response message back to the Slack channel
-            ChatPostMessageResponse response =
-                    slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
-
-            if (!response.isOk()) {
-                String errorMessage = "Failed to send add comment error message: " + response.getError();
-                logger.error(errorMessage);
-                throw new RuntimeException(errorMessage);
-            }
-
-            logger.info("Comment addition confirmation successfully posted to channel: {}", channelID);
-        } catch (IOException e) {
-            logger.error("IOException occurred while posting message to Slack: {}", e.getMessage(), e);
-            // Optionally, add a retry mechanism or send a failure notification to users
-        } catch (SlackApiException e) {
-            logger.error("Slack API error occurred while posting message: {}", e.getMessage(), e);
-            // Handle specific Slack API exceptions if needed (e.g., retry on rate limit errors)
-        } catch (IllegalStateException e) {
-            logger.error("Error in fetching Slack user info: {}", e.getMessage(), e);
-        } catch (Exception e) {
-            logger.error("Unexpected error occurred: {}", e.getMessage(), e);
-            // Optionally, send a failure notification or alert to a monitoring system
+      // Get the Slack handle (username)
+      List<String> roleUpdates = new ArrayList<>();
+      for (Role newRole : newRoles) {
+        if (newRole.getUserDetails().getUserId() != null) {
+          roleUpdates.add(
+              String.format(
+                  "*%s*: <@%s>",
+                  newRole.getRoleType().getDisplayValue(), newRole.getUserDetails().getUserId()));
         }
+      }
+
+      String messageText =
+          String.format(
+              ":firefighter: *Roles Updated*\nThe following roles have been updated:\n%s",
+              Strings.join(roleUpdates, '\n'));
+
+      // Send the added comment response message back to the Slack channel
+      ChatPostMessageResponse response =
+          slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
+
+      if (!response.isOk()) {
+        String errorMessage = "Failed to send add comment error message: " + response.getError();
+        logger.error(errorMessage);
+        throw new RuntimeException(errorMessage);
+      }
+
+      logger.info("Comment addition confirmation successfully posted to channel: {}", channelID);
+    } catch (IOException e) {
+      logger.error("IOException occurred while posting message to Slack: {}", e.getMessage(), e);
+      // Optionally, add a retry mechanism or send a failure notification to users
+    } catch (SlackApiException e) {
+      logger.error("Slack API error occurred while posting message: {}", e.getMessage(), e);
+      // Handle specific Slack API exceptions if needed (e.g., retry on rate limit errors)
+    } catch (IllegalStateException e) {
+      logger.error("Error in fetching Slack user info: {}", e.getMessage(), e);
+    } catch (Exception e) {
+      logger.error("Unexpected error occurred: {}", e.getMessage(), e);
+      // Optionally, send a failure notification or alert to a monitoring system
     }
+  }
 
   private void sendAddCommentResponseMsg(
       String channelID, Incident updatedIncident, String newComment) {
@@ -1653,100 +1894,99 @@ public class SlackServiceImpl implements SlackService {
     }
   }
 
-    private void sendUpdateStatusResponseMsg(
-            String channelID, Incident updatedIncident, String newStatus) {
-        try {
-            // Fetch user info from Slack using userId
-            UsersInfoResponse slackUserInfo =
-                    getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
-            if (slackUserInfo == null || slackUserInfo.getUser() == null) {
-                logger.error(
-                        "Update status: failed to fetch Slack user info for userId: {}",
-                        updatedIncident.getUpdatedBy().getUserId());
-                throw new IllegalStateException("Unable to fetch Slack user info");
-            }
+  private void sendUpdateStatusResponseMsg(
+      String channelID, Incident updatedIncident, String newStatus) {
+    try {
+      // Fetch user info from Slack using userId
+      UsersInfoResponse slackUserInfo =
+          getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
+      if (slackUserInfo == null || slackUserInfo.getUser() == null) {
+        logger.error(
+            "Update status: failed to fetch Slack user info for userId: {}",
+            updatedIncident.getUpdatedBy().getUserId());
+        throw new IllegalStateException("Unable to fetch Slack user info");
+      }
 
-            // Get the Slack handle (username)
-            String slackHandle = slackUserInfo.getUser().getName();
+      // Get the Slack handle (username)
+      String slackHandle = slackUserInfo.getUser().getName();
 
-            // Prepare the message text
-            String messageText =
-                    String.format(
-                            ":eyes: *Status Updated*\n <@%s> updated the status to: _%s_",
-                            slackHandle, newStatus);
+      // Prepare the message text
+      String messageText =
+          String.format(
+              ":eyes: *Status Updated*\n <@%s> updated the status to: _%s_",
+              slackHandle, newStatus);
 
-            // Send the added comment response message back to the Slack channel
-            ChatPostMessageResponse response =
-                    slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
+      // Send the added comment response message back to the Slack channel
+      ChatPostMessageResponse response =
+          slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
 
-            if (!response.isOk()) {
-                String errorMessage = "Failed to send add comment error message: " + response.getError();
-                logger.error(errorMessage);
-                throw new RuntimeException(errorMessage);
-            }
+      if (!response.isOk()) {
+        String errorMessage = "Failed to send add comment error message: " + response.getError();
+        logger.error(errorMessage);
+        throw new RuntimeException(errorMessage);
+      }
 
-            logger.info("Comment addition confirmation successfully posted to channel: {}", channelID);
-        } catch (IOException e) {
-            logger.error("IOException occurred while posting message to Slack: {}", e.getMessage(), e);
-            // Optionally, add a retry mechanism or send a failure notification to users
-        } catch (SlackApiException e) {
-            logger.error("Slack API error occurred while posting message: {}", e.getMessage(), e);
-            // Handle specific Slack API exceptions if needed (e.g., retry on rate limit errors)
-        } catch (IllegalStateException e) {
-            logger.error("Error in fetching Slack user info: {}", e.getMessage(), e);
-        } catch (Exception e) {
-            logger.error("Unexpected error occurred: {}", e.getMessage(), e);
-            // Optionally, send a failure notification or alert to a monitoring system
-        }
+      logger.info("Comment addition confirmation successfully posted to channel: {}", channelID);
+    } catch (IOException e) {
+      logger.error("IOException occurred while posting message to Slack: {}", e.getMessage(), e);
+      // Optionally, add a retry mechanism or send a failure notification to users
+    } catch (SlackApiException e) {
+      logger.error("Slack API error occurred while posting message: {}", e.getMessage(), e);
+      // Handle specific Slack API exceptions if needed (e.g., retry on rate limit errors)
+    } catch (IllegalStateException e) {
+      logger.error("Error in fetching Slack user info: {}", e.getMessage(), e);
+    } catch (Exception e) {
+      logger.error("Unexpected error occurred: {}", e.getMessage(), e);
+      // Optionally, send a failure notification or alert to a monitoring system
     }
+  }
 
+  private void sendUpdateSeverityResponseMsg(
+      String channelID, Incident updatedIncident, String newSeverity) {
+    try {
+      // Fetch user info from Slack using userId
+      UsersInfoResponse slackUserInfo =
+          getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
+      if (slackUserInfo == null || slackUserInfo.getUser() == null) {
+        logger.error(
+            "Failed to fetch Slack user info for userId: {}",
+            updatedIncident.getUpdatedBy().getUserId());
+        throw new IllegalStateException("Unable to fetch Slack user info");
+      }
 
-    private void sendUpdateSeverityResponseMsg(
-            String channelID, Incident updatedIncident, String newSeverity) {
-        try {
-            // Fetch user info from Slack using userId
-            UsersInfoResponse slackUserInfo =
-                    getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
-            if (slackUserInfo == null || slackUserInfo.getUser() == null) {
-                logger.error(
-                        "Failed to fetch Slack user info for userId: {}",
-                        updatedIncident.getUpdatedBy().getUserId());
-                throw new IllegalStateException("Unable to fetch Slack user info");
-            }
+      // Get the Slack handle (username)
+      String slackHandle = slackUserInfo.getUser().getName();
 
-            // Get the Slack handle (username)
-            String slackHandle = slackUserInfo.getUser().getName();
+      // Prepare the message text
+      String messageText =
+          String.format(
+              ":vertical_traffic_light: *Severity Updated*\n <@%s> updated the severity to: _%s_",
+              slackHandle, newSeverity);
 
-            // Prepare the message text
-            String messageText =
-                    String.format(
-                            ":vertical_traffic_light: *Severity Updated*\n <@%s> updated the severity to: _%s_",
-                            slackHandle, newSeverity);
+      // Send the update summary response message back to the Slack channel
+      ChatPostMessageResponse response =
+          slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
 
-            // Send the update summary response message back to the Slack channel
-            ChatPostMessageResponse response =
-                    slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
+      if (!response.isOk()) {
+        String errorMessage = "Failed to send message: " + response.getError();
+        logger.error(errorMessage);
+        throw new RuntimeException(errorMessage);
+      }
 
-            if (!response.isOk()) {
-                String errorMessage = "Failed to send message: " + response.getError();
-                logger.error(errorMessage);
-                throw new RuntimeException(errorMessage);
-            }
-
-            logger.info("Summary update confirmation successfully posted to channel: {}", channelID);
-        } catch (IOException e) {
-            logger.error("IOException occurred while posting message to Slack: {}", e.getMessage(), e);
-            // Optionally, add a retry mechanism or send a failure notification to users
-        } catch (SlackApiException e) {
-            logger.error("Slack API error occurred while posting message: {}", e.getMessage(), e);
-            // Handle specific Slack API exceptions if needed (e.g., retry on rate limit errors)
-        } catch (IllegalStateException e) {
-            logger.error("Error in fetching Slack user info: {}", e.getMessage(), e);
-        } catch (Exception e) {
-            logger.error("Unexpected error occurred: {}", e.getMessage(), e);
-            // Optionally, send a failure notification or alert to a monitoring system
-        }
+      logger.info("Summary update confirmation successfully posted to channel: {}", channelID);
+    } catch (IOException e) {
+      logger.error("IOException occurred while posting message to Slack: {}", e.getMessage(), e);
+      // Optionally, add a retry mechanism or send a failure notification to users
+    } catch (SlackApiException e) {
+      logger.error("Slack API error occurred while posting message: {}", e.getMessage(), e);
+      // Handle specific Slack API exceptions if needed (e.g., retry on rate limit errors)
+    } catch (IllegalStateException e) {
+      logger.error("Error in fetching Slack user info: {}", e.getMessage(), e);
+    } catch (Exception e) {
+      logger.error("Unexpected error occurred: {}", e.getMessage(), e);
+      // Optionally, send a failure notification or alert to a monitoring system
     }
+  }
 
   private void sendUpdateSummaryResponseMsg(
       String channelID, Incident updatedIncident, String newSummary) {
@@ -1815,41 +2055,47 @@ public class SlackServiceImpl implements SlackService {
         fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
   }
 
-  public void handleIncidentRolesViewSubmission(ViewSubmissionRequest payload) throws SlackApiException, IOException {
+  public void handleIncidentRolesViewSubmission(ViewSubmissionRequest payload)
+      throws SlackApiException, IOException {
     String incidentIdentifier = payload.getPayload().getView().getPrivateMetadata();
     ViewState state = payload.getPayload().getView().getState();
     Map<String, String> roleMapping = new HashMap<>();
     Map<String, Map<String, ViewState.Value>> stateValues = state.getValues();
-//    List<String> roles = Arrays.asList("create_incident_modal_set_Incident_Commander", "create_incident_modal_set_Communications_Lead");
-    List<String> roles = Arrays.stream(RoleType.values()).map(RoleType::getValue).collect(Collectors.toList());
+    //    List<String> roles = Arrays.asList("create_incident_modal_set_Incident_Commander",
+    // "create_incident_modal_set_Communications_Lead");
+    List<String> roles =
+        Arrays.stream(RoleType.values()).map(RoleType::getValue).collect(Collectors.toList());
     Map<String, UserDetails> roleUserDetails = new HashMap<>();
-    for(String key: stateValues.keySet()) {
-        Map<String, ViewState.Value> viewState = stateValues.get(key);
-        for(String role: roles) {
-            String viewStateKey = "create_incident_modal_set_" + role;
-            ViewState.Value viewStateValue = viewState.get(viewStateKey);
-            if(viewStateValue != null) {
-                String selectedUser = viewStateValue.getSelectedUser();
-                if (selectedUser != null) {
-                    roleUserDetails.put(role, fetchSlackUserDetails(selectedUser, ChannelSource.Slack));
-                } else {
-                    roleUserDetails.put(role, new UserDetails());
-                }
-            }
+    for (String key : stateValues.keySet()) {
+      Map<String, ViewState.Value> viewState = stateValues.get(key);
+      for (String role : roles) {
+        String viewStateKey = "create_incident_modal_set_" + role;
+        ViewState.Value viewStateValue = viewState.get(viewStateKey);
+        if (viewStateValue != null) {
+          String selectedUser = viewStateValue.getSelectedUser();
+          if (selectedUser != null) {
+            roleUserDetails.put(role, fetchSlackUserDetails(selectedUser, ChannelSource.Slack));
+          } else {
+            roleUserDetails.put(role, new UserDetails());
+          }
         }
+      }
     }
     List<Role> roleList = new ArrayList<>();
-    for(String roleType: roleUserDetails.keySet()) {
-        Role role = new Role();
-        role.setRoleType(RoleType.valueOf(roleType));
-        role.setUserDetails(roleUserDetails.get(roleType));
-        roleList.add(role);
+    for (String roleType : roleUserDetails.keySet()) {
+      Role role = new Role();
+      role.setRoleType(RoleType.valueOf(roleType));
+      role.setUserDetails(roleUserDetails.get(roleType));
+      roleList.add(role);
     }
-    updateIncidentRoles(incidentIdentifier, roleList,
-            fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
+    updateIncidentRoles(
+        incidentIdentifier,
+        roleList,
+        fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
   }
 
-    public void handleIncidentStatusViewSubmission(ViewSubmissionRequest payload) throws SlackApiException, IOException {
+  public void handleIncidentStatusViewSubmission(ViewSubmissionRequest payload)
+      throws SlackApiException, IOException {
     String incidentIdentifier = payload.getPayload().getView().getPrivateMetadata();
     String status =
         payload
@@ -1861,11 +2107,15 @@ public class SlackServiceImpl implements SlackService {
             .get("create_incident_modal_set_incident_status")
             .getSelectedOption()
             .getValue();
-    updateIncidentStatus(incidentIdentifier, status, fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
+    updateIncidentStatus(
+        incidentIdentifier,
+        status,
+        fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
     logger.info("Incident Identifier: {}, Updated Status: {}", incidentIdentifier, status);
   }
 
-  public void handleIncidentSeverityViewSubmission(ViewSubmissionRequest payload) throws SlackApiException, IOException {
+  public void handleIncidentSeverityViewSubmission(ViewSubmissionRequest payload)
+      throws SlackApiException, IOException {
     String incidentIdentifier = payload.getPayload().getView().getPrivateMetadata();
     String severity =
         payload
@@ -1878,8 +2128,103 @@ public class SlackServiceImpl implements SlackService {
             .getSelectedOption()
             .getValue();
 
-    updateIncidentSeverity(incidentIdentifier, severity, fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
+    updateIncidentSeverity(
+        incidentIdentifier,
+        severity,
+        fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
     logger.info("Incident Identifier: {}, Updated Severity: {}", incidentIdentifier, severity);
+  }
+
+  /** Registers the "Create Incident" button handler. */
+  private void registerCreateIncidentButton() {
+    slackApp.blockAction(
+        "create_incident_modal", // The action ID for the button
+        (payload, ctx) -> {
+          // Perform processing asynchronously
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  logger.info("Handling 'Create Incident' button click: {}", payload);
+
+                  // Build the modal view
+                  List<LayoutBlock> blocks = new ArrayList<>();
+                  blocks.add(
+                      SectionBlock.builder()
+                          .text(
+                              MarkdownTextObject.builder()
+                                  .text(
+                                      "This will start a new incident channel, and you will "
+                                          + "be invited to it. From there, please use our incident "
+                                          + "management process to run the incident or coordinate "
+                                          + "with others to do so.")
+                                  .build())
+                          .build());
+                  blocks.add(getNameBlock());
+                  blocks.add(getTypeBlock());
+                  blocks.add(
+                      getSummaryBlock(
+                          "create_incident_modal_summary", "create_incident_modal_set_summary"));
+                  blocks.add(getSeverityBlock());
+                  blocks.add(getRoleBlock());
+                  blocks.add(getChannelSelectBlock());
+
+                  View modalView =
+                      Views.view(
+                          v ->
+                              v.type("modal")
+                                  .callbackId("create_incident_modal")
+                                  .title(
+                                      Views.viewTitle(
+                                          title ->
+                                              title
+                                                  .type("plain_text")
+                                                  .text("Start a new incident")))
+                                  .blocks(blocks)
+                                  .submit(
+                                      Views.viewSubmit(
+                                          submit -> submit.type("plain_text").text("Start"))));
+
+                  // Open the modal view
+                  ViewsOpenResponse response =
+                      ctx.client()
+                          .viewsOpen(
+                              r ->
+                                  r.triggerId(payload.getPayload().getTriggerId()).view(modalView));
+
+                  if (response.isOk()) {
+                    logger.info("Create Incident modal opened successfully.");
+                  } else {
+                    logger.error("Failed to open Create Incident modal: {}", response.getError());
+                    // Optionally, notify the user about the failure
+                    slackApp
+                        .client()
+                        .chatPostMessage(
+                            r ->
+                                r.channel(payload.getPayload().getUser().getId())
+                                    .text(
+                                        "Failed to open the incident creation modal. Please try again."));
+                  }
+                } catch (Exception e) {
+                  logger.error("Exception while handling 'Create Incident' button click", e);
+                  // Optionally, notify the user about the exception
+                  try {
+                    slackApp
+                        .client()
+                        .chatPostMessage(
+                            r ->
+                                r.channel(payload.getPayload().getUser().getId())
+                                    .text(
+                                        "An error occurred while creating the incident. Please try again."));
+                  } catch (IOException | SlackApiException ex) {
+                    throw new RuntimeException(ex);
+                  }
+                }
+              },
+              executorService);
+
+          // Acknowledge immediately
+          return ctx.ack();
+        });
   }
 
   public void createIncident(GlobalShortcutRequest req, GlobalShortcutContext ctx) {
@@ -2012,76 +2357,63 @@ public class SlackServiceImpl implements SlackService {
                                 .options(options))));
   }
 
-    private List<LayoutBlock> getUpdateRoleBlock() {
-        List<LayoutBlock> blocks = new ArrayList<>();
-        for(RoleType role: RoleType.values()) {
-            TextObject roleText = PlainTextObject.builder()
-                    .text(role.getDisplayValue())
+  private List<LayoutBlock> getUpdateRoleBlock() {
+    List<LayoutBlock> blocks = new ArrayList<>();
+    for (RoleType role : RoleType.values()) {
+      TextObject roleText =
+          PlainTextObject.builder().text(role.getDisplayValue()).emoji(true).build();
+
+      UsersSelectElement userSelect =
+          BlockElements.usersSelect(
+              r ->
+                  r.placeholder(PlainTextObject.builder().text("Select a user").emoji(true).build())
+                      .actionId("create_incident_modal_set_" + role));
+
+      SectionBlock section = SectionBlock.builder().text(roleText).accessory(userSelect).build();
+
+      blocks.add(section);
+    }
+    return blocks;
+  }
+
+  public InputBlock updateStatus() {
+    List<Status> supportedIncidentStatuses = Arrays.asList(Status.values());
+
+    if (supportedIncidentStatuses.isEmpty()) {
+      throw new IllegalStateException("No incident statuses available.");
+    }
+    List<OptionObject> incidentStatusOptions = new ArrayList<>();
+
+    for (Status incidentStatus : supportedIncidentStatuses) {
+      OptionObject option =
+          OptionObject.builder()
+              .text(PlainTextObject.builder().text(incidentStatus.getValue()).emoji(true).build())
+              .value(incidentStatus.getValue())
+              .build();
+      incidentStatusOptions.add(option);
+    }
+
+    StaticSelectElement selectElement =
+        StaticSelectElement.builder()
+            .actionId("create_incident_modal_set_incident_status")
+            .placeholder(
+                PlainTextObject.builder()
+                    .text("Select status of the incident...")
                     .emoji(true)
-                    .build();
+                    .build())
+            .options(incidentStatusOptions)
+            .build();
 
-            UsersSelectElement userSelect = BlockElements.usersSelect(r -> r
-                    .placeholder(PlainTextObject.builder()
-                            .text("Select a user")
-                            .emoji(true)
-                            .build())
-                    .actionId("create_incident_modal_set_" + role)
-            );
+    PlainTextObject label =
+        PlainTextObject.builder().text(":arrows_counterclockwise: Status").emoji(true).build();
 
-            SectionBlock section = SectionBlock.builder()
-                    .text(roleText)
-                    .accessory(userSelect)
-                    .build();
+    InputBlock statusInputBlock =
+        Blocks.input(block -> block.blockId("incident_status").element(selectElement).label(label));
 
-            blocks.add(section);
-        }
-        return blocks;
-    }
+    return statusInputBlock;
+  }
 
-    public InputBlock updateStatus() {
-        List<Status> supportedIncidentStatuses = Arrays.asList(Status.values());
-
-        if (supportedIncidentStatuses.isEmpty()) {
-            throw new IllegalStateException("No incident statuses available.");
-        }
-        List<OptionObject> incidentStatusOptions = new ArrayList<>();
-
-        for (Status incidentStatus : supportedIncidentStatuses) {
-            OptionObject option = OptionObject.builder()
-                    .text(PlainTextObject.builder()
-                            .text(incidentStatus.getValue())
-                            .emoji(true)
-                            .build())
-                    .value(incidentStatus.getValue())
-                    .build();
-            incidentStatusOptions.add(option);
-        }
-
-        StaticSelectElement selectElement = StaticSelectElement.builder()
-                .actionId("create_incident_modal_set_incident_status")
-                .placeholder(PlainTextObject.builder()
-                        .text("Select status of the incident...")
-                        .emoji(true)
-                        .build())
-                .options(incidentStatusOptions)
-                .build();
-
-        PlainTextObject label = PlainTextObject.builder()
-                .text(":arrows_counterclockwise: Status")
-                .emoji(true)
-                .build();
-
-        InputBlock statusInputBlock = Blocks.input(block -> block
-                .blockId("incident_status")
-                .element(selectElement)
-                .label(label)
-        );
-
-        return statusInputBlock;
-    }
-
-
-    private InputBlock getChannelSelectBlock() {
+  private InputBlock getChannelSelectBlock() {
     return Blocks.input(
         i ->
             i.blockId("create_incident_modal_conversation_select")
@@ -2170,11 +2502,11 @@ public class SlackServiceImpl implements SlackService {
     try {
       Query query;
       if (slackIncidentType.equals(SlackIncidentType.Open)) {
-          Criteria criteria = Criteria.where("status").ne("Resolved");
-          query = new Query(criteria);
+        Criteria criteria = Criteria.where("status").ne("Resolved");
+        query = new Query(criteria);
       } else {
-          Criteria criteria = Criteria.where("status").is("Resolved");
-          query = new Query(criteria);
+        Criteria criteria = Criteria.where("status").is("Resolved");
+        query = new Query(criteria);
       }
       List<Incident> listIncidents = incidentService.listIncidents(query);
 
