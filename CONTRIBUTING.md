@@ -44,7 +44,7 @@ Signed-off-by: Joe Smith <joe.smith@email.com>
 
 Use your real name (sorry, no pseudonyms or anonymous contributions.)
 
-If you set your `user.name` and `user.email` git configs, you can sign your commit automatically with `git commit -s`. You can also use git [aliases](https://git-scm.com/book/tr/v2/Git-Basics-Git-Aliases) like `git config --global alias.ci 'commit -s'`. Now you can commit with git ci and the commit will be signed.
+If you set your `user.name` and `user.email` git configs, you can sign your commit automatically with `git commit -s`. You can also use git aliases like `git config --global alias.ci 'commit -s'`. Now you can commit with git ci and the commit will be signed.
 
 <br />
 
