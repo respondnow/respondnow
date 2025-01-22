@@ -1,36 +1,63 @@
 package io.respondnow.controller;
 
-import io.respondnow.dto.auth.*;
+import io.respondnow.dto.auth.AddUserInput;
+import io.respondnow.dto.auth.ChangePasswordInput;
+import io.respondnow.dto.auth.ChangePasswordResponseDTO;
+import io.respondnow.dto.auth.ChangePasswordResponseData;
+import io.respondnow.dto.auth.GetUserMappingResponseDTO;
+import io.respondnow.dto.auth.LoginResponseDTO;
+import io.respondnow.dto.auth.LoginResponseData;
+import io.respondnow.dto.auth.LoginUserInput;
+import io.respondnow.dto.auth.SignupResponseDTO;
+import io.respondnow.dto.auth.UserMappingData;
 import io.respondnow.exception.EmailAlreadyExistsException;
 import io.respondnow.exception.UserNotFoundException;
 import io.respondnow.model.user.User;
 import io.respondnow.service.auth.AuthService;
 import io.respondnow.service.hierarchy.UserMappingService;
 import io.respondnow.util.JWTUtil;
+import io.respondnow.util.constants.AppConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
+
+import static io.respondnow.model.incident.ChangeType.Status;
+import static io.respondnow.util.constants.AppConstants.ApiPaths.AUTH_BASE;
+import static io.respondnow.util.constants.AppConstants.ApiPaths.CHANGE_PASSWORD;
+import static io.respondnow.util.constants.AppConstants.ApiPaths.LOGIN;
+import static io.respondnow.util.constants.AppConstants.ApiPaths.SIGNUP;
+import static io.respondnow.util.constants.AppConstants.ApiPaths.USER_MAPPING;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping(AUTH_BASE)
+@Slf4j
 public class AuthController {
 
-  @Autowired private AuthService authService;
+  private final AuthService authService;
+  private final UserMappingService userMappingService;
+  private final JWTUtil jwtUtil;
 
-  @Autowired private UserMappingService userMappingService;
-
-  @Autowired private JWTUtil jwtUtil;
-
-  private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+  @Autowired
+  public AuthController(AuthService authService, UserMappingService userMappingService, JWTUtil jwtUtil) {
+    this.authService = authService;
+    this.userMappingService = userMappingService;
+    this.jwtUtil = jwtUtil;
+  }
 
   @Operation(summary = "Sign up a new user")
   @ApiResponses({
@@ -38,24 +65,24 @@ public class AuthController {
     @ApiResponse(responseCode = "400", description = "Bad Request"),
     @ApiResponse(responseCode = "409", description = "Conflict - Email already exists")
   })
-  @PostMapping("/signup")
+  @PostMapping(SIGNUP)
   public ResponseEntity<SignupResponseDTO> signup(@RequestBody @Valid AddUserInput input) {
     try {
       User user = authService.signup(input);
       String token = jwtUtil.generateToken(user.getName(), user.getUserId(), user.getEmail());
 
       SignupResponseDTO response =
-          new SignupResponseDTO("success", "User registered successfully", token, user);
-      return ResponseEntity.status(201).body(response);
+          new SignupResponseDTO(AppConstants.ResponseStatus.SUCCESS, "User registered successfully", token, user);
+      return ResponseEntity.status(HttpStatus.CREATED).body(response);
     } catch (EmailAlreadyExistsException e) {
       // Handle the case where email already exists
       SignupResponseDTO response =
-          new SignupResponseDTO("error", "Email already exists", null, null);
-      return ResponseEntity.status(409).body(response); // 409 Conflict
+          new SignupResponseDTO(AppConstants.ResponseStatus.ERROR, "Email already exists", null, null);
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     } catch (Exception e) {
       // Handle any other errors (e.g. bad request, unexpected errors)
-      SignupResponseDTO response = new SignupResponseDTO("error", "Bad Request", null, null);
-      return ResponseEntity.status(400).body(response); // 400 Bad Request
+      SignupResponseDTO response = new SignupResponseDTO(AppConstants.ResponseStatus.ERROR, "Bad Request", null, null);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // 400 Bad Request
     }
   }
 
@@ -65,31 +92,31 @@ public class AuthController {
     @ApiResponse(responseCode = "400", description = "Bad Request"),
     @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid credentials")
   })
-  @PostMapping("/login")
+  @PostMapping(LOGIN)
   public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginUserInput input) {
     try {
       User user = authService.login(input);
       String token = jwtUtil.generateToken(user.getName(), user.getUserId(), user.getEmail());
 
-      if (user.getChangePasswordRequired()) {
+      if (Boolean.TRUE.equals(user.getChangePasswordRequired())) {
         LoginResponseData data = new LoginResponseData(token, user.getLastLoginAt(), true);
         LoginResponseDTO response =
-            new LoginResponseDTO("success", "Change Password is required", data);
+            new LoginResponseDTO(AppConstants.ResponseStatus.ERROR, "Change Password is required", data);
         return ResponseEntity.ok(response);
       }
 
       LoginResponseData data =
           new LoginResponseData(
               token, System.currentTimeMillis(), user.getChangePasswordRequired());
-      LoginResponseDTO response = new LoginResponseDTO("success", "Login successful", data);
+      LoginResponseDTO response = new LoginResponseDTO(AppConstants.ResponseStatus.SUCCESS, "Login successful", data);
       return ResponseEntity.ok(response);
     } catch (UserNotFoundException e) {
-      LoginResponseDTO response = new LoginResponseDTO("error", "User not found", null);
-      return ResponseEntity.status(404).body(response); // 404 Not Found
+      LoginResponseDTO response = new LoginResponseDTO(AppConstants.ResponseStatus.ERROR, "User not found", null);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     } catch (Exception e) {
-      logger.info(e.getMessage());
-      LoginResponseDTO response = new LoginResponseDTO("error", "Bad Request", null);
-      return ResponseEntity.status(400).body(response); // 400 Bad Request
+      log.error(e.getMessage());
+      LoginResponseDTO response = new LoginResponseDTO(AppConstants.ResponseStatus.ERROR, "Bad Request", null);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
   }
 
@@ -100,7 +127,7 @@ public class AuthController {
     @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid credentials"),
     @ApiResponse(responseCode = "404", description = "Not Found - User not found")
   })
-  @PostMapping("/changePassword")
+  @PostMapping(CHANGE_PASSWORD)
   public ResponseEntity<ChangePasswordResponseDTO> changePassword(
       @RequestBody @Valid ChangePasswordInput input) {
     try {
@@ -110,16 +137,16 @@ public class AuthController {
       ChangePasswordResponseData data =
           new ChangePasswordResponseData(token, System.currentTimeMillis());
       ChangePasswordResponseDTO response =
-          new ChangePasswordResponseDTO("success", "Password changed successfully", data);
+          new ChangePasswordResponseDTO(AppConstants.ResponseStatus.SUCCESS, "Password changed successfully", data);
       return ResponseEntity.ok(response);
     } catch (UserNotFoundException e) {
       ChangePasswordResponseDTO response =
-          new ChangePasswordResponseDTO("error", "User not found", null);
-      return ResponseEntity.status(404).body(response); // 404 Not Found
+          new ChangePasswordResponseDTO(AppConstants.ResponseStatus.ERROR, "User not found", null);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     } catch (Exception e) {
       ChangePasswordResponseDTO response =
-          new ChangePasswordResponseDTO("error", "Bad Request", null);
-      return ResponseEntity.status(400).body(response); // 404 Not Found
+          new ChangePasswordResponseDTO(AppConstants.ResponseStatus.ERROR, "Bad Request", null);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
   }
 
@@ -139,10 +166,10 @@ public class AuthController {
             description = "Internal Server Error",
             content = @Content(schema = @Schema(implementation = GetUserMappingResponseDTO.class)))
       })
-  @GetMapping("/userMapping")
+  @GetMapping(USER_MAPPING)
   public ResponseEntity<GetUserMappingResponseDTO> getUserMappings(
       @RequestParam(value = "correlationId", required = false) String correlationId,
-      @RequestParam(value = "userId", required = true) String userId) {
+      @RequestParam(value = "userId") String userId) {
 
     // Generate correlationId if not provided
     if (correlationId == null || correlationId.isEmpty()) {
@@ -153,18 +180,18 @@ public class AuthController {
 
     if (userId == null || userId.isEmpty()) {
       response.setMessage("userId is required in the query");
-      response.setStatus("ERROR");
+      response.setStatus(AppConstants.ResponseStatus.ERROR);
       return ResponseEntity.badRequest().body(response);
     }
     try {
       UserMappingData userMappingData = userMappingService.getUserMappings(correlationId, userId);
       response.setData(userMappingData);
       response.setMessage("User mappings retrieved successfully");
-      response.setStatus("SUCCESS");
+      response.setStatus(AppConstants.ResponseStatus.SUCCESS);
       return ResponseEntity.ok(response);
     } catch (RuntimeException e) {
       response.setMessage("Error: " + e.getMessage());
-      response.setStatus("ERROR");
+      response.setStatus(AppConstants.ResponseStatus.ERROR);
       return ResponseEntity.internalServerError().body(response);
     }
   }
