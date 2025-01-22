@@ -3,7 +3,7 @@ name: Build and Publish Docker Image - Server
 on:
   push:
     branches:
-      - main
+      - main-java
       - release/*
       - develop
   release:
