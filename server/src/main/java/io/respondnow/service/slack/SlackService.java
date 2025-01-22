@@ -48,13 +48,18 @@ public interface SlackService {
 
   void createIncident(ViewSubmissionRequest viewSubmission);
 
-  void handleIncidentSummaryViewSubmission(ViewSubmissionRequest viewSubmission) throws SlackApiException, IOException;
+  void handleIncidentSummaryViewSubmission(ViewSubmissionRequest viewSubmission)
+      throws SlackApiException, IOException;
 
-  void handleIncidentCommentViewSubmission(ViewSubmissionRequest viewSubmission) throws SlackApiException, IOException;
+  void handleIncidentCommentViewSubmission(ViewSubmissionRequest viewSubmission)
+      throws SlackApiException, IOException;
 
-  void handleIncidentRolesViewSubmission(ViewSubmissionRequest viewSubmission) throws SlackApiException, IOException;
+  void handleIncidentRolesViewSubmission(ViewSubmissionRequest viewSubmission)
+      throws SlackApiException, IOException;
 
-  void handleIncidentStatusViewSubmission(ViewSubmissionRequest viewSubmission) throws SlackApiException, IOException;
+  void handleIncidentStatusViewSubmission(ViewSubmissionRequest viewSubmission)
+      throws SlackApiException, IOException;
 
-  void handleIncidentSeverityViewSubmission(ViewSubmissionRequest viewSubmission) throws SlackApiException, IOException;
+  void handleIncidentSeverityViewSubmission(ViewSubmissionRequest viewSubmission)
+      throws SlackApiException, IOException;
 }

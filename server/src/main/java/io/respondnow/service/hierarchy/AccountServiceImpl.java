@@ -6,7 +6,6 @@ import io.respondnow.model.hierarchy.Account;
 import io.respondnow.repository.AccountRepository;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;

@@ -39,7 +39,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     Optional<Organization> existingOrg =
         organizationRepository.findByOrgIdentifier(organization.getOrgIdentifier());
     if (existingOrg.isPresent()) {
-      throw new orgIdentifierAlreadyExistsException("Organization with the given org_id already exists");
+      throw new orgIdentifierAlreadyExistsException(
+          "Organization with the given org_id already exists");
     }
     return organizationRepository.save(organization);
   }
@@ -53,7 +54,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     Optional<Organization> existingOrg =
         organizationRepository.findByOrgIdentifier(organization.getOrgIdentifier());
     if (existingOrg.isPresent()) {
-      throw new orgIdentifierAlreadyExistsException("Organization with the given org_id already exists");
+      throw new orgIdentifierAlreadyExistsException(
+          "Organization with the given org_id already exists");
     }
     return organizationRepository.save(organization);
   }

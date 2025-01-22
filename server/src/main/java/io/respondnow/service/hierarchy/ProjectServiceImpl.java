@@ -36,7 +36,8 @@ public class ProjectServiceImpl implements ProjectService {
   @Transactional
   public Project createProject(Project project) {
     // Check if the project already exists
-    Optional<Project> existingProject = projectRepository.findByProjectIdentifier(project.getProjectIdentifier());
+    Optional<Project> existingProject =
+        projectRepository.findByProjectIdentifier(project.getProjectIdentifier());
     if (existingProject.isPresent()) {
       throw new projectIdentifierAlreadyExistsException("Project with the given id already exists");
     }
@@ -49,7 +50,8 @@ public class ProjectServiceImpl implements ProjectService {
       backoff = @Backoff(delay = 2000, multiplier = 1.5))
   public Project createProjectWithRetry(Project project) {
     // Check if the project already exists
-    Optional<Project> existingProject = projectRepository.findByProjectIdentifier(project.getProjectIdentifier());
+    Optional<Project> existingProject =
+        projectRepository.findByProjectIdentifier(project.getProjectIdentifier());
     if (existingProject.isPresent()) {
       throw new projectIdentifierAlreadyExistsException("Project with the given id already exists");
     }
