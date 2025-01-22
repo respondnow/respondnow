@@ -1,17 +1,20 @@
 package io.respondnow.service.incident;
 
 import io.respondnow.dto.incident.CreateRequest;
+import io.respondnow.exception.IncidentNotFoundException;
 import io.respondnow.exception.InvalidIncidentException;
+import io.respondnow.exception.RoleUpdateException;
 import io.respondnow.model.incident.*;
 import io.respondnow.model.user.UserDetails;
 import io.respondnow.repository.IncidentRepository;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -35,6 +38,8 @@ public class IncidentServiceImpl implements IncidentService {
 
   @Value("${hierarchy.defaultProject.id:default_project_id}")
   private String defaultProjectId;
+
+  private static final Logger logger = LoggerFactory.getLogger(IncidentServiceImpl.class);
 
   public Incident createIncident(CreateRequest request, UserDetails currentUser) {
     long createdAt = Instant.now().getEpochSecond();
@@ -176,48 +181,131 @@ public class IncidentServiceImpl implements IncidentService {
     return updated;
   }
 
+  @Transactional
   public Incident updateIncidentRoles(
-      String incidentID, List<Role> roleUserDetails, UserDetails currentUser) throws Exception {
+      String incidentID, List<Role> newRoleAssignments, UserDetails currentUser) throws Exception {
+
+    logger.info("Starting role update for incident ID: {}", incidentID);
+
     // Step 1: Retrieve the existing incident by its ID
-    Optional<Incident> existingIncident = incidentRepository.findByIdentifier(incidentID);
-    if (existingIncident.isEmpty()) {
-      throw new Exception("Incident not found with ID: " + incidentID);
+    Optional<Incident> existingIncidentOpt = incidentRepository.findByIdentifier(incidentID);
+    if (existingIncidentOpt.isEmpty()) {
+      logger.error("Incident not found with ID: {}", incidentID);
+      throw new IncidentNotFoundException("Incident not found with ID: " + incidentID);
     }
 
-    Incident incident = existingIncident.get();
-    // Step 2: Get the old role and prepare the new timeline entry
-    List<Role> oldRoles = incident.getRoles();
+    Incident incident = existingIncidentOpt.get();
+    List<Role> existingRoles = incident.getRoles();
 
-    // Get the current timestamp (in Unix time)
+    // Step 2: Create maps for existing roles
+    // Map<RoleType, Role> for quick lookup by RoleType
+    Map<RoleType, Role> roleTypeToRoleMap =
+        existingRoles.stream().collect(Collectors.toMap(Role::getRoleType, Function.identity()));
+
+    // Map<UserId, RoleType> to track which roles are assigned to which users
+    Map<String, RoleType> userIdToRoleTypeMap =
+        existingRoles.stream()
+            .collect(
+                Collectors.toMap(role -> role.getUserDetails().getUserId(), Role::getRoleType));
+
+    // Initialize lists to track changes for the timeline
+    List<String> previousStates = new ArrayList<>();
+    List<String> currentStates = new ArrayList<>();
+    List<String> affectedUsers = new ArrayList<>();
+
+    // Keep a copy of existing roles before modifications for previousState
+    List<Role> previousRoleSnapshot = new ArrayList<>(existingRoles);
+
+    // Step 3: Process each new role assignment
+    for (Role newRole : newRoleAssignments) {
+      RoleType newRoleType = newRole.getRoleType();
+      UserDetails newUser = newRole.getUserDetails();
+      String newUserId = newUser.getUserId();
+
+      // Check if the RoleType is already assigned to another user
+      if (roleTypeToRoleMap.containsKey(newRoleType)) {
+        Role existingRole = roleTypeToRoleMap.get(newRoleType);
+        String existingUserId = existingRole.getUserDetails().getUserId();
+
+        if (!existingUserId.equals(newUserId)) {
+          // Remove the existing role assignment
+          existingRoles.remove(existingRole);
+          previousStates.add(existingRole.toString());
+          affectedUsers.add(existingUserId);
+          logger.info("Removed role '{}' from user '{}'", newRoleType, existingUserId);
+        }
+        // If the role is already assigned to the same user, no action needed
+      }
+
+      // Check if the new user already has a different RoleType
+      if (userIdToRoleTypeMap.containsKey(newUserId)) {
+        RoleType existingUserRoleType = userIdToRoleTypeMap.get(newUserId);
+        if (!existingUserRoleType.equals(newRoleType)) {
+          // Remove the existing role from the user
+          Role userExistingRole = roleTypeToRoleMap.get(existingUserRoleType);
+          if (userExistingRole != null) {
+            existingRoles.remove(userExistingRole);
+            previousStates.add(userExistingRole.toString());
+            affectedUsers.add(newUserId);
+            logger.info("Removed role '{}' from user '{}'", existingUserRoleType, newUserId);
+          }
+        }
+        // If the user already has the same RoleType, no action needed
+      }
+
+      // Assign the new role to the user
+      existingRoles.add(newRole);
+      currentStates.add(newRole.toString());
+      affectedUsers.add(newUserId);
+      logger.info("Assigned role '{}' to user '{}'", newRoleType, newUserId);
+    }
+
+    // Remove duplicate user entries in affectedUsers
+    affectedUsers = affectedUsers.stream().distinct().collect(Collectors.toList());
+
+    if (currentStates.isEmpty() && previousStates.isEmpty()) {
+      logger.warn("No roles were updated for incident ID: {}", incidentID);
+      throw new RoleUpdateException("No roles were updated. Please provide different roles.");
+    }
+
+    // Step 4: Get the current timestamp (in Unix time)
     long ts = Instant.now().getEpochSecond();
 
     // Update the audit details with the current user and timestamp
     incident.setUpdatedBy(currentUser);
     incident.setUpdatedAt(ts);
-    incident.setUpdatedAt(ts);
 
-    // Step 3: Create a new timeline entry for the change
+    // Step 5: Create a new timeline entry for the change
     Timeline timeline = new Timeline();
     timeline.setId(String.valueOf(ts));
     timeline.setType(ChangeType.Roles);
     timeline.setCreatedAt(ts);
     timeline.setUpdatedAt(ts);
     timeline.setUserDetails(currentUser);
-    timeline.setPreviousState(oldRoles.toString());
-    timeline.setCurrentState(roleUserDetails.toString());
+
+    // Populate additionalDetails
+    Map<String, Object> roleDetailsMap = new HashMap<>();
+    roleDetailsMap.put("previousState", previousRoleSnapshot);
+    roleDetailsMap.put("currentState", existingRoles);
+    timeline.setAdditionalDetails(roleDetailsMap);
+
+    //     Optionally, retain previousState and currentState as strings if needed
+    timeline.setPreviousState(String.join(" | ", previousStates));
+    timeline.setCurrentState(String.join(" | ", currentStates));
+
+    logger.info("Updated roles: {}", existingRoles);
 
     // Add the timeline entry to the incident's timeline
     incident.getTimelines().add(timeline);
 
-    // Step 4: Update the incident's summary and description
-    incident.setRoles(roleUserDetails);
-
-    // Step 5: Update the incident in the database
+    // Step 6: Update the incident in the database
     Incident updated = updateIncidentById(incident.getId(), incident);
     if (updated == null) {
-      throw new Exception("Failed to update incident summary.");
+      logger.error("Failed to update incident roles for incident ID: {}", incidentID);
+      throw new RoleUpdateException("Failed to update incident roles.");
     }
 
+    logger.info("Successfully updated roles for incident ID: {}", incidentID);
     return updated;
   }
 

@@ -23,7 +23,11 @@ jobs:
         run: |
           curl -sSL -o gitleaks https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64
           chmod +x gitleaks
+          file gitleaks  # Check if it's a binary executable
+          ls -l gitleaks # Check file permissions
+          ./gitleaks version # Ensure it runs before moving
           sudo mv gitleaks /usr/local/bin/
+
 
       - name: Run Gitleaks
         run: gitleaks detect --verbose --redact --exit-code 1
