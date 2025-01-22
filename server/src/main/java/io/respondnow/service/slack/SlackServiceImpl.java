@@ -49,6 +49,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1572,50 +1574,55 @@ public class SlackServiceImpl implements SlackService {
   }
 
     private void sendUpdateRoleResponseMsg(
-            String channelID, Incident updatedIncident, List<Role> newRoles) throws SlackApiException, IOException {
-//        try {
-//            // Fetch user info from Slack using userId
-//            UsersInfoResponse slackUserInfo =
-//                    getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
-//            if (slackUserInfo == null || slackUserInfo.getUser() == null) {
-//                logger.error(
-//                        "Add comment: failed to fetch Slack user info for userId: {}",
-//                        updatedIncident.getUpdatedBy().getUserId());
-//                throw new IllegalStateException("Unable to fetch Slack user info");
-//            }
-//
-//            // Get the Slack handle (username)
-//            String slackHandle = slackUserInfo.getUser().getName();
-//
-//            // Prepare the message text
-//            String messageText =
-//                    String.format(
-//                            ":speech_balloon: *Comment Added*\n <@%s> added a new comment:\n> _%s_",
-//                            slackHandle, newComment);
-//
-//            // Send the added comment response message back to the Slack channel
-//            ChatPostMessageResponse response =
-//                    slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
-//
-//            if (!response.isOk()) {
-//                String errorMessage = "Failed to send add comment error message: " + response.getError();
-//                logger.error(errorMessage);
-//                throw new RuntimeException(errorMessage);
-//            }
-//
-//            logger.info("Comment addition confirmation successfully posted to channel: {}", channelID);
-//        } catch (IOException e) {
-//            logger.error("IOException occurred while posting message to Slack: {}", e.getMessage(), e);
-//            // Optionally, add a retry mechanism or send a failure notification to users
-//        } catch (SlackApiException e) {
-//            logger.error("Slack API error occurred while posting message: {}", e.getMessage(), e);
-//            // Handle specific Slack API exceptions if needed (e.g., retry on rate limit errors)
-//        } catch (IllegalStateException e) {
-//            logger.error("Error in fetching Slack user info: {}", e.getMessage(), e);
-//        } catch (Exception e) {
-//            logger.error("Unexpected error occurred: {}", e.getMessage(), e);
-//            // Optionally, send a failure notification or alert to a monitoring system
-//        }
+            String channelID, Incident updatedIncident, List<Role> newRoles) {
+        try {
+            // Fetch user info from Slack using userId
+            UsersInfoResponse slackUserInfo =
+                    getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
+            if (slackUserInfo == null || slackUserInfo.getUser() == null) {
+                logger.error(
+                        "Add comment: failed to fetch Slack user info for userId: {}",
+                        updatedIncident.getUpdatedBy().getUserId());
+                throw new IllegalStateException("Unable to fetch Slack user info");
+            }
+
+            // Get the Slack handle (username)
+            List<String> roleUpdates = new ArrayList<>();
+            for(Role newRole: newRoles) {
+                roleUpdates.add(String.format("*%s*: <@%s>", newRole.getRoleType().getDisplayValue(),
+                        newRole.getUserDetails().getUserId()));
+            }
+
+
+
+            String messageText =
+                    String.format(
+                            ":firefighter: *Roles Updated*\nThe following roles have been updated:\n%s",
+                            Strings.join(roleUpdates, '\n'));
+
+            // Send the added comment response message back to the Slack channel
+            ChatPostMessageResponse response =
+                    slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
+
+            if (!response.isOk()) {
+                String errorMessage = "Failed to send add comment error message: " + response.getError();
+                logger.error(errorMessage);
+                throw new RuntimeException(errorMessage);
+            }
+
+            logger.info("Comment addition confirmation successfully posted to channel: {}", channelID);
+        } catch (IOException e) {
+            logger.error("IOException occurred while posting message to Slack: {}", e.getMessage(), e);
+            // Optionally, add a retry mechanism or send a failure notification to users
+        } catch (SlackApiException e) {
+            logger.error("Slack API error occurred while posting message: {}", e.getMessage(), e);
+            // Handle specific Slack API exceptions if needed (e.g., retry on rate limit errors)
+        } catch (IllegalStateException e) {
+            logger.error("Error in fetching Slack user info: {}", e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred: {}", e.getMessage(), e);
+            // Optionally, send a failure notification or alert to a monitoring system
+        }
     }
 
   private void sendAddCommentResponseMsg(

@@ -36,7 +36,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-import static io.respondnow.model.incident.ChangeType.Status;
 import static io.respondnow.util.constants.AppConstants.ApiPaths.AUTH_BASE;
 import static io.respondnow.util.constants.AppConstants.ApiPaths.CHANGE_PASSWORD;
 import static io.respondnow.util.constants.AppConstants.ApiPaths.LOGIN;

@@ -21,10 +21,21 @@ public final class AppConstants {
         }
     }
 
+    public static final class Messages {
+        public static final String USER_REGISTERED_SUCCESS = "User registered successfully.";
+        public static final String LOGIN_SUCCESS = "Login successful.";
+        public static final String PASSWORD_CHANGED_SUCCESS = "Password changed successfully.";
+        public static final String CHANGE_PASSWORD_REQUIRED = "Change Password is required.";
+
+        private Messages() {
+            throw new UnsupportedOperationException("Messages constants class cannot be instantiated.");
+        }
+    }
+
     public static final class ResponseStatus {
         public static final String SUCCESS = "success";
         public static final String ERROR = "error";
-        
+
         private ResponseStatus() {
             throw new UnsupportedOperationException("ResponseStatus constants class cannot be instantiated.");
         }
