@@ -13,9 +13,9 @@ jwt:
   expiration: ${JWT_EXPIRATION:86400000}
 
 slack:
-  botToken: ${SLACK_BOT_TOKEN:botToken}
-  appToken: ${SLACK_APP_TOKEN:appToken}
-  incidentChannelID: ${SLACK_INCIDENT_CHANNEL_ID:slackIncidentChannelId}
+  botToken: ${SLACK_BOT_TOKEN:xoxb-308118791127-8313951448102-eCzpSy3AblAWzwr1guK8kDcb}
+  appToken: ${SLACK_APP_TOKEN:xapp-1-A08A3AMAVFS-8306018852311-033eccdb039b32927fc6cdae6c7d8d76f28cc982086a7e88fc27967683c53889}
+  incidentChannelID: ${SLACK_INCIDENT_CHANNEL_ID:C089H2Q0BPE}
 
 hierarchy:
   defaultUser:

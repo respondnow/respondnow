@@ -9,7 +9,6 @@ import com.slack.api.methods.SlackApiException;
 import com.slack.api.model.Conversation;
 import com.slack.api.model.event.AppHomeOpenedEvent;
 import io.respondnow.model.incident.SlackIncidentType;
-
 import java.io.IOException;
 import java.util.List;
 

@@ -63,15 +63,14 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class SlackServiceImpl implements SlackService {
-  @Autowired private IncidentService incidentService;
-
+  private static final Logger logger = LoggerFactory.getLogger(SlackServiceImpl.class);
   private final Slack slackClient;
   private final SocketModeClient socketModeSlackClient;
   private final App slackApp;
   private final SocketModeApp socketModeApp;
   private final ExecutorService executorService;
+  @Autowired private IncidentService incidentService;
   private String botUserId;
-  private static final Logger logger = LoggerFactory.getLogger(SlackServiceImpl.class);
 
   @Value("${slack.botToken}")
   private String botToken;
@@ -110,6 +109,12 @@ public class SlackServiceImpl implements SlackService {
     registerShortcutHandlers();
     registerViewSubmissionHandlers();
     registerBlockActionHandlers();
+  }
+
+  private static Map<String, Object> errorResponse() {
+    Map<String, Object> response = new HashMap<>();
+    response.put("text", "Failed to open the incident modal. Please try again later.");
+    return response;
   }
 
   @Override
@@ -2489,12 +2494,6 @@ public class SlackServiceImpl implements SlackService {
     }
 
     return options;
-  }
-
-  private static Map<String, Object> errorResponse() {
-    Map<String, Object> response = new HashMap<>();
-    response.put("text", "Failed to open the incident modal. Please try again later.");
-    return response;
   }
 
   public void listIncidents(GlobalShortcutContext ctx, SlackIncidentType slackIncidentType)
