@@ -8,7 +8,6 @@ import io.respondnow.repository.IncidentRepository;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.bson.types.ObjectId;
@@ -75,7 +74,7 @@ public class IncidentServiceImpl implements IncidentService {
     incidentCreatedTimeline.setType(ChangeType.Incident_Created);
     incidentCreatedTimeline.setCreatedAt(createdAt);
     incidentCreatedTimeline.setUpdatedAt(createdAt);
-    incidentCreatedTimeline.setPreviousState(null); // No previous state for creation
+    incidentCreatedTimeline.setPreviousState(request.getStatus().toString());
     incidentCreatedTimeline.setCurrentState(request.getStatus().toString());
     incidentCreatedTimeline.setSlack(
         request.getIncidentChannel() != null ? request.getIncidentChannel().getSlack() : null);
@@ -113,7 +112,7 @@ public class IncidentServiceImpl implements IncidentService {
     slackChannelTimeline.setType(ChangeType.Slack_Channel_Created);
     slackChannelTimeline.setCreatedAt(createdAt);
     slackChannelTimeline.setUpdatedAt(createdAt);
-    slackChannelTimeline.setPreviousState(null); // No previous state since it's already created
+    slackChannelTimeline.setPreviousState(slackChannel.getId());
     slackChannelTimeline.setCurrentState(
         slackChannel.getId()); // Use the channel ID as the current state
 
@@ -177,7 +176,8 @@ public class IncidentServiceImpl implements IncidentService {
     return updated;
   }
 
-  public Incident updateIncidentRoles(String incidentID, List<Role> roleUserDetails, UserDetails currentUser) throws Exception {
+  public Incident updateIncidentRoles(
+      String incidentID, List<Role> roleUserDetails, UserDetails currentUser) throws Exception {
     // Step 1: Retrieve the existing incident by its ID
     Optional<Incident> existingIncident = incidentRepository.findByIdentifier(incidentID);
     if (existingIncident.isEmpty()) {
@@ -221,7 +221,8 @@ public class IncidentServiceImpl implements IncidentService {
     return updated;
   }
 
-  public Incident updateIncidentSeverity(String incidentID, Severity newSeverity, UserDetails currentUser) throws Exception {
+  public Incident updateIncidentSeverity(
+      String incidentID, Severity newSeverity, UserDetails currentUser) throws Exception {
     // Step 1: Retrieve the existing incident by its ID
     Optional<Incident> existingIncident = incidentRepository.findByIdentifier(incidentID);
     if (existingIncident.isEmpty()) {
@@ -295,7 +296,7 @@ public class IncidentServiceImpl implements IncidentService {
     timeline.setCreatedAt(ts);
     timeline.setUpdatedAt(ts);
     timeline.setUserDetails(currentUser);
-    timeline.setPreviousState(null);
+    timeline.setPreviousState(comment);
     timeline.setCurrentState(comment);
 
     // Add the timeline entry to the incident's timeline
@@ -315,7 +316,7 @@ public class IncidentServiceImpl implements IncidentService {
   }
 
   public Incident updateStatus(String incidentID, Status newStatus, UserDetails currentUser)
-          throws Exception {
+      throws Exception {
     Optional<Incident> existingIncident = incidentRepository.findByIdentifier(incidentID);
     if (existingIncident.isEmpty()) {
       throw new Exception("Incident not found with ID: " + incidentID);

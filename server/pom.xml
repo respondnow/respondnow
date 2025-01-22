@@ -214,11 +214,6 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>com.slack.api</groupId>-->
-        <!--            <artifactId>slack-api-client</artifactId>-->
-        <!--            <version>1.29.2</version>-->
-        <!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -231,34 +226,34 @@
             </plugin>
 
             <!-- Docker Maven Plugin (fabric8) to build Docker image -->
-<!--            <plugin>-->
-<!--                <groupId>io.fabric8</groupId>-->
-<!--                <artifactId>docker-maven-plugin</artifactId>-->
-<!--                <version>0.40.0</version> &lt;!&ndash; Use compatible version &ndash;&gt;-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>build</goal>-->
-<!--                            <goal>push</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--                <configuration>-->
-<!--                    <images>-->
-<!--                        <image>-->
-<!--                            <name>sagarnewdocker/respondnow:latest</name>-->
-<!--                            <build>-->
-<!--                                <dockerFile>${project.basedir}/src/main/docker/Dockerfile</dockerFile>-->
-<!--                                &lt;!&ndash; Set the context to the project root &ndash;&gt;-->
-<!--                                <contextDir>${project.basedir}</contextDir>-->
-<!--                                <tags>-->
-<!--                                    <tag>latest</tag>-->
-<!--                                </tags>-->
-<!--                            </build>-->
-<!--                        </image>-->
-<!--                    </images>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>io.fabric8</groupId>-->
+            <!--                <artifactId>docker-maven-plugin</artifactId>-->
+            <!--                <version>0.40.0</version> &lt;!&ndash; Use compatible version &ndash;&gt;-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <goals>-->
+            <!--                            <goal>build</goal>-->
+            <!--                            <goal>push</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--                <configuration>-->
+            <!--                    <images>-->
+            <!--                        <image>-->
+            <!--                            <name>sagarnewdocker/respondnow:latest</name>-->
+            <!--                            <build>-->
+            <!--                                <dockerFile>${project.basedir}/src/main/docker/Dockerfile</dockerFile>-->
+            <!--                                &lt;!&ndash; Set the context to the project root &ndash;&gt;-->
+            <!--                                <contextDir>${project.basedir}</contextDir>-->
+            <!--                                <tags>-->
+            <!--                                    <tag>latest</tag>-->
+            <!--                                </tags>-->
+            <!--                            </build>-->
+            <!--                        </image>-->
+            <!--                    </images>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
         </plugins>
     </build>
 

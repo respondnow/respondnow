@@ -56,6 +56,15 @@ public class HierarchyServiceImpl implements HierarchyService {
   @Value("${hierarchy.defaultProject.name:Default Project}")
   private String defaultProjectName;
 
+  @Value("${hierarchy.defaultUser.name:Admin}")
+  private String defaultUserName;
+
+  @Value("${hierarchy.defaultUser.email:admin@respondnow.io}")
+  private String defaultUserEmail;
+
+  @Value("${hierarchy.defaultUser.password:respondnow}")
+  private String defaultUserPassword;
+
   @Async
   @Transactional
   public CompletableFuture<Void> backgroundProcess() {
@@ -108,9 +117,9 @@ public class HierarchyServiceImpl implements HierarchyService {
   private User createDefaultUser() {
     AddUserInput input = new AddUserInput();
     input.setUserId("admin");
-    input.setName("Admin");
-    input.setEmail("admin@respondnow.io");
-    input.setPassword("respondnow");
+    input.setName(defaultUserName);
+    input.setEmail(defaultUserEmail);
+    input.setPassword(defaultUserPassword);
     return authService.signupWithRetry(input);
   }
 
