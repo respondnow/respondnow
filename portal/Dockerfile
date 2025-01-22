@@ -1,5 +1,5 @@
 # Use AlmaLinux minimal base image with ARM64 & AMD64 support
-FROM almalinux:8 AS base
+FROM almalinux:8.10-minimal AS base
 
 RUN dnf update -y && \
     dnf install -y nginx && \
