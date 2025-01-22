@@ -7,7 +7,6 @@ public enum RoleType {
   Incident_Commander("Incident_Commander"),
   Communications_Lead("Communications_Lead");
 
-
   private final String value;
   private final String displayValue;
 
@@ -17,8 +16,8 @@ public enum RoleType {
     this.displayValue = value.replace("_", " ");
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return value;
   }
 }
-

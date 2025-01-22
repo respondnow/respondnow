@@ -6,7 +6,6 @@ import io.respondnow.dto.DefaultResponseDTO;
 import io.respondnow.model.api.Pagination;
 import io.respondnow.model.incident.Incident;
 import java.util.List;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

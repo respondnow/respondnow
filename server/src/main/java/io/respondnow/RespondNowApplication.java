@@ -18,10 +18,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
             license =
                 @License(name = "Apache-2.0 license", url = "http://www.apache.org/licenses/")))
 @SpringBootApplication
-@ComponentScan(basePackages = {
-        "io.respondnow",
-        "io.respondnow.controller"
-})
+@ComponentScan(basePackages = {"io.respondnow", "io.respondnow.controller"})
 @EnableAsync
 public class RespondNowApplication {
 

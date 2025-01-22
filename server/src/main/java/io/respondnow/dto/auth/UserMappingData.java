@@ -1,7 +1,6 @@
 package io.respondnow.dto.auth;
 
 import java.util.List;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

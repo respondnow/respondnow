@@ -52,7 +52,8 @@ public class AuthController {
   private final JWTUtil jwtUtil;
 
   @Autowired
-  public AuthController(AuthService authService, UserMappingService userMappingService, JWTUtil jwtUtil) {
+  public AuthController(
+      AuthService authService, UserMappingService userMappingService, JWTUtil jwtUtil) {
     this.authService = authService;
     this.userMappingService = userMappingService;
     this.jwtUtil = jwtUtil;
@@ -71,16 +72,19 @@ public class AuthController {
       String token = jwtUtil.generateToken(user.getName(), user.getUserId(), user.getEmail());
 
       SignupResponseDTO response =
-          new SignupResponseDTO(AppConstants.ResponseStatus.SUCCESS, "User registered successfully", token, user);
+          new SignupResponseDTO(
+              AppConstants.ResponseStatus.SUCCESS, "User registered successfully", token, user);
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
     } catch (EmailAlreadyExistsException e) {
       // Handle the case where email already exists
       SignupResponseDTO response =
-          new SignupResponseDTO(AppConstants.ResponseStatus.ERROR, "Email already exists", null, null);
+          new SignupResponseDTO(
+              AppConstants.ResponseStatus.ERROR, "Email already exists", null, null);
       return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     } catch (Exception e) {
       // Handle any other errors (e.g. bad request, unexpected errors)
-      SignupResponseDTO response = new SignupResponseDTO(AppConstants.ResponseStatus.ERROR, "Bad Request", null, null);
+      SignupResponseDTO response =
+          new SignupResponseDTO(AppConstants.ResponseStatus.ERROR, "Bad Request", null, null);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // 400 Bad Request
     }
   }
@@ -100,21 +104,25 @@ public class AuthController {
       if (Boolean.TRUE.equals(user.getChangePasswordRequired())) {
         LoginResponseData data = new LoginResponseData(token, user.getLastLoginAt(), true);
         LoginResponseDTO response =
-            new LoginResponseDTO(AppConstants.ResponseStatus.ERROR, "Change Password is required", data);
+            new LoginResponseDTO(
+                AppConstants.ResponseStatus.ERROR, "Change Password is required", data);
         return ResponseEntity.ok(response);
       }
 
       LoginResponseData data =
           new LoginResponseData(
               token, System.currentTimeMillis(), user.getChangePasswordRequired());
-      LoginResponseDTO response = new LoginResponseDTO(AppConstants.ResponseStatus.SUCCESS, "Login successful", data);
+      LoginResponseDTO response =
+          new LoginResponseDTO(AppConstants.ResponseStatus.SUCCESS, "Login successful", data);
       return ResponseEntity.ok(response);
     } catch (UserNotFoundException e) {
-      LoginResponseDTO response = new LoginResponseDTO(AppConstants.ResponseStatus.ERROR, "User not found", null);
+      LoginResponseDTO response =
+          new LoginResponseDTO(AppConstants.ResponseStatus.ERROR, "User not found", null);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     } catch (Exception e) {
       log.error(e.getMessage());
-      LoginResponseDTO response = new LoginResponseDTO(AppConstants.ResponseStatus.ERROR, "Bad Request", null);
+      LoginResponseDTO response =
+          new LoginResponseDTO(AppConstants.ResponseStatus.ERROR, "Bad Request", null);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
   }
@@ -136,7 +144,8 @@ public class AuthController {
       ChangePasswordResponseData data =
           new ChangePasswordResponseData(token, System.currentTimeMillis());
       ChangePasswordResponseDTO response =
-          new ChangePasswordResponseDTO(AppConstants.ResponseStatus.SUCCESS, "Password changed successfully", data);
+          new ChangePasswordResponseDTO(
+              AppConstants.ResponseStatus.SUCCESS, "Password changed successfully", data);
       return ResponseEntity.ok(response);
     } catch (UserNotFoundException e) {
       ChangePasswordResponseDTO response =

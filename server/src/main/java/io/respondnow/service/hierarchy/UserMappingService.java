@@ -15,7 +15,11 @@ public interface UserMappingService {
   void deleteById(String id);
 
   UserMapping createUserMapping(
-      String userId, String accountIdentifier, String orgIdentifier, String projectIdentifier, boolean isDefault);
+      String userId,
+      String accountIdentifier,
+      String orgIdentifier,
+      String projectIdentifier,
+      boolean isDefault);
 
   UserMappingData getUserMappings(String correlationId, String userId);
 }
