@@ -1,14 +1,18 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8
-RUN microdnf update --refresh --best --noplugins --setopt=install_weak_deps=0
-RUN microdnf module enable nginx:1.20
-RUN microdnf install nginx
+# Use AlmaLinux minimal base image with ARM64 & AMD64 support
+FROM almalinux:8 AS base
 
+RUN dnf update -y && \
+    dnf install -y nginx && \
+    dnf clean all
+
+# Copy application files
 COPY dist /opt/respond-now
 COPY nginx/nginx.conf /etc/nginx/
 COPY ./entrypoint.sh /opt
 
 WORKDIR /opt/respond-now
 
+# Ensure proper permissions
 RUN chown 65534:65534 -R /opt/respond-now
 RUN chown 65534:65534 -R /var/log/nginx
 RUN chown 65534:65534 -R /etc/nginx
