@@ -25,7 +25,7 @@ jobs:
 
       - name: Install Google Java Format
         run: |
-          curl -Lo google-java-format.jar https://github.com/google/google-java-format/releases/download/v1.25.0/google-java-format-1.25.0-all-deps.jar
+          curl -Lo google-java-format.jar https://github.com/google/google-java-format/releases/download/v1.17.0/google-java-format-1.17.0-all-deps.jar
 
       - name: Run Google Java Format Check
         run: |
