@@ -6,7 +6,7 @@
 
 - Select the desired slack workspace from the drop-down menu and click _Next_
 
-- Paste the [RespondNow manifest configuration](https://github.com/respondnow/respond/blob/main/server/clients/slack/manifest.yaml) and click _Next_
+- Paste the [RespondNow manifest configuration](https://github.com/respondnow/respondnow/blob/main/server/src/main/resources/slackmanifest.yml) and click _Next_
 
 - Review and verify that the configuration you entered matches the summary and click _Create_
 
