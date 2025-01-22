@@ -10,6 +10,7 @@ public interface IncidentService {
   Incident createIncident(CreateRequest request, UserDetails currentUser);
 
   Incident getIncidentById(String id);
+
   Incident getIncidentByIdentifier(String id);
 
   List<Incident> listIncidents(Query query);
@@ -18,8 +19,11 @@ public interface IncidentService {
 
   Incident updateIncidentById(String id, Incident incident);
 
-  Incident updateIncidentRoles(String incidentID, List<Role> roleUserDetails, UserDetails currentUser) throws Exception;
-  Incident updateIncidentSeverity(String incidentID, Severity newSeverity, UserDetails currentUser) throws Exception;
+  Incident updateIncidentRoles(
+      String incidentID, List<Role> roleUserDetails, UserDetails currentUser) throws Exception;
+
+  Incident updateIncidentSeverity(String incidentID, Severity newSeverity, UserDetails currentUser)
+      throws Exception;
 
   void bulkProcessIncidents(List<Incident> createList, List<Incident> updateList);
 
@@ -39,7 +43,7 @@ public interface IncidentService {
       throws Exception;
 
   Incident updateStatus(String incidentID, Status newStatus, UserDetails currentUser)
-          throws Exception;
+      throws Exception;
 
   Incident addComment(String incidentID, String comment, UserDetails currentUser) throws Exception;
 }
