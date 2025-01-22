@@ -17,4 +17,5 @@ jobs:
       - name: Run lychee link checker
         uses: lycheeverse/lychee-action@v1
         with:
-          args: "**/*.md --fail"
+          args: "**/*.md"
+          fail: true  # This ensures the action fails on broken links
