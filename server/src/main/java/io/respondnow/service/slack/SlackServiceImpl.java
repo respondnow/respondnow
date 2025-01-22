@@ -50,6 +50,7 @@ import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -61,6 +62,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class SlackServiceImpl implements SlackService {
   @Autowired private IncidentService incidentService;
 
@@ -256,10 +258,7 @@ public class SlackServiceImpl implements SlackService {
     slackApp.blockAction(
         "create_incident_channel_join_channel_button",
         (req, ctx) -> {
-          System.out.println("Inside block action handler");
-
           String value = req.getPayload().getActions().get(0).getValue();
-          System.out.println("Button value: " + value);
 
           if (req.getPayload().getResponseUrl() != null) {
             ctx.respond(r -> r.text("You've sent \"" + value + "\" by clicking the button!"));
@@ -282,8 +281,6 @@ public class SlackServiceImpl implements SlackService {
     slackApp.blockAction(
         "update_incident_summary_button",
         (req, ctx) -> {
-          System.out.println("Displaying modal for incident summary");
-
           // Build the modal
           View modalRequest =
               View.builder()
@@ -302,8 +299,6 @@ public class SlackServiceImpl implements SlackService {
                               "create_incident_modal_set_summary")))
                   .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
                   .build();
-
-          // Open the modal
           ctx.client()
               .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
 
@@ -315,10 +310,7 @@ public class SlackServiceImpl implements SlackService {
     slackApp.blockAction(
         "update_incident_comment_button",
         (req, ctx) -> {
-          System.out.println("Displaying modal for incident comment");
-
-          // Build the modal
-          View modalRequest =
+            View modalRequest =
               View.builder()
                   .type("modal")
                   .privateMetadata(req.getPayload().getActions().get(0).getValue())
@@ -335,12 +327,9 @@ public class SlackServiceImpl implements SlackService {
                               "update_incident_modal_set_comment")))
                   .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
                   .build();
-
-          // Open the modal
-          ctx.client()
+            ctx.client()
               .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
-
-          return ctx.ack();
+            return ctx.ack();
         });
   }
 
@@ -348,8 +337,6 @@ public class SlackServiceImpl implements SlackService {
     slackApp.blockAction(
         "update_incident_assign_roles_button",
         (req, ctx) -> {
-          System.out.println("Displaying modal for assigning roles");
-
             View modalRequest =
                     View.builder()
                             .type("modal")
@@ -364,10 +351,9 @@ public class SlackServiceImpl implements SlackService {
                             .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
                             .close(ViewClose.builder().type("plain_text").text("Close").build())
                             .build();
-
             ctx.client()
                     .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
-          return ctx.ack();
+            return ctx.ack();
         });
   }
 
@@ -375,7 +361,6 @@ public class SlackServiceImpl implements SlackService {
     slackApp.blockAction(
         "update_incident_status_button",
         (req, ctx) -> {
-          System.out.println("Displaying modal for incident status selection");
             View modalRequest =
                     View.builder()
                             .type("modal")
@@ -391,7 +376,6 @@ public class SlackServiceImpl implements SlackService {
                                             updateStatus()))
                             .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
                             .build();
-
             ctx.client()
                     .viewsOpen(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
 
@@ -403,8 +387,6 @@ public class SlackServiceImpl implements SlackService {
     slackApp.blockAction(
         "update_incident_severity_button",
         (req, ctx) -> {
-          System.out.println("Displaying modal for incident severity selection");
-
             View modalRequest =
                     View.builder()
                             .type("modal")
@@ -437,7 +419,6 @@ public class SlackServiceImpl implements SlackService {
                 (req, ctx) -> {
 
                     String actionId = req.getPayload().getActions().get(0).getActionId();
-                    System.out.println("Action ID: " + actionId);
                     String[] parts = actionId.split("_");
                     String incidentIdentifier = parts[2];
                     Incident incident = incidentService.getIncidentByIdentifier(incidentIdentifier);
@@ -457,10 +438,8 @@ public class SlackServiceImpl implements SlackService {
                                     .submit(ViewSubmit.builder().type("plain_text").text("Submit").build())
                                     .close(ViewClose.builder().type("plain_text").text("Close").build())
                                     .build();
-
-                    System.out.println("view open response for list detail");
-                    System.out.println(ctx.client()
-                            .viewsPush(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest)));
+                    ctx.client()
+                            .viewsPush(r -> r.triggerId(req.getPayload().getTriggerId()).view(modalRequest));
                     return ctx.ack();
                 });
     }
@@ -1073,7 +1052,7 @@ public class SlackServiceImpl implements SlackService {
         }
 
         String channelId = createChannelResponse.getChannel().getId();
-        System.out.println("Successfully created an incident channel: " + channelId);
+        log.info("Successfully created an incident channel: {}", channelId);
 
         // Invite users to the channel
         try {
