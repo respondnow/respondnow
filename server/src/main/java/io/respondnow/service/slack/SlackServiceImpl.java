@@ -40,6 +40,7 @@ import com.slack.api.model.event.MemberJoinedChannelEvent;
 import com.slack.api.model.view.*;
 import com.slack.api.socket_mode.SocketModeClient;
 import io.respondnow.dto.incident.CreateRequest;
+import io.respondnow.exception.RoleUpdateException;
 import io.respondnow.model.incident.*;
 import io.respondnow.model.user.UserDetails;
 import io.respondnow.service.incident.IncidentService;
@@ -472,7 +473,6 @@ public class SlackServiceImpl implements SlackService {
                   logger.info("Opened Incident Roles modal for payload: {}", req.getPayload());
                 } catch (Exception e) {
                   logger.error("Error opening Incident Roles modal", e);
-                  // Optionally, handle the error
                 }
               });
 
@@ -1130,14 +1130,16 @@ public class SlackServiceImpl implements SlackService {
     // Modularize the block creation logic for better readability
     return Arrays.asList(
         SlackBlockFactory.createHeaderBlock(":robot_face: Respond Now", "app_home_resp_header"),
-        SlackBlockFactory.createActionsBlock(
-            "app_home_resp_create_incident_button",
-            ButtonElement.builder()
-                .text(PlainTextObject.builder().text("Start New Incident").emoji(true).build())
-                .actionId("create_incident_modal")
-                .value("show_incident_modal")
-                .style("danger")
-                .build()),
+        // TODO: Implement this
+        //        SlackBlockFactory.createActionsBlock(
+        //            "app_home_resp_create_incident_button",
+        //            ButtonElement.builder()
+        //                .text(PlainTextObject.builder().text("Start New
+        // Incident").emoji(true).build())
+        //                .actionId("create_incident_modal")
+        //                .value("show_incident_modal")
+        //                .style("danger")
+        //                .build()),
         SlackBlockFactory.createDividerBlock(),
         SlackBlockFactory.createSectionBlock(
             "*Hi there, <@" + userId + "> :wave:*\n\nI'm your friendly Respond Now...",
@@ -1806,7 +1808,7 @@ public class SlackServiceImpl implements SlackService {
           getSlackUserDetails(updatedIncident.getUpdatedBy().getUserId());
       if (slackUserInfo == null || slackUserInfo.getUser() == null) {
         logger.error(
-            "Add comment: failed to fetch Slack user info for userId: {}",
+            "Role update: failed to fetch Slack user info for userId: {}",
             updatedIncident.getUpdatedBy().getUserId());
         throw new IllegalStateException("Unable to fetch Slack user info");
       }
@@ -1832,12 +1834,12 @@ public class SlackServiceImpl implements SlackService {
           slackApp.client().chatPostMessage(r -> r.channel(channelID).text(messageText));
 
       if (!response.isOk()) {
-        String errorMessage = "Failed to send add comment error message: " + response.getError();
+        String errorMessage = "Failed to send update role error message: " + response.getError();
         logger.error(errorMessage);
         throw new RuntimeException(errorMessage);
       }
 
-      logger.info("Comment addition confirmation successfully posted to channel: {}", channelID);
+      logger.info("Update roles confirmation successfully posted to channel: {}", channelID);
     } catch (IOException e) {
       logger.error("IOException occurred while posting message to Slack: {}", e.getMessage(), e);
       // Optionally, add a retry mechanism or send a failure notification to users
@@ -2062,41 +2064,83 @@ public class SlackServiceImpl implements SlackService {
 
   public void handleIncidentRolesViewSubmission(ViewSubmissionRequest payload)
       throws SlackApiException, IOException {
+
     String incidentIdentifier = payload.getPayload().getView().getPrivateMetadata();
     ViewState state = payload.getPayload().getView().getState();
-    Map<String, String> roleMapping = new HashMap<>();
     Map<String, Map<String, ViewState.Value>> stateValues = state.getValues();
-    //    List<String> roles = Arrays.asList("create_incident_modal_set_Incident_Commander",
-    // "create_incident_modal_set_Communications_Lead");
+
+    // Extract roles based on RoleType enum
     List<String> roles =
         Arrays.stream(RoleType.values()).map(RoleType::getValue).collect(Collectors.toList());
+
     Map<String, UserDetails> roleUserDetails = new HashMap<>();
-    for (String key : stateValues.keySet()) {
-      Map<String, ViewState.Value> viewState = stateValues.get(key);
+
+    for (Map<String, ViewState.Value> viewState : stateValues.values()) {
       for (String role : roles) {
         String viewStateKey = "create_incident_modal_set_" + role;
         ViewState.Value viewStateValue = viewState.get(viewStateKey);
         if (viewStateValue != null) {
           String selectedUser = viewStateValue.getSelectedUser();
-          if (selectedUser != null) {
+          if (selectedUser != null && !selectedUser.isEmpty()) {
             roleUserDetails.put(role, fetchSlackUserDetails(selectedUser, ChannelSource.Slack));
           } else {
-            roleUserDetails.put(role, new UserDetails());
+            roleUserDetails.put(role, new UserDetails()); // Or handle as per your business logic
           }
         }
       }
     }
-    List<Role> roleList = new ArrayList<>();
-    for (String roleType : roleUserDetails.keySet()) {
-      Role role = new Role();
-      role.setRoleType(RoleType.valueOf(roleType));
-      role.setUserDetails(roleUserDetails.get(roleType));
-      roleList.add(role);
+
+    // Convert roleUserDetails to a list of Role objects
+    List<Role> roleList =
+        roleUserDetails.entrySet().stream()
+            .map(
+                entry -> {
+                  Role role = new Role();
+                  role.setRoleType(RoleType.fromValue(entry.getKey()));
+                  role.setUserDetails(entry.getValue());
+                  return role;
+                })
+            .collect(Collectors.toList());
+
+    try {
+      Incident updatedIncident =
+          incidentService.updateIncidentRoles(
+              incidentIdentifier,
+              roleList,
+              fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
+
+      sendUpdateRoleResponseMsg(
+          updatedIncident.getChannels().get(0).getId(), updatedIncident, roleList);
+      //      sendSlackMessage(
+      //          payload.getPayload().getUser().getId(), "Incident roles have been successfully
+      // updated.");
+    } catch (RoleUpdateException e) {
+      logger.error("Role update failed for incident ID: {}", incidentIdentifier, e);
+      sendSlackMessage(
+          payload.getPayload().getUser().getId(),
+          "Failed to update incident roles: " + e.getMessage());
+    } catch (Exception e) {
+      logger.error(
+          "Unexpected error during role update for incident ID: {}", incidentIdentifier, e);
+      sendSlackMessage(
+          payload.getPayload().getUser().getId(),
+          "An unexpected error occurred while updating roles. Please try again.");
     }
-    updateIncidentRoles(
-        incidentIdentifier,
-        roleList,
-        fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
+  }
+
+  /**
+   * Sends a message to a user via Slack.
+   *
+   * @param userId The Slack user ID.
+   * @param message The message to send.
+   */
+  private void sendSlackMessage(String userId, String message) {
+    try {
+      slackApp.client().chatPostMessage(r -> r.channel(userId).text(message));
+      logger.info("Sent message to user {}: {}", userId, message);
+    } catch (Exception e) {
+      logger.error("Failed to send message to user {}: {}", userId, e.getMessage(), e);
+    }
   }
 
   public void handleIncidentStatusViewSubmission(ViewSubmissionRequest payload)
