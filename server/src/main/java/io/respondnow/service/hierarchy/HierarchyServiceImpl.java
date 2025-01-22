@@ -111,9 +111,9 @@ public class HierarchyServiceImpl implements HierarchyService {
   private User createDefaultUser() {
     AddUserInput input = new AddUserInput();
     input.setUserId("admin");
-    input.setName(defaultUserName);
-    input.setEmail(defaultUserEmail);
-    input.setPassword(defaultUserPassword);
+    input.setName("Admin");
+    input.setEmail("admin@respondnow.io");
+    input.setPassword("respondnow");
     return authService.signupWithRetry(input);
   }
 
