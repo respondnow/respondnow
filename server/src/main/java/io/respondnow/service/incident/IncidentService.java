@@ -18,6 +18,9 @@ public interface IncidentService {
 
   Incident updateIncidentById(String id, Incident incident);
 
+  Incident updateIncidentRoles(String incidentID, List<Role> roleUserDetails, UserDetails currentUser) throws Exception;
+  Incident updateIncidentSeverity(String incidentID, Severity newSeverity, UserDetails currentUser) throws Exception;
+
   void bulkProcessIncidents(List<Incident> createList, List<Incident> updateList);
 
   void validateIncident(Incident incident);

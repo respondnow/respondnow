@@ -56,5 +56,5 @@ public interface SlackService {
 
   void handleIncidentStatusViewSubmission(ViewSubmissionRequest viewSubmission) throws SlackApiException, IOException;
 
-  void handleIncidentSeverityViewSubmission(ViewSubmissionRequest viewSubmission);
+  void handleIncidentSeverityViewSubmission(ViewSubmissionRequest viewSubmission) throws SlackApiException, IOException;
 }

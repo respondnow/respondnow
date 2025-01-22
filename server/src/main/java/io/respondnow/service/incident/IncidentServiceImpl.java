@@ -8,6 +8,7 @@ import io.respondnow.repository.IncidentRepository;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.bson.types.ObjectId;
@@ -166,6 +167,94 @@ public class IncidentServiceImpl implements IncidentService {
     // Step 4: Update the incident's summary and description
     incident.setSummary(newSummary);
     incident.setDescription(newSummary);
+
+    // Step 5: Update the incident in the database
+    Incident updated = updateIncidentById(incident.getId(), incident);
+    if (updated == null) {
+      throw new Exception("Failed to update incident summary.");
+    }
+
+    return updated;
+  }
+
+  public Incident updateIncidentRoles(String incidentID, List<Role> roleUserDetails, UserDetails currentUser) throws Exception {
+    // Step 1: Retrieve the existing incident by its ID
+    Optional<Incident> existingIncident = incidentRepository.findByIdentifier(incidentID);
+    if (existingIncident.isEmpty()) {
+      throw new Exception("Incident not found with ID: " + incidentID);
+    }
+
+    Incident incident = existingIncident.get();
+    // Step 2: Get the old role and prepare the new timeline entry
+    List<Role> oldRoles = incident.getRoles();
+
+    // Get the current timestamp (in Unix time)
+    long ts = Instant.now().getEpochSecond();
+
+    // Update the audit details with the current user and timestamp
+    incident.setUpdatedBy(currentUser);
+    incident.setUpdatedAt(ts);
+    incident.setUpdatedAt(ts);
+
+    // Step 3: Create a new timeline entry for the change
+    Timeline timeline = new Timeline();
+    timeline.setId(String.valueOf(ts));
+    timeline.setType(ChangeType.Roles);
+    timeline.setCreatedAt(ts);
+    timeline.setUpdatedAt(ts);
+    timeline.setUserDetails(currentUser);
+    timeline.setPreviousState(oldRoles.toString());
+    timeline.setCurrentState(roleUserDetails.toString());
+
+    // Add the timeline entry to the incident's timeline
+    incident.getTimelines().add(timeline);
+
+    // Step 4: Update the incident's summary and description
+    incident.setRoles(roleUserDetails);
+
+    // Step 5: Update the incident in the database
+    Incident updated = updateIncidentById(incident.getId(), incident);
+    if (updated == null) {
+      throw new Exception("Failed to update incident summary.");
+    }
+
+    return updated;
+  }
+
+  public Incident updateIncidentSeverity(String incidentID, Severity newSeverity, UserDetails currentUser) throws Exception {
+    // Step 1: Retrieve the existing incident by its ID
+    Optional<Incident> existingIncident = incidentRepository.findByIdentifier(incidentID);
+    if (existingIncident.isEmpty()) {
+      throw new Exception("Incident not found with ID: " + incidentID);
+    }
+
+    Incident incident = existingIncident.get();
+    // Step 2: Get the old role and prepare the new timeline entry
+    Severity oldSeverity = incident.getSeverity();
+
+    // Get the current timestamp (in Unix time)
+    long ts = Instant.now().getEpochSecond();
+
+    // Update the audit details with the current user and timestamp
+    incident.setUpdatedBy(currentUser);
+    incident.setUpdatedAt(ts);
+    incident.setUpdatedAt(ts);
+
+    // Step 3: Create a new timeline entry for the change
+    Timeline timeline = new Timeline();
+    timeline.setId(String.valueOf(ts));
+    timeline.setType(ChangeType.Roles);
+    timeline.setCreatedAt(ts);
+    timeline.setUpdatedAt(ts);
+    timeline.setUserDetails(currentUser);
+    timeline.setPreviousState(oldSeverity.toString());
+    timeline.setCurrentState(newSeverity.toString());
+
+    // Add the timeline entry to the incident's timeline
+    incident.getTimelines().add(timeline);
+
+    // Step 4: Update the incident's summary and description
+    incident.setSeverity(newSeverity);
 
     // Step 5: Update the incident in the database
     Incident updated = updateIncidentById(incident.getId(), incident);
