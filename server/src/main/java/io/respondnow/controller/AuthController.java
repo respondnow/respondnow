@@ -1,5 +1,11 @@
 package io.respondnow.controller;
 
+import static io.respondnow.util.constants.AppConstants.ApiPaths.AUTH_BASE;
+import static io.respondnow.util.constants.AppConstants.ApiPaths.CHANGE_PASSWORD;
+import static io.respondnow.util.constants.AppConstants.ApiPaths.LOGIN;
+import static io.respondnow.util.constants.AppConstants.ApiPaths.SIGNUP;
+import static io.respondnow.util.constants.AppConstants.ApiPaths.USER_MAPPING;
+
 import io.respondnow.dto.auth.AddUserInput;
 import io.respondnow.dto.auth.ChangePasswordInput;
 import io.respondnow.dto.auth.ChangePasswordResponseDTO;
@@ -23,6 +29,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,14 +40,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
-
-import static io.respondnow.util.constants.AppConstants.ApiPaths.AUTH_BASE;
-import static io.respondnow.util.constants.AppConstants.ApiPaths.CHANGE_PASSWORD;
-import static io.respondnow.util.constants.AppConstants.ApiPaths.LOGIN;
-import static io.respondnow.util.constants.AppConstants.ApiPaths.SIGNUP;
-import static io.respondnow.util.constants.AppConstants.ApiPaths.USER_MAPPING;
 
 @RestController
 @RequestMapping(AUTH_BASE)

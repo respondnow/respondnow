@@ -1,12 +1,11 @@
 package io.respondnow.service.hierarchy;
 
-import io.respondnow.exception.orgIdentifierAlreadyExistsException;
 import io.respondnow.exception.OrganizationNotFoundException;
+import io.respondnow.exception.orgIdentifierAlreadyExistsException;
 import io.respondnow.model.hierarchy.Organization;
 import io.respondnow.repository.OrganizationRepository;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
