@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   link-checker:
@@ -13,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Run lychee
+      - name: Run lychee link checker
         uses: lycheeverse/lychee-action@v1
         with:
-          args: "**/*.md"
+          args: "**/*.md --fail"
