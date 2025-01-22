@@ -1589,8 +1589,10 @@ public class SlackServiceImpl implements SlackService {
             // Get the Slack handle (username)
             List<String> roleUpdates = new ArrayList<>();
             for(Role newRole: newRoles) {
-                roleUpdates.add(String.format("*%s*: <@%s>", newRole.getRoleType().getDisplayValue(),
-                        newRole.getUserDetails().getUserId()));
+                if(newRole.getUserDetails().getUserId() != null) {
+                    roleUpdates.add(String.format("*%s*: <@%s>", newRole.getRoleType().getDisplayValue(),
+                            newRole.getUserDetails().getUserId()));
+                }
             }
 
 
@@ -1851,6 +1853,8 @@ public class SlackServiceImpl implements SlackService {
                 String selectedUser = viewStateValue.getSelectedUser();
                 if (selectedUser != null) {
                     roleUserDetails.put(role, fetchSlackUserDetails(selectedUser, ChannelSource.Slack));
+                } else {
+                    roleUserDetails.put(role, new UserDetails());
                 }
             }
         }
@@ -1865,19 +1869,6 @@ public class SlackServiceImpl implements SlackService {
     updateIncidentRoles(incidentIdentifier, roleList,
             fetchSlackUserDetails(payload.getPayload().getUser().getId(), ChannelSource.Slack));
   }
-
-//    private void updateIncidentComment(String incidentIdentifier, String comment, UserDetails user) {
-//        // Simulate a service call to add a new incident comment
-//        try {
-//            Incident updatedIncident = incidentService.addComment(incidentIdentifier, comment, user);
-//
-//            // Send confirmation message to Slack
-//            sendAddCommentResponseMsg(
-//                    updatedIncident.getChannels().get(0).getId(), updatedIncident, comment);
-//        } catch (Exception e) {
-//            logger.error("Failed to add a new incident comment: {}", e.getMessage(), e);
-//        }
-//    }
 
     public void handleIncidentStatusViewSubmission(ViewSubmissionRequest payload) throws SlackApiException, IOException {
     String incidentIdentifier = payload.getPayload().getView().getPrivateMetadata();
