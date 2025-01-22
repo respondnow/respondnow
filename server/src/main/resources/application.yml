@@ -19,15 +19,15 @@ slack:
 
 hierarchy:
   defaultUser:
-    email: ${DEFAULT_USER_EMAIL:"admin@respondnow.io"}
-    name: ${DEFAULT_USER_NAME:"Admin"}
-    password: ${DEFAULT_USER_PASSWORD:"respondnow"}
+    email: ${DEFAULT_USER_EMAIL:admin@respondnow.io}
+    name: ${DEFAULT_USER_NAME:Admin}
+    password: ${DEFAULT_USER_PASSWORD:respondnow}
   defaultAccount:
     id: ${DEFAULT_ACCOUNT_ID:default_account_id}
-    name: ${DEFAULT_ACCOUNT_NAME:"Default Account"}
+    name: ${DEFAULT_ACCOUNT_NAME:Default Account}
   defaultOrg:
     id: ${DEFAULT_ORG_ID:default_org_id}
-    name: ${DEFAULT_ORG_NAME:"Default Org"}
+    name: ${DEFAULT_ORG_NAME:Default Org}
   defaultProject:
     id: ${DEFAULT_PROJECT_ID:default_project_id}
-    name: ${DEFAULT_PROJECT_NAME:"Default Project"}
+    name: ${DEFAULT_PROJECT_NAME:Default Project}
