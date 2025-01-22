@@ -182,7 +182,8 @@ public class IncidentServiceImpl implements IncidentService {
 
   @Transactional
   public Incident updateIncidentRoles(
-      String incidentID, List<Role> newRoleAssignments, UserDetails currentUser) throws Exception {
+      String incidentID, List<Role> newRoleAssignments, UserDetails currentUser)
+      throws RoleUpdateException, IncidentNotFoundException {
 
     logger.info("Starting role update for incident ID: {}", incidentID);
 
@@ -197,20 +198,29 @@ public class IncidentServiceImpl implements IncidentService {
     List<Role> existingRoles = incident.getRoles();
 
     // Step 2: Create maps for existing roles
-    // Map<RoleType, Role> for quick lookup by RoleType
     Map<RoleType, Role> roleTypeToRoleMap =
-        existingRoles.stream().collect(Collectors.toMap(Role::getRoleType, Function.identity()));
-
-    // Map<UserId, RoleType> to track which roles are assigned to which users
-    Map<String, RoleType> userIdToRoleTypeMap =
         existingRoles.stream()
+            .filter(role -> role.getRoleType() != null) // Filter out roles with null RoleType
             .collect(
-                Collectors.toMap(role -> role.getUserDetails().getUserId(), Role::getRoleType));
+                Collectors.toMap(
+                    Role::getRoleType, Function.identity(), (existing, replacement) -> existing));
+
+    Map<String, List<RoleType>> userIdToRoleTypesMap =
+        existingRoles.stream()
+            .filter(
+                role ->
+                    role.getUserDetails() != null
+                        && role.getUserDetails().getUserId()
+                            != null) // Filter out roles with null userDetails or userId
+            .collect(
+                Collectors.groupingBy(
+                    role -> role.getUserDetails().getUserId(),
+                    Collectors.mapping(Role::getRoleType, Collectors.toList())));
 
     // Initialize lists to track changes for the timeline
     List<String> previousStates = new ArrayList<>();
     List<String> currentStates = new ArrayList<>();
-    List<String> affectedUsers = new ArrayList<>();
+    Set<String> affectedUsers = new HashSet<>();
 
     // Keep a copy of existing roles before modifications for previousState
     List<Role> previousRoleSnapshot = new ArrayList<>(existingRoles);
@@ -219,48 +229,39 @@ public class IncidentServiceImpl implements IncidentService {
     for (Role newRole : newRoleAssignments) {
       RoleType newRoleType = newRole.getRoleType();
       UserDetails newUser = newRole.getUserDetails();
-      String newUserId = newUser.getUserId();
+      String newUserId = newUser != null ? newUser.getUserId() : null;
 
-      // Check if the RoleType is already assigned to another user
+      if (newRoleType == null || newUserId == null) {
+        logger.warn("Skipping invalid role assignment: RoleType or UserId is null");
+        continue; // Skip if role type or user id is null
+      }
+
+      // If the RoleType is already assigned, we need to replace the existing user
       if (roleTypeToRoleMap.containsKey(newRoleType)) {
         Role existingRole = roleTypeToRoleMap.get(newRoleType);
         String existingUserId = existingRole.getUserDetails().getUserId();
 
         if (!existingUserId.equals(newUserId)) {
-          // Remove the existing role assignment
+          // Remove the existing user for this role
           existingRoles.remove(existingRole);
           previousStates.add(existingRole.toString());
           affectedUsers.add(existingUserId);
           logger.info("Removed role '{}' from user '{}'", newRoleType, existingUserId);
         }
-        // If the role is already assigned to the same user, no action needed
       }
 
-      // Check if the new user already has a different RoleType
-      if (userIdToRoleTypeMap.containsKey(newUserId)) {
-        RoleType existingUserRoleType = userIdToRoleTypeMap.get(newUserId);
-        if (!existingUserRoleType.equals(newRoleType)) {
-          // Remove the existing role from the user
-          Role userExistingRole = roleTypeToRoleMap.get(existingUserRoleType);
-          if (userExistingRole != null) {
-            existingRoles.remove(userExistingRole);
-            previousStates.add(userExistingRole.toString());
-            affectedUsers.add(newUserId);
-            logger.info("Removed role '{}' from user '{}'", existingUserRoleType, newUserId);
-          }
-        }
-        // If the user already has the same RoleType, no action needed
+      // If the new role assignment is not already present, assign the new role
+      if (!userIdToRoleTypesMap.containsKey(newUserId)
+          || !userIdToRoleTypesMap.get(newUserId).contains(newRoleType)) {
+        existingRoles.add(newRole);
+        currentStates.add(newRole.toString());
+        affectedUsers.add(newUserId);
+        logger.info("Assigned role '{}' to user '{}'", newRoleType, newUserId);
+      } else {
+        logger.info(
+            "User '{}' already has role '{}' - skipping assignment.", newUserId, newRoleType);
       }
-
-      // Assign the new role to the user
-      existingRoles.add(newRole);
-      currentStates.add(newRole.toString());
-      affectedUsers.add(newUserId);
-      logger.info("Assigned role '{}' to user '{}'", newRoleType, newUserId);
     }
-
-    // Remove duplicate user entries in affectedUsers
-    affectedUsers = affectedUsers.stream().distinct().collect(Collectors.toList());
 
     if (currentStates.isEmpty() && previousStates.isEmpty()) {
       logger.warn("No roles were updated for incident ID: {}", incidentID);
@@ -282,30 +283,19 @@ public class IncidentServiceImpl implements IncidentService {
     timeline.setUpdatedAt(ts);
     timeline.setUserDetails(currentUser);
 
-    // Populate additionalDetails
     Map<String, Object> roleDetailsMap = new HashMap<>();
     roleDetailsMap.put("previousState", previousRoleSnapshot);
     roleDetailsMap.put("currentState", existingRoles);
     timeline.setAdditionalDetails(roleDetailsMap);
 
-    //     Optionally, retain previousState and currentState as strings if needed
     timeline.setPreviousState(String.join(" | ", previousStates));
     timeline.setCurrentState(String.join(" | ", currentStates));
 
     logger.info("Updated roles: {}", existingRoles);
 
-    // Add the timeline entry to the incident's timeline
-    incident.getTimelines().add(timeline);
-
-    // Step 6: Update the incident in the database
-    Incident updated = updateIncidentById(incident.getId(), incident);
-    if (updated == null) {
-      logger.error("Failed to update incident roles for incident ID: {}", incidentID);
-      throw new RoleUpdateException("Failed to update incident roles.");
-    }
-
-    logger.info("Successfully updated roles for incident ID: {}", incidentID);
-    return updated;
+    incident.addTimeline(timeline);
+    incident.setRoles(existingRoles);
+    return incidentRepository.save(incident);
   }
 
   public Incident updateIncidentSeverity(
@@ -331,7 +321,7 @@ public class IncidentServiceImpl implements IncidentService {
     // Step 3: Create a new timeline entry for the change
     Timeline timeline = new Timeline();
     timeline.setId(String.valueOf(ts));
-    timeline.setType(ChangeType.Roles);
+    timeline.setType(ChangeType.Severity);
     timeline.setCreatedAt(ts);
     timeline.setUpdatedAt(ts);
     timeline.setUserDetails(currentUser);
