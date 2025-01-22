@@ -24,19 +24,13 @@ import org.springframework.transaction.annotation.Transactional;
 @EnableAsync
 public class HierarchyServiceImpl implements HierarchyService {
 
-  @Autowired private UserService userService;
-
-  @Autowired private AuthService authService;
-
-  @Autowired private UserMappingService userMappingService;
-
-  @Autowired private AccountService accountService;
-
-  @Autowired private OrganizationService organizationService;
-
-  @Autowired private ProjectService projectService;
-
   private static final Logger logger = LoggerFactory.getLogger(HierarchyServiceImpl.class);
+  @Autowired private UserService userService;
+  @Autowired private AuthService authService;
+  @Autowired private UserMappingService userMappingService;
+  @Autowired private AccountService accountService;
+  @Autowired private OrganizationService organizationService;
+  @Autowired private ProjectService projectService;
 
   @Value("${hierarchy.defaultAccount.id:default_account_id}")
   private String defaultAccountId;

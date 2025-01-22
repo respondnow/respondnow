@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class IncidentServiceImpl implements IncidentService {
 
+  private static final Logger logger = LoggerFactory.getLogger(IncidentServiceImpl.class);
   @Autowired private IncidentRepository incidentRepository;
   @Autowired private MongoTemplate mongoTemplate;
 
@@ -39,7 +40,41 @@ public class IncidentServiceImpl implements IncidentService {
   @Value("${hierarchy.defaultProject.id:default_project_id}")
   private String defaultProjectId;
 
-  private static final Logger logger = LoggerFactory.getLogger(IncidentServiceImpl.class);
+  @NotNull
+  private static Timeline getTimeline(
+      CreateRequest request, UserDetails currentUser, long createdAt) {
+
+    // Check if channels are available and not empty
+    if (request.getChannels() == null || request.getChannels().isEmpty()) {
+      throw new IllegalArgumentException("No channels provided in the request.");
+    }
+
+    // Get the first channel from the list (you can adjust this logic if multiple channels should be
+    // handled differently)
+    Channel slackChannel = request.getChannels().get(0);
+
+    // Create a new timeline entry for the Slack channel creation
+    Timeline slackChannelTimeline = new Timeline();
+    slackChannelTimeline.setType(ChangeType.Slack_Channel_Created);
+    slackChannelTimeline.setCreatedAt(createdAt);
+    slackChannelTimeline.setUpdatedAt(createdAt);
+    slackChannelTimeline.setPreviousState(slackChannel.getId());
+    slackChannelTimeline.setCurrentState(
+        slackChannel.getId()); // Use the channel ID as the current state
+
+    io.respondnow.model.incident.Slack slack = new io.respondnow.model.incident.Slack();
+    slack.setChannelId(slackChannel.getId());
+    slack.setChannelName(slackChannel.getName());
+    slack.setChannelStatus(slackChannel.getStatus());
+    slack.setTeamId(slackChannel.getTeamId());
+    slackChannelTimeline.setSlack(slack); // Set the full Slack channel object
+    slackChannelTimeline.setUserDetails(
+        currentUser); // Set the user details associated with the request
+    slackChannelTimeline.setMessage("Slack channel associated with the incident");
+    slackChannelTimeline.setAdditionalDetails(null); // Add any additional details if necessary
+
+    return slackChannelTimeline;
+  }
 
   public Incident createIncident(CreateRequest request, UserDetails currentUser) {
     long createdAt = Instant.now().getEpochSecond();
@@ -97,42 +132,6 @@ public class IncidentServiceImpl implements IncidentService {
 
     // Save and return the new Incident
     return incidentRepository.save(newIncident);
-  }
-
-  @NotNull
-  private static Timeline getTimeline(
-      CreateRequest request, UserDetails currentUser, long createdAt) {
-
-    // Check if channels are available and not empty
-    if (request.getChannels() == null || request.getChannels().isEmpty()) {
-      throw new IllegalArgumentException("No channels provided in the request.");
-    }
-
-    // Get the first channel from the list (you can adjust this logic if multiple channels should be
-    // handled differently)
-    Channel slackChannel = request.getChannels().get(0);
-
-    // Create a new timeline entry for the Slack channel creation
-    Timeline slackChannelTimeline = new Timeline();
-    slackChannelTimeline.setType(ChangeType.Slack_Channel_Created);
-    slackChannelTimeline.setCreatedAt(createdAt);
-    slackChannelTimeline.setUpdatedAt(createdAt);
-    slackChannelTimeline.setPreviousState(slackChannel.getId());
-    slackChannelTimeline.setCurrentState(
-        slackChannel.getId()); // Use the channel ID as the current state
-
-    io.respondnow.model.incident.Slack slack = new io.respondnow.model.incident.Slack();
-    slack.setChannelId(slackChannel.getId());
-    slack.setChannelName(slackChannel.getName());
-    slack.setChannelStatus(slackChannel.getStatus());
-    slack.setTeamId(slackChannel.getTeamId());
-    slackChannelTimeline.setSlack(slack); // Set the full Slack channel object
-    slackChannelTimeline.setUserDetails(
-        currentUser); // Set the user details associated with the request
-    slackChannelTimeline.setMessage("Slack channel associated with the incident");
-    slackChannelTimeline.setAdditionalDetails(null); // Add any additional details if necessary
-
-    return slackChannelTimeline;
   }
 
   public Incident updateSummary(String incidentID, String newSummary, UserDetails currentUser)

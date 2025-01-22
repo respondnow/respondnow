@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class SlackAsyncService {
 
-  private final SlackService slackService;
   private static final Logger logger = LoggerFactory.getLogger(SlackAsyncService.class);
+  private final SlackService slackService;
 
   public SlackAsyncService(SlackService slackService) {
     this.slackService = slackService;
