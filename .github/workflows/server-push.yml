@@ -55,6 +55,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
+          cd server
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
             --push . -f src/main/docker/Dockerfile
