@@ -48,12 +48,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT }}
 
-      - name: Build the Docker image
-        run: |
-          cd server
-          ls
-          docker build -t ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -f package/Dockerfile .
-
       - name: Push Docker image to GitHub Container Registry
         if: |
           github.ref == 'refs/heads/main-java' ||
