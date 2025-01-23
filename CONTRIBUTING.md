@@ -58,7 +58,7 @@ To submit any kinds of improvements, please consider the following:
 - Create a `feature branch` from your forked repository and submit a pull request against this repo’s main branch.
   - If you are making a change to the user interface (UI), include a screenshot of the UI changes.
 - Follow the relevant coding style guidelines
-  - For backend contributions, popular ones are the [Go Code Review Comments](https://code.google.com/p/go-wiki/wiki/CodeReviewComments) and the _Formatting_ and _style_ section of Peter Bourgon's [Go: Best Practices for Production Environments](https://peter.bourgon.org/go-in-production/#formatting-and-style).
+  - For backend contributions, popular ones are the [Go Code Review Comments](https://go.dev/wiki/CodeReviewComments) and the _Formatting_ and _style_ section of Peter Bourgon's [Go: Best Practices for Production Environments](https://peter.bourgon.org/go-in-production/#formatting-and-style).
   - If you are making any changes in backend, make sure you have run and tested the code locally, the reviewers might ask for relevant screenshots in the comments.
   - For frontend contributions, we follow the [Airbnb style guide](https://airbnb.io/javascript/react/)
 - Your branch may be merged once all configured checks pass, including:
