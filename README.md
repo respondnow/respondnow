@@ -1,4 +1,5 @@
-[<img alt="RespondNow" src="https://github.com/user-attachments/assets/4792d8ba-0ab9-4126-a360-ef6b5bab4889" align="left"> ](https://respondnow.io/)
+
+[<img alt="RespondNow" src="https://github.com/user-attachments/assets/7b7a4b11-472a-46a9-833d-651f8b371cc9" align="left"> ](https://respondnow.io/)
 
 <br><br><br>
 
