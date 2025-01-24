@@ -1,4 +1,4 @@
-<img src="./resources/logos/respond-now.svg" height="80px">
+<img src="./resources/logos/respond-now-white-bg.svg" height="80px">
 
 # Contributing to RespondNow
 
