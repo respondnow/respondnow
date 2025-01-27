@@ -12,6 +12,6 @@
 
 - Verify that all pods in the `respondnow` namespace are up and running successfully
 
-- Now, you are all setup to begin your incident management journey on slack. Refer to the **User Guide** to create your first incident. 
+- Now, you are all setup to begin your incident management journey on slack. Refer to the [User Guide](https://respondnow.github.io/respondnow/user-guide/slack-based-incident-management/create-incidents/) to create your first incident. 
 
 
