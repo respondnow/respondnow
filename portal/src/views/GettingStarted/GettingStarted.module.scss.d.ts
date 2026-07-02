@@ -1,6 +1,7 @@
 declare namespace GettingStartedModuleScssNamespace {
   export interface IGettingStartedModuleScss {
     cardContainer: string;
+    manifestScroll: string;
     stepperContainer: string;
   }
 }

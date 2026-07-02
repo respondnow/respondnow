@@ -29,8 +29,10 @@ export interface StringsMap {
   gettingStartedConfigureIncidentChannelHeader: unknown;
   gettingStartedCreateSlackAppContent: unknown;
   gettingStartedCreateSlackAppHeader: unknown;
+  gettingStartedCreateSlackAppLink: unknown;
   gettingStartedInstallSlackAppContent: unknown;
   gettingStartedInstallSlackAppHeader: unknown;
+  gettingStartedViewDocsLink: unknown;
   goBack: unknown;
   goToHome: unknown;
   goToIncidentDashboard: unknown;
