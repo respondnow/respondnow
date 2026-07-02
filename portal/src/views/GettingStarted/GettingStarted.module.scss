@@ -6,6 +6,13 @@
   border: 0 !important;
 }
 
+.manifestScroll {
+  width: 100%;
+  height: 260px;
+  overflow-y: auto;
+  border: 1px solid var(--grey-200);
+}
+
 .stepperContainer {
   [data-testid='Stepper_main'] {
     margin: 0 !important;

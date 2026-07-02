@@ -64,9 +64,8 @@ commentedIn: commented in
 showCommentsOnly: Show Comments Only
 showAll: Show All
 noTimeLineDataAvailable: No timeline data available
-gettingStartedCreateSlackAppContent: Go to the Slack API site and create a new app "from an app manifest", then paste in the RespondNow manifest below.
+gettingStartedCreateSlackAppContent: Copy the RespondNow app manifest below, then create a new Slack app "from an app manifest" and paste it in.
 gettingStartedCreateSlackAppLink: Create Slack App
-gettingStartedViewManifestLink: View RespondNow manifest
 gettingStartedInstallSlackAppContent: In your app's Settings > Basic Information, generate an App-Level Token with the "connections:write" scope and save it. Then, in Settings > Install App, install the app to your workspace and save the Bot User OAuth Token.
 gettingStartedConfigureIncidentChannelContent: Create a Slack channel for incidents and add the app to it. Then set SLACK_BOT_TOKEN, SLACK_APP_TOKEN and SLACK_INCIDENT_CHANNEL_ID on the RespondNow server and restart it.
 gettingStartedViewDocsLink: View full setup guide
