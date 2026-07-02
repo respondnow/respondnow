@@ -6,6 +6,7 @@ import {
   Card,
   Container,
   Layout,
+  Link,
   Stepper,
   Text,
   useToggleOpen
@@ -48,9 +49,21 @@ const GettingStartedView: React.FC = () => {
                     id: 'createSlackApp',
                     title: getString('gettingStartedCreateSlackAppHeader'),
                     panel: (
-                      <Text font={{ variation: FontVariation.BODY }}>
-                        {getString('gettingStartedCreateSlackAppContent')}
-                      </Text>
+                      <Layout.Vertical style={{ gap: '0.5rem' }}>
+                        <Text font={{ variation: FontVariation.BODY }}>
+                          {getString('gettingStartedCreateSlackAppContent')}
+                        </Text>
+                        <Link href="https://api.slack.com/apps?new_app=1" target="_blank" rel="noopener noreferrer">
+                          {getString('gettingStartedCreateSlackAppLink')}
+                        </Link>
+                        <Link
+                          href="https://github.com/respondnow/respondnow/blob/main/server/src/main/resources/slackmanifest.yml"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {getString('gettingStartedViewManifestLink')}
+                        </Link>
+                      </Layout.Vertical>
                     )
                   },
                   {
@@ -73,6 +86,13 @@ const GettingStartedView: React.FC = () => {
                         <Text font={{ variation: FontVariation.BODY }}>
                           {getString('gettingStartedConfigureIncidentChannelContent')}
                         </Text>
+                        <Link
+                          href="https://respondnow.github.io/respondnow/getting-started/create-slack-app-with-app-manifest/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {getString('gettingStartedViewDocsLink')}
+                        </Link>
                         <Button
                           text={
                             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.WHITE}>

@@ -64,9 +64,12 @@ commentedIn: commented in
 showCommentsOnly: Show Comments Only
 showAll: Show All
 noTimeLineDataAvailable: No timeline data available
-gettingStartedCreateSlackAppContent: Create a Slack App to start with, this will be used to manage incidents.
-gettingStartedInstallSlackAppContent: Install the Slack App to your workspace to start managing incidents.
-gettingStartedConfigureIncidentChannelContent: Create a channel in Slack to manage incidents. Configure the channel with the Slack App you just created.
+gettingStartedCreateSlackAppContent: Go to the Slack API site and create a new app "from an app manifest", then paste in the RespondNow manifest below.
+gettingStartedCreateSlackAppLink: Create Slack App
+gettingStartedViewManifestLink: View RespondNow manifest
+gettingStartedInstallSlackAppContent: In your app's Settings > Basic Information, generate an App-Level Token with the "connections:write" scope and save it. Then, in Settings > Install App, install the app to your workspace and save the Bot User OAuth Token.
+gettingStartedConfigureIncidentChannelContent: Create a Slack channel for incidents and add the app to it. Then set SLACK_BOT_TOKEN, SLACK_APP_TOKEN and SLACK_INCIDENT_CHANNEL_ID on the RespondNow server and restart it.
+gettingStartedViewDocsLink: View full setup guide
 goToIncidentDashboard: Go to Incidents Dashboard
 gettingStartedCreateSlackAppHeader: Create a Slack App
 gettingStartedInstallSlackAppHeader: Install the Slack App to your workspace
